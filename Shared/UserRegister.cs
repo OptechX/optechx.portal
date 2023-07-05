@@ -21,8 +21,11 @@ namespace OptechX.Portal.Shared
 		[Range(0, 1000, ErrorMessage = "Choose between 0-1000")]
 		public int Bananas { get; set; } = 100;
 
+		[Required]
+		public string Country { get; set; } = null!;
+
 		[Range(typeof(bool), "true", "true", ErrorMessage = "Only confirmed users can play")]
-		public bool IsConfirmed { get; set; } = true;
+		public bool IsConfirmed { get; set; } = false;
 	}
 }
 

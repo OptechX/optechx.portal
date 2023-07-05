@@ -7,6 +7,7 @@ namespace OptechX.Portal.Client.Services
         IList<Unit> Units { get; }
 		IList<UserUnit> MyUnits { get; set; }
 		void AddUnit(int unitId);
+		Task LoadUnitsAsync();
 	}
 }
 

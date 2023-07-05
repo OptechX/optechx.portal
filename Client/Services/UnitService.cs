@@ -1,4 +1,5 @@
-﻿using Blazored.Toast.Services;
+﻿using System.Net.Http.Json;
+using Blazored.Toast.Services;
 using OptechX.Portal.Shared;
 
 namespace OptechX.Portal.Client.Services
@@ -6,19 +7,15 @@ namespace OptechX.Portal.Client.Services
     public class UnitService : IUnitService
     {
         private readonly IToastService _toastService;
+        private readonly HttpClient _httpClient;
 
-        public UnitService(IToastService toastService)
+        public UnitService(IToastService toastService, HttpClient httpClient)
         {
             _toastService = toastService;
+            _httpClient = httpClient;
         }
 
-
-        public IList<Unit> Units => new List<Unit>
-        {
-            new Unit { Id = 1, Title = "Knight", Attack = 10, Defense = 10, BananaCost = 100},
-            new Unit { Id = 2, Title = "Archer", Attack = 10, Defense = 10, BananaCost = 100},
-            new Unit { Id = 3, Title = "Mage", Attack = 10, Defense = 10, BananaCost = 100},
-        };
+        public IList<Unit> Units { get; set; } = new List<Unit>();
 
         public IList<UserUnit> MyUnits { get; set; } = new List<UserUnit>();
 
@@ -28,6 +25,14 @@ namespace OptechX.Portal.Client.Services
             MyUnits.Add(new UserUnit { UnitId = unit.Id, HitPoints = unit.HitPoints });
 
             _toastService.ShowSuccess($"Your {unit.Title} has been built!");
+        }
+
+        public async Task LoadUnitsAsync()
+        {
+            if (Units == null || Units.Count == 0)
+            {
+                Units = await _httpClient.GetFromJsonAsync<IList<Unit>>("api/Unit");
+            }
         }
     }
 }
