@@ -24,10 +24,12 @@
 
   <ItemGroup>
     <Content Remove="wwwroot\icons\" />
+    <Content Remove="wwwroot\img\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="wwwroot\icons\" />
     <Folder Include="Services\" />
+    <Folder Include="wwwroot\img\" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Services\" />
