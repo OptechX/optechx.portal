@@ -29,9 +29,10 @@ namespace OptechX.Portal.Client.Services
 
         public async Task LoadUnitsAsync()
         {
-            if (Units == null || Units.Count == 0)
+            var unitList = await _httpClient.GetFromJsonAsync<IList<Unit>>("api/Unit");
+            if (unitList != null)
             {
-                Units = await _httpClient.GetFromJsonAsync<IList<Unit>>("api/Unit");
+                Units = unitList;
             }
         }
     }
