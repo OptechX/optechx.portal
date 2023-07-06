@@ -29,21 +29,21 @@ namespace OptechX.Portal.Shared.Models.Engine.Applications
         public string[]? Lcid
         {
             get => LcidString?.Split(',', StringSplitOptions.RemoveEmptyEntries);
-            set => LcidString = value != null ? string.Join(',', value) : null;
+            set => LcidString = value != null ? string.Join(',', value) : LcidString;
         }
 
         [NotMapped]
         public string[]? CpuArch
         {
             get => CpuArchString?.Split(',', StringSplitOptions.RemoveEmptyEntries);
-            set => CpuArchString = value != null ? string.Join(',', value) : null;
+            set => CpuArchString = value != null ? string.Join(',', value) : CpuArchString;
         }
 
         [NotMapped]
         public string[]? Tags
         {
             get => TagsString?.Split(',', StringSplitOptions.RemoveEmptyEntries);
-            set => TagsString = value != null ? string.Join(',', value) : null;
+            set => TagsString = value != null ? string.Join(',', value) : TagsString;
         }
     }
 }
