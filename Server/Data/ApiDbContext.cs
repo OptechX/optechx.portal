@@ -7,7 +7,7 @@ namespace OptechX.Portal.Server.Data
 {
 	public class ApiDbContext : DbContext
 	{
-        public DbSet<Application> Applications { get; set; }
+        public DbSet<Application>? Applications { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

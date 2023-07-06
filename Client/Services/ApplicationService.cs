@@ -1,6 +1,5 @@
 ﻿using System.Net.Http.Json;
 using OptechX.Portal.Shared.Models.Engine.Applications;
-using OptechX.Portal.Shared.Models.Engine.Constants;
 
 namespace OptechX.Portal.Client.Services
 {

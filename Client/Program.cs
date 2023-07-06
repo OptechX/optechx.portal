@@ -3,7 +3,6 @@ using Blazored.Toast;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using OptechX.Portal.Client;
 using OptechX.Portal.Client.Services;
 
 namespace OptechX.Portal.Client;
