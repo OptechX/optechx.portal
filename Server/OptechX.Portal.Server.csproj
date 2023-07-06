@@ -20,8 +20,12 @@
 
   <ItemGroup>
     <None Remove="Controllers\Generic\" />
+    <None Remove="Controllers\Engine\" />
+    <None Remove="Controllers\Engine\Applications\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Controllers\Generic\" />
+    <Folder Include="Controllers\Engine\" />
+    <Folder Include="Controllers\Engine\Applications\" />
   </ItemGroup>
 </Project>

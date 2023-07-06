@@ -9,4 +9,18 @@
   <ItemGroup>
     <SupportedPlatform Include="browser" />
   </ItemGroup>
+  <ItemGroup>
+    <None Remove="Models\" />
+    <None Remove="Models\Engine\" />
+    <None Remove="Models\Engine\Applications\" />
+    <None Remove="Models\Constants\" />
+    <None Remove="Models\Engine\Constants\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Models\" />
+    <Folder Include="Models\Engine\" />
+    <Folder Include="Models\Engine\Applications\" />
+    <Folder Include="Models\Constants\" />
+    <Folder Include="Models\Engine\Constants\" />
+  </ItemGroup>
 </Project>

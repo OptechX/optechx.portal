@@ -23,6 +23,7 @@ public class Program
         builder.Services.AddScoped<IBananaService, BananaService>();
         builder.Services.AddScoped<IUnitService, UnitService>();
         builder.Services.AddScoped<ICountryListService, CountryListService>();
+        builder.Services.AddScoped<IApplicationService, ApplicationService>();
         builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
         builder.Services.AddOptions();
         builder.Services.AddAuthorizationCore();

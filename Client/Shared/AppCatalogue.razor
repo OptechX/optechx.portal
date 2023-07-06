@@ -1,0 +1,19 @@
+﻿@inject IApplicationService ApplicationService
+
+<div class="row ml-4">
+    <h3>@pageTitle</h3>
+</div>
+
+@foreach (var app in ApplicationService.Applications)
+{
+    <h3>@app.Name</h3>
+}
+
+@code {
+    private string pageTitle = "Application Library";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ApplicationService.LoadApplicationsAsync();
+    }
+}

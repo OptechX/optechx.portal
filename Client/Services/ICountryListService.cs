@@ -1,7 +1,4 @@
-﻿using System;
-using OptechX.Portal.Shared;
-
-namespace OptechX.Portal.Client.Services
+﻿namespace OptechX.Portal.Client.Services
 {
 	public interface ICountryListService
 	{
