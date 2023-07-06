@@ -28,10 +28,14 @@
     <None Remove="Controllers\Generic\" />
     <None Remove="Controllers\Engine\" />
     <None Remove="Controllers\Engine\Applications\" />
+    <None Remove="Data\" />
+    <None Remove="Models\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Controllers\Generic\" />
     <Folder Include="Controllers\Engine\" />
     <Folder Include="Controllers\Engine\Applications\" />
+    <Folder Include="Data\" />
+    <Folder Include="Models\" />
   </ItemGroup>
 </Project>

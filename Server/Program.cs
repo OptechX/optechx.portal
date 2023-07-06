@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.ResponseCompression;
+﻿using OptechX.Portal.Server.Data;
 
 namespace OptechX.Portal;
 
@@ -9,7 +9,7 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
 
         // Add services to the container.
-
+        builder.Services.AddDbContext<ApiDbContext>();
         builder.Services.AddControllersWithViews();
         builder.Services.AddRazorPages();
 

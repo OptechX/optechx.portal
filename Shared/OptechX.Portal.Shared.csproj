@@ -23,4 +23,7 @@
     <Folder Include="Models\Constants\" />
     <Folder Include="Models\Engine\Constants\" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.8" />
+  </ItemGroup>
 </Project>

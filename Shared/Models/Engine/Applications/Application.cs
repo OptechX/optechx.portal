@@ -1,4 +1,5 @@
-﻿using OptechX.Portal.Shared.Models.Engine.Constants;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using OptechX.Portal.Shared.Models.Engine.Constants;
 
 namespace OptechX.Portal.Shared.Models.Engine.Applications
 {
@@ -13,20 +14,36 @@ namespace OptechX.Portal.Shared.Models.Engine.Applications
         public string Version { get; set; } = null!;
         public string Copyright { get; set; } = null!;
         public bool LicenseAcceptRequired { get; set; } = false;
-        public string[]? Lcid { get; set; }
-        public string[]? CpuArch { get; set; }
+        public string LcidString { get; set; } = null!;
+        public string CpuArchString { get; set; } = null!;
         public string Homepage { get; set; } = null!;
         public string Icon { get; set; } = null!;
         public string Docs { get; set; } = null!;
         public string License { get; set; } = null!;
-        public string[]? Tags { get; set; }
+        public string TagsString { get; set; } = null!;
         public string Summary { get; set; } = null!;
         public bool Enabled { get; set; } = true;
         public string? BannerIcon { get; set; }
 
-        public Application()
+        [NotMapped]
+        public string[]? Lcid
         {
-            LastUpdate = DateTime.Today.Date;
+            get => LcidString?.Split(',', StringSplitOptions.RemoveEmptyEntries);
+            set => LcidString = value != null ? string.Join(',', value) : null;
+        }
+
+        [NotMapped]
+        public string[]? CpuArch
+        {
+            get => CpuArchString?.Split(',', StringSplitOptions.RemoveEmptyEntries);
+            set => CpuArchString = value != null ? string.Join(',', value) : null;
+        }
+
+        [NotMapped]
+        public string[]? Tags
+        {
+            get => TagsString?.Split(',', StringSplitOptions.RemoveEmptyEntries);
+            set => TagsString = value != null ? string.Join(',', value) : null;
         }
     }
 }
