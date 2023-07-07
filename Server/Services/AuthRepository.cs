@@ -42,6 +42,34 @@ namespace OptechX.Portal.Server.Services
             _emailService = emailService;
         }
 
+        public async Task<ServiceResponse<bool>> GetNewVerificationToken(string emailAddress)
+        {
+            var userFound = await _dbContext.UserAccounts!.FirstOrDefaultAsync(u => u.EmailAddress == emailAddress.ToLower());
+            if (userFound == null)
+            {
+                return new ServiceResponse<bool>() { Data = false, Message = "Token invalid or expired", ResponseCode = 400, Success = false };
+            }
+            string verificationToken = OptechXValueGenerator.GenerateRandomString(8);
+            userFound.VerificationToken = verificationToken;
+            userFound.Updated = DateTime.UtcNow;
+            await _dbContext.SaveChangesAsync();
+            string emailTemplate = EmailTemplates.VerifyEmailAddress(
+                recipientSmtp: userFound.EmailAddress,
+                verifyUrl: $"https://portal.optechx.com/account/verify-account?token={userFound.VerificationToken}");
+            await _emailService.SendAsync(
+                to: userFound.EmailAddress,
+                subject: "Welcome to OptechX!",
+                html: emailTemplate);
+
+            return new ServiceResponse<bool>
+            {
+                Data = true,
+                Message = "Request received successfully",
+                ResponseCode = 201,
+                Success = true,
+            };
+        }
+
         public async Task<ServiceResponse<UserLoginResponse>> Login(UserLogin userLogin)
         {
             var response = new ServiceResponse<UserLoginResponse>();
@@ -201,14 +229,19 @@ namespace OptechX.Portal.Server.Services
             return new ServiceResponse<bool>() { Data = true, Message = "Request for password reset received", ResponseCode = 204, Success = false };
         }
 
-        public async Task<ServiceResponse<int>> VerifyAccount(string verificationToken)
+        /// <summary>
+        /// Verify user account
+        /// </summary>
+        /// <param name="verificationToken"></param>
+        /// <returns></returns>
+        public async Task<ServiceResponse<bool>> VerifyAccount(string verificationToken)
         {
             var userFound = await _dbContext.UserAccounts!.FirstOrDefaultAsync(u => u.VerificationToken == verificationToken);
             if (userFound is null)
             {
-                return new ServiceResponse<int>()
+                return new ServiceResponse<bool>()
                 {
-                    Data = 1,
+                    Data = false,
                     Message = "Verification Token either expired or incorrect",
                     ResponseCode = 403,
                     Success = false,
@@ -218,9 +251,9 @@ namespace OptechX.Portal.Server.Services
             userFound.Verified = verifiedAt;
             userFound.Updated = verifiedAt;
             await _dbContext.SaveChangesAsync();
-            return new ServiceResponse<int>()
+            return new ServiceResponse<bool>()
             {
-                Data = 0,
+                Data = true,
                 Message = "Account verified successfully",
                 ResponseCode = 200,
                 Success = true,

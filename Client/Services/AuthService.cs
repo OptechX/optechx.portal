@@ -13,6 +13,11 @@ namespace OptechX.Portal.Client.Services
             _httpClient = httpClient;
 		}
 
+        /// <summary>
+        /// Login user account request
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
         public async Task<ServiceResponse<UserLoginResponse>> Login(UserLogin request)
         {
             var response = new ServiceResponse<UserLoginResponse>();
@@ -36,6 +41,11 @@ namespace OptechX.Portal.Client.Services
             }
         }
 
+        /// <summary>
+        /// Register user account
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
         public async Task<ServiceResponse<int>> Register(UserRegister request)
         {
             var result = await _httpClient.PostAsJsonAsync("api/auth/register", request);
@@ -62,7 +72,11 @@ namespace OptechX.Portal.Client.Services
             }
         }
 
-        // reset password request
+        /// <summary>
+        /// Request password reset
+        /// </summary>
+        /// <param name="userEmail"></param>
+        /// <returns></returns>
         public async Task<ServiceResponse<bool>> ResetPassword(ResetPasswordRequest userEmail)
         {
             var requestUri = $"api/auth/reset-password/{userEmail}";
@@ -81,6 +95,27 @@ namespace OptechX.Portal.Client.Services
             else
             {
                 return new ServiceResponse<bool> { Data = false, Message = "Request for password reset received", ResponseCode = 204, Success = false };
+            }
+        }
+
+        public async Task<ServiceResponse<bool>> VerifyAccount(string verificationToken)
+        {
+            var requestUri = $"api/auth/verify-account/{verificationToken}";
+            var result = await _httpClient.PostAsync(requestUri, null);
+            var content = await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
+            if (content is not null)
+            {
+                return new ServiceResponse<bool>
+                {
+                    Data = content.Data,
+                    Message = content.Message,
+                    ResponseCode = content.ResponseCode,
+                    Success = content.Success,
+                };
+            }
+            else
+            {
+                return new ServiceResponse<bool> { Data = false, Message = "Request for account verification failed", ResponseCode = 400, Success = false };
             }
         }
     }

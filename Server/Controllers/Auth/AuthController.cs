@@ -63,5 +63,19 @@ namespace OptechX.Portal.Server.Controllers.Auth
             var response = await _authRepo.ResetPassword(emailAddress);
             return Ok(response);  // this will never return anything other than Ok()
         }
+
+        [HttpPost("request-new-verification-token/{emailAddress}")]
+        public async Task<ActionResult<bool>> RequestNewVerificationToken(string emailAddress)
+        {
+            var response = await _authRepo.GetNewVerificationToken(emailAddress);
+            if (response.Success)
+            {
+                return Ok(response);
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
     }
 }
