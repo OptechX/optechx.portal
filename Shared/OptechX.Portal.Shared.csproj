@@ -15,6 +15,9 @@
     <None Remove="Models\Engine\Applications\" />
     <None Remove="Models\Constants\" />
     <None Remove="Models\Engine\Constants\" />
+    <None Remove="Models\User\" />
+    <None Remove="Models\User\Constants\" />
+    <None Remove="Models\Generic\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Models\" />
@@ -22,6 +25,9 @@
     <Folder Include="Models\Engine\Applications\" />
     <Folder Include="Models\Constants\" />
     <Folder Include="Models\Engine\Constants\" />
+    <Folder Include="Models\User\" />
+    <Folder Include="Models\User\Constants\" />
+    <Folder Include="Models\Generic\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.8" />

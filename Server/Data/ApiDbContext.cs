@@ -2,12 +2,16 @@
 using Microsoft.EntityFrameworkCore;
 using OptechX.Portal.Server.Models;
 using OptechX.Portal.Shared.Models.Engine.Applications;
+using OptechX.Portal.Shared.Models.User;
 
 namespace OptechX.Portal.Server.Data
 {
 	public class ApiDbContext : DbContext
 	{
         public DbSet<Application>? Applications { get; set; }
+
+        // User
+        public DbSet<UserAccount>? UserAccounts { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

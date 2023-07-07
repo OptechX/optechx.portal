@@ -24,6 +24,8 @@ public class Program
         builder.Services.AddScoped<ICountryListService, CountryListService>();
         builder.Services.AddScoped<IApplicationService, ApplicationService>();
         builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
+        builder.Services.AddScoped<IAuthService, AuthService>();
+
         builder.Services.AddOptions();
         builder.Services.AddAuthorizationCore();
 

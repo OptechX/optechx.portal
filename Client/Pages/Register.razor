@@ -1,14 +1,15 @@
 ﻿@page "/register"
-@inject IUnitService UnitService
+@using OptechX.Portal.Shared.Models.User
+@inject IAuthService AuthService
+@inject IToastService ToastService
 @inject ICountryListService CountryListService
-@inject IJSRuntime JSRuntime
 @inject NavigationManager NavigationManager
 
 <PageTitle>OptechX Portal</PageTitle>
 
 <h3>Register</h3>
 
-@if(UnitService.Units.Count > 0 || CountryListService.Countries.Count > 0)
+@if (CountryListService.Countries.Count > 0)
 {
     <EditForm Model="user" OnValidSubmit="HandleRegistration">
         <DataAnnotationsValidator></DataAnnotationsValidator>
@@ -18,41 +19,21 @@
             <InputText id="email" @bind-Value="user.Email" class="form-control"></InputText>
             <ValidationMessage For="@(() => user.Email)" />
         </div>
-        <!-- Username -->
-        <div class="form-group mb-3">
-            <label for="username">Username</label>
-            <InputText id="username" @bind-Value="user.Username" class="form-control"></InputText>
-            <ValidationMessage For="@(() => user.Username)" />
-        </div>
+
         <!-- Password -->
         <div class="form-group mb-3">
             <label for="password" class="required">Password</label>
             <InputText id="password" @bind-Value="user.Password" class="form-control"></InputText>
             <ValidationMessage For="@(() => user.Password)" />
         </div>
+
         <!-- Confirm Password -->
         <div class="form-group mb-3">
             <label for="confirmPassword">Confirm Password</label>
             <InputText id="password" @bind-Value="user.ConfirmPassword" class="form-control"></InputText>
             <ValidationMessage For="@(() => user.ConfirmPassword)" />
         </div>
-        <!-- Start Unit -->
-        <div class="form-group mb-3">
-            <label for="startUnit">Start Unit</label>
-            <InputSelect id="startUnit" @bind-Value="user.StartUnitId" class="form-control">
-                @foreach (var unit in UnitService.Units)
-                {
-                    <option value="@unit.Id">@unit.Title</option>
-                }
-            </InputSelect>
-            <ValidationMessage For="@(() => user.StartUnitId)" />
-        </div>
-        <!-- Bananas -->
-        <div class="form-group mb-3">
-            <label for="bananas">Bananas</label>
-            <InputNumber id="bananas" @bind-Value="user.Bananas" class="form-control"></InputNumber>
-            <ValidationMessage For="@(() => user.Bananas)" />
-        </div>
+
         <!-- Country -->
         <div class="form-group mb-3">
             <label for="country">Country</label>
@@ -64,12 +45,14 @@
             </InputSelect>
             <ValidationMessage For="@(() => user.Country)" />
         </div>
+
         <!-- Accept Terms & Conditions -->
         <div class="form-check mb-3">
             <InputCheckbox id="confirmed" @bind-Value="user.IsConfirmed" class="form-control-input"></InputCheckbox>
             <label for="confirmed" class="form-check-label">I accept Terms &amp; Conditions for OptechX</label>
             <ValidationMessage For="@(() => user.IsConfirmed)" />
         </div>
+
         <!-- Submit button -->
         <button type="submit" class="btn btn-primary">Register</button>
     </EditForm>
@@ -84,14 +67,21 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        await UnitService.LoadUnitsAsync();
         await CountryListService.LoadCountryListAsync();
     }
 
-    void HandleRegistration()
+    async void HandleRegistration()
     {
-        JSRuntime.InvokeVoidAsync("console.log", user);
-        NavigationManager.NavigateTo("login");
+        var result = await AuthService.Register(user);
+        if (result.Data == 201)
+        {
+            ToastService.ShowSuccess(result.Message!);
+            NavigationManager.NavigateTo("/");
+        }
+        else
+        {
+            ToastService.ShowError(result.Message!);
+        }
     }
 }
 
