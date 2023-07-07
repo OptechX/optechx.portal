@@ -56,5 +56,12 @@ namespace OptechX.Portal.Server.Controllers.Auth
                     return BadRequest(response.Message);
             }
         }
+
+        [HttpPost("reset-password/{emailAddress}")]
+        public async Task<ActionResult<bool>> ResetPassword(string emailAddress)
+        {
+            var response = await _authRepo.ResetPassword(emailAddress);
+            return Ok(response);  // this will never return anything other than Ok()
+        }
     }
 }

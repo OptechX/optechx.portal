@@ -179,6 +179,28 @@ namespace OptechX.Portal.Server.Services
             };
         }
 
+        // Password Reset Request
+        public async Task<ServiceResponse<bool>> ResetPassword(string request)
+        {
+            var userFound = await _dbContext.UserAccounts!.FirstOrDefaultAsync(u => u.EmailAddress == request.ToLower());
+            if (userFound == null)
+            {
+                return new ServiceResponse<bool>() { Data = false, Message = "Request for password reset received", ResponseCode = 204, Success = false };
+            }
+            string resetToken = OptechXValueGenerator.GenerateRandomString(8);
+            userFound.ResetToken = resetToken;
+            userFound.Password = string.Empty;
+            userFound.Password2 = string.Empty;
+            userFound.ResetTokenExpires = DateTime.UtcNow.AddHours(3);
+            userFound.Updated = DateTime.UtcNow;
+            await _dbContext.SaveChangesAsync();
+            string message = EmailTemplates.ResetPassword(
+                accountSmtp: userFound.EmailAddress,
+                resetUrl: $"https://portal.optechx.com/account/set-password?token={resetToken}");
+            await _emailService.SendAsync(to: userFound.EmailAddress, subject: "OptechX Password Reset Request", html: message);
+            return new ServiceResponse<bool>() { Data = true, Message = "Request for password reset received", ResponseCode = 204, Success = false };
+        }
+
         public async Task<ServiceResponse<int>> VerifyAccount(string verificationToken)
         {
             var userFound = await _dbContext.UserAccounts!.FirstOrDefaultAsync(u => u.VerificationToken == verificationToken);

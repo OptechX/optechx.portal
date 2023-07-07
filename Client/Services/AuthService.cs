@@ -61,6 +61,28 @@ namespace OptechX.Portal.Client.Services
                 };
             }
         }
+
+        // reset password request
+        public async Task<ServiceResponse<bool>> ResetPassword(ResetPasswordRequest userEmail)
+        {
+            var requestUri = $"api/auth/reset-password/{userEmail}";
+            var result = await _httpClient.PostAsync(requestUri, null);
+            var content = await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
+            if (content is not null)
+            {
+                return new ServiceResponse<bool>
+                {
+                    Data = content.Data,
+                    Message = content.Message,
+                    ResponseCode = content.ResponseCode,
+                    Success = content.Success,
+                };
+            }
+            else
+            {
+                return new ServiceResponse<bool> { Data = false, Message = "Request for password reset received", ResponseCode = 204, Success = false };
+            }
+        }
     }
 }
 

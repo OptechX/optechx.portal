@@ -7,6 +7,7 @@ namespace OptechX.Portal.Client.Services
 	{
         Task<ServiceResponse<int>> Register(UserRegister userRegister);
 		Task<ServiceResponse<UserLoginResponse>> Login(UserLogin userLogin);
+		Task<ServiceResponse<bool>> ResetPassword(ResetPasswordRequest userEmail);
 	}
 }
 

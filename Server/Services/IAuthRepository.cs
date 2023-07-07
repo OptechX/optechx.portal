@@ -8,6 +8,8 @@ namespace OptechX.Portal.Server.Services
         Task<ServiceResponse<string>> Register(UserRegister userRegister);
 		Task<ServiceResponse<UserLoginResponse>> Login(UserLogin userLogin);
         Task<ServiceResponse<int>> VerifyAccount(string verificationToken);
-	}
+		Task<ServiceResponse<bool>> ResetPassword(string emailAddress);
+
+    }
 }
 
