@@ -1,0 +1,44 @@
+﻿@using OptechX.Portal.Shared.Models.User
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IAuthService AuthService
+@inject IToastService ToastService
+@inject NavigationManager NavigationManager
+
+<PageTitle>OptechX Portal</PageTitle>
+
+<h3>Verify Account</h3>
+
+<p>Input account verification token or <a href="/account/password-reset">request a new token</a> to reset your password.</p>
+
+<EditForm Model="verifyAccountRequest" OnValidSubmit="HandleResetRequest">
+    <DataAnnotationsValidator></DataAnnotationsValidator>
+    <div class="form-group mb-3">
+        <label for="token">Verify Token</label>
+        <InputText id="token" @bind-Value="verifyAccountRequest.VerifyToken" class="form-control"></InputText>
+        <ValidationMessage For="@(() => verifyAccountRequest.VerifyToken)" />
+    </div>
+    <button type="submit" class="btn btn-primary">Verify Account</button>
+</EditForm>
+
+@code {
+    private VerifyAccountRequest verifyAccountRequest = new();
+
+    protected override void OnInitialized()
+    {
+        var uri = new Uri(NavigationManager.Uri);
+        var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
+        var token = query["token"];
+
+        if (!string.IsNullOrEmpty(token))
+        {
+            verifyAccountRequest.VerifyToken = token;
+        }
+    }
+
+    private async Task HandleResetRequest()
+    {
+        ToastService.ShowInfo("Redirecting...");
+        await Task.Delay(2000);
+        NavigationManager.NavigateTo("/");
+    }
+}

@@ -1,8 +1,9 @@
 ﻿@using OptechX.Portal.Shared.Models.User
+@using OptechX.Portal.Client.Services
 @inject ILocalStorageService LocalStorage
 @inject AuthenticationStateProvider AuthenticationStateProvider
-@*@inject IAuthService AuthService
-@inject ToastService ToastService*@ 
+@inject IAuthService AuthService
+@inject IToastService ToastService
 
 <PageTitle>OptechX Portal</PageTitle>
 
@@ -29,16 +30,17 @@
 
     private async void HandleLogin()
     {
-        //var result = await AuthService.Login(userLogin);
-        //if (result.Success)
-        //{
-        //    await LocalStorage.SetItemAsync<bool>("isAuthenticated", true);
-        //    await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        //}
-        //else
-        //{
-        //    ToastService.ShowError(result?.Message ?? "Unable to login");
-        //}
+        var result = await AuthService.Login(userLogin);
+        if (result.Success)
+        {
+            ToastService.ShowSuccess("Login successful");
+            await LocalStorage.SetItemAsync<bool>("isAuthenticated", true);
+            await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        }
+        else
+        {
+            ToastService.ShowError("Incorrect email or password");
+        }
     }
 }
 

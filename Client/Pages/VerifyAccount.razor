@@ -1,0 +1,28 @@
+﻿@page "/account/verify-account"
+@inject ILocalStorageService LocalStorageService
+@inject NavigationManager NavigationManager
+
+<PageTitle>OptechX Portal</PageTitle>
+
+<AuthorizeView>
+    <Authorized>
+        <p>User is authorized. Redirecting...</p>
+    </Authorized>
+    <NotAuthorized>
+        <AccountVerify />
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        // Check if the user is authorized
+        var userIsAuthorized = await LocalStorageService.GetItemAsync<bool>("isAuthenticated");
+
+        if (userIsAuthorized)
+        {
+            // Redirect the authorized user to another page
+            NavigationManager.NavigateTo("/");
+        }
+    }
+}
