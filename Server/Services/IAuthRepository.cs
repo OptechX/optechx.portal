@@ -10,6 +10,7 @@ namespace OptechX.Portal.Server.Services
         Task<ServiceResponse<bool>> VerifyAccount(string verificationToken);
 		Task<ServiceResponse<bool>> ResetPassword(string emailAddress);
 		Task<ServiceResponse<bool>> GetNewVerificationToken(string emailAddress);
+		Task<ServiceResponse<bool>> SetNewPassword(SetPasswordRequest request);
     }
 }
 

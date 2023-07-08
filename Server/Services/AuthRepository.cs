@@ -166,7 +166,7 @@ namespace OptechX.Portal.Server.Services
             }
             UserAccount userAccount = new();
             var userCount = await _dbContext.UserAccounts!.CountAsync();
-            switch(userCount)
+            switch (userCount)
             {
                 case 0:
                     userAccount.Role = Role.ADMIN;
@@ -228,6 +228,40 @@ namespace OptechX.Portal.Server.Services
             await _emailService.SendAsync(to: userFound.EmailAddress, subject: "OptechX Password Reset Request", html: message);
             return new ServiceResponse<bool>() { Data = true, Message = "Request for password reset received", ResponseCode = 204, Success = false };
         }
+
+        /// <summary>
+        /// User changes their password, returns true only if successful
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        public async Task<ServiceResponse<bool>> SetNewPassword(SetPasswordRequest request)
+        {
+            var userFound = await _dbContext.UserAccounts!.FirstOrDefaultAsync(u => u.ResetToken == request.PasswordResetToken);
+            if (userFound != null)
+            {
+                if (userFound.ResetTokenExpires <= DateTime.UtcNow) { return new ServiceResponse<bool> { Data = false, Message = "Token expired", ResponseCode = 401, Success = false }; }
+                string salt = BCrypt.Net.BCrypt.GenerateSalt();
+                string hashedPassword = PasswordHelper.GenerateSaltAndHashPassword(salt: salt, password: request.Password);
+                userFound.Password = hashedPassword;
+                userFound.Password2 = salt;
+                userFound.ResetToken = string.Empty;
+                userFound.Updated = DateTime.Now;
+
+                await _dbContext.SaveChangesAsync();
+
+                // email the user their verification email
+                string emailTemplate = EmailTemplates.PasswordHasBeenReset();
+                await _emailService.SendAsync(
+                    to: userFound.EmailAddress,
+                    subject: "Welcome to OptechX!",
+                    html: emailTemplate);
+
+                return new ServiceResponse<bool> { Data = true, Message = "Password has changed email", ResponseCode = 204, Success = true };
+            };
+            return new ServiceResponse<bool> { Data = false, Message = "Something went wrong", ResponseCode = 404, Success = false };
+        }
+
+        
 
         /// <summary>
         /// Verify user account

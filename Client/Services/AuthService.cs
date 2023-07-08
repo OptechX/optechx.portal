@@ -14,6 +14,33 @@ namespace OptechX.Portal.Client.Services
 		}
 
         /// <summary>
+        /// Request new verification code for account
+        /// </summary>
+        /// <param name="emailAddress"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public async Task<ServiceResponse<bool>> GetNewVerificationToken(string emailAddress)
+        {
+            var requestUri = $"request-new-verification-token/{emailAddress}";
+            var result = await _httpClient.PostAsync(requestUri, null);
+            var content = await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
+            if (content is not null)
+            {
+                return new ServiceResponse<bool>
+                {
+                    Data = content.Data,
+                    Message = content.Message,
+                    ResponseCode = content.ResponseCode,
+                    Success = content.Success,
+                };
+            }
+            else
+            {
+                return new ServiceResponse<bool> { Data = true, Message = "Request for new verification token received", ResponseCode = 204, Success = false };
+            }
+        }
+
+        /// <summary>
         /// Login user account request
         /// </summary>
         /// <param name="request"></param>
@@ -98,6 +125,11 @@ namespace OptechX.Portal.Client.Services
             }
         }
 
+        /// <summary>
+        /// Verify user account
+        /// </summary>
+        /// <param name="verificationToken"></param>
+        /// <returns></returns>
         public async Task<ServiceResponse<bool>> VerifyAccount(string verificationToken)
         {
             var requestUri = $"api/auth/verify-account/{verificationToken}";

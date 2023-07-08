@@ -15,6 +15,11 @@ namespace OptechX.Portal.Server.Controllers.Auth
             _authRepo = authRepo;
         }
 
+        /// <summary>
+        /// Register for new account
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
         [HttpPost("register")]
         public async Task<IActionResult> Register(UserRegister request)
         {
@@ -29,6 +34,11 @@ namespace OptechX.Portal.Server.Controllers.Auth
             }
         }
 
+        /// <summary>
+        /// Login user
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
         [HttpPost("login")]
         public async Task<ActionResult<UserLoginResponse>> Login([FromBody] UserLogin request)
         {
@@ -43,6 +53,11 @@ namespace OptechX.Portal.Server.Controllers.Auth
             }
         }
 
+        /// <summary>
+        /// Verify account
+        /// </summary>
+        /// <param name="verificationToken"></param>
+        /// <returns></returns>
         [HttpPost("verify-account/{verificationToken}")]
         public async Task<ActionResult<int>> VerifyAccount(string verificationToken)
         {
@@ -57,6 +72,11 @@ namespace OptechX.Portal.Server.Controllers.Auth
             }
         }
 
+        /// <summary>
+        /// Reset password
+        /// </summary>
+        /// <param name="emailAddress"></param>
+        /// <returns></returns>
         [HttpPost("reset-password/{emailAddress}")]
         public async Task<ActionResult<bool>> ResetPassword(string emailAddress)
         {
@@ -64,6 +84,11 @@ namespace OptechX.Portal.Server.Controllers.Auth
             return Ok(response);  // this will never return anything other than Ok()
         }
 
+        /// <summary>
+        /// Request replacement verification token for account
+        /// </summary>
+        /// <param name="emailAddress"></param>
+        /// <returns></returns>
         [HttpPost("request-new-verification-token/{emailAddress}")]
         public async Task<ActionResult<bool>> RequestNewVerificationToken(string emailAddress)
         {
