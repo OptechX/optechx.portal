@@ -15,17 +15,27 @@
 
 <p>If you've already requested one before, you can also <a href="/account/verify-account">click here</a> to quickly verify your account.</p>
 
-<EditForm Model="resendVerifyTokenRequest" OnValidSubmit="HandleResetRequest">
+<EditForm Model="resendVerifyTokenRequest" OnValidSubmit="HandleResendVerifyRequest">
     <DataAnnotationsValidator></DataAnnotationsValidator>
     <div class="form-group mb-3">
         <label for="email">Email Address</label>
         <InputText id="email" @bind-Value="resendVerifyTokenRequest.ResetEmailAddress" class="form-control"></InputText>
         <ValidationMessage For="@(() => resendVerifyTokenRequest.ResetEmailAddress)" />
     </div>
-    <button type="submit" class="btn btn-primary">Request New Token</button>
+    
+    <!-- Submit button -->
+    @if (showSubmitButton)
+    {
+        <button type="submit" class="btn btn-primary">Request New Token</button>
+    }
+    else
+    {
+        <button type="submit" class="btn btn-primary btn-secondary" style="cursor: not-allowed; color: grey; font-style: italic;" disabled>Requesting...</button>
+    }
 </EditForm>
 
 @code {
+    private bool showSubmitButton;
     private ResetPasswordRequest resendVerifyTokenRequest = new();
 
     protected override void OnInitialized()
@@ -33,17 +43,21 @@
         var uri = new Uri(NavigationManager.Uri);
         var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
         var token = query["email"];
-
         if (!string.IsNullOrEmpty(token))
         {
             resendVerifyTokenRequest.ResetEmailAddress = token;
         }
+        showSubmitButton = true;
     }
 
-    private async Task HandleResetRequest()
+    private async Task HandleResendVerifyRequest()
     {
-        ToastService.ShowInfo("Redirecting...");
+        showSubmitButton = false;
+        ToastService.ShowSuccess("Token regeneration request submitted");
+        _ = await AuthService.GetNewVerificationToken(emailAddress: resendVerifyTokenRequest.ResetEmailAddress);
         await Task.Delay(2000);
-        NavigationManager.NavigateTo("/");
+        ToastService.ShowInfo("Redirecting...");
+        await Task.Delay(1000);
+        NavigationManager.NavigateTo("/account/verify-account");
     }
 }

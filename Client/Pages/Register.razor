@@ -4,7 +4,7 @@
 @inject IToastService ToastService
 @inject ICountryListService CountryListService
 @inject NavigationManager NavigationManager
-@inject IJSRuntime JSRuntime
+@*@inject IJSRuntime JSRuntime*@
 
 <PageTitle>OptechX Portal</PageTitle>
 
@@ -55,7 +55,14 @@
         </div>
 
         <!-- Submit button -->
-        <button type="submit" class="btn btn-primary">Register</button>
+        @if (showSubmitButton)
+        {
+            <button type="submit" class="btn btn-primary">Register</button>
+        }
+        else
+        {
+            <button type="submit" class="btn btn-primary btn-secondary" style="cursor: not-allowed; color: grey; font-style: italic;" disabled>Submitting...</button>
+        }
     </EditForm>
 }
 else
@@ -64,28 +71,32 @@ else
 }
 
 @code {
-    UserRegister user = new UserRegister();
+    private bool showSubmitButton;
+    private UserRegister user = new UserRegister();
 
     protected override async Task OnInitializedAsync()
     {
         await CountryListService.LoadCountryListAsync();
+        showSubmitButton = true;
     }
 
-    async void HandleRegistration()
+    private async Task HandleRegistration()
     {
+        showSubmitButton = false;
         ToastService.ShowInfo("Processing account registration");
-        await JSRuntime.InvokeVoidAsync("console.log", user);
+        //await JSRuntime.InvokeVoidAsync("console.log", user);
         var result = await AuthService.Register(user);
-        await JSRuntime.InvokeVoidAsync("console.log", result);
+        //await JSRuntime.InvokeVoidAsync("console.log", result);
         if (result.Success == true)
         {
             ToastService.ShowSuccess(result.Message!);
             await Task.Delay(3000);
-            NavigationManager.NavigateTo("/");
+            NavigationManager.NavigateTo("/account/verify-account");
         }
         else
         {
             ToastService.ShowError(result.Message!);
+            showSubmitButton = true;
         }
     }
 }

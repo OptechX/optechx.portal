@@ -21,18 +21,12 @@ namespace OptechX.Portal.Client.Services
         /// <exception cref="NotImplementedException"></exception>
         public async Task<ServiceResponse<bool>> GetNewVerificationToken(string emailAddress)
         {
-            var requestUri = $"request-new-verification-token/{emailAddress}";
+            var requestUri = $"api/auth/request-new-verification-token/{emailAddress}";
             var result = await _httpClient.PostAsync(requestUri, null);
             var content = await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
             if (content != null)
             {
-                return new ServiceResponse<bool>
-                {
-                    Data = content.Data,
-                    Message = content.Message,
-                    ResponseCode = content.ResponseCode,
-                    Success = content.Success,
-                };
+                return content;
             }
             else
             {
@@ -69,19 +63,19 @@ namespace OptechX.Portal.Client.Services
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        public async Task<ServiceResponse<int>> Register(UserRegister request)
+        public async Task<ServiceResponse<bool>> Register(UserRegister request)
         {
             var result = await _httpClient.PostAsJsonAsync("api/auth/register", request);
-            var content = await result.Content.ReadFromJsonAsync<ServiceResponse<int>>();
+            var content = await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
             if (content != null)
             {
                 return content;
             }
             else
             {
-                return new ServiceResponse<int>
+                return new ServiceResponse<bool>
                 {
-                    Data = 204,
+                    Data = false,
                     Message = "User account not registered",
                     ResponseCode = 204,
                     Success = false,
@@ -96,9 +90,9 @@ namespace OptechX.Portal.Client.Services
         /// <returns></returns>
         public async Task<ServiceResponse<bool>> ResetPassword(ResetPasswordRequest userEmail)
         {
-            var requestUri = $"api/auth/reset-password/{userEmail}";
-            var result = await _httpClient.PostAsync(requestUri, null);
-            var content = await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
+            string requestUri = $"api/auth/reset-password/{userEmail.ResetEmailAddress}";
+            HttpResponseMessage result = await _httpClient.PostAsync(requestUri, null);
+            ServiceResponse<bool>? content = await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
             if (content != null)
             {
                 return content;

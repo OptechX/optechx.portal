@@ -18,10 +18,8 @@
     {
         // Check if the user is authorized
         var userIsAuthorized = await LocalStorageService.GetItemAsync<bool>("isAuthenticated");
-
         if (userIsAuthorized)
         {
-            // Redirect the authorized user to another page
             NavigationManager.NavigateTo("/");
         }
     }

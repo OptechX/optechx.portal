@@ -195,7 +195,6 @@ namespace OptechX.Portal.Server.Services
             return new ServiceResponse<bool> { Data = true, Message = "User account created succesfully. Please check your email to verify account.", ResponseCode = 201, Success = true };
         }
 
-        // Password Reset Request
         public async Task<ServiceResponse<bool>> ResetPassword(string request)
         {
             var userFound = await _dbContext.UserAccounts!.FirstOrDefaultAsync(u => u.EmailAddress == request.ToLower());
@@ -227,14 +226,16 @@ namespace OptechX.Portal.Server.Services
             var userFound = await _dbContext.UserAccounts!.FirstOrDefaultAsync(u => u.ResetToken == request.PasswordResetToken);
             if (userFound != null)
             {
-                if (userFound.ResetTokenExpires <= DateTime.UtcNow) { return new ServiceResponse<bool> { Data = false, Message = "Token expired", ResponseCode = 401, Success = false }; }
+                if (userFound.ResetTokenExpires <= DateTime.UtcNow) { return new ServiceResponse<bool> { Data = false, Message = "Token expired\nRequest Password Reset again.", ResponseCode = 401, Success = false }; }
+                DateTime timeNow = DateTime.UtcNow;
                 string salt = BCrypt.Net.BCrypt.GenerateSalt();
                 string hashedPassword = PasswordHelper.GenerateSaltAndHashPassword(salt: salt, password: request.Password);
                 userFound.Password = hashedPassword;
                 userFound.Password2 = salt;
                 userFound.ResetToken = string.Empty;
-                userFound.Updated = DateTime.Now;
-
+                userFound.ResetTokenExpires = timeNow;
+                userFound.PasswordReset = timeNow;
+                userFound.Updated = timeNow;
                 await _dbContext.SaveChangesAsync();
 
                 // email the user their verification email
@@ -244,7 +245,7 @@ namespace OptechX.Portal.Server.Services
                     subject: "Welcome to OptechX!",
                     html: emailTemplate);
 
-                return new ServiceResponse<bool> { Data = true, Message = "Password has changed email", ResponseCode = 204, Success = true };
+                return new ServiceResponse<bool> { Data = true, Message = "Password has been updated", ResponseCode = 204, Success = true };
             };
             return new ServiceResponse<bool> { Data = false, Message = "Something went wrong", ResponseCode = 404, Success = false };
         }
@@ -261,25 +262,14 @@ namespace OptechX.Portal.Server.Services
             var userFound = await _dbContext.UserAccounts!.FirstOrDefaultAsync(u => u.VerificationToken == verificationToken);
             if (userFound is null)
             {
-                return new ServiceResponse<bool>()
-                {
-                    Data = false,
-                    Message = "Verification Token either expired or incorrect",
-                    ResponseCode = 403,
-                    Success = false,
-                };
+                return new ServiceResponse<bool>() { Data = false, Message = "Verification Token either expired or incorrect", ResponseCode = 403, Success = false, };
             }
             DateTime verifiedAt = DateTime.UtcNow;
+            userFound.VerificationToken = string.Empty;
             userFound.Verified = verifiedAt;
             userFound.Updated = verifiedAt;
             await _dbContext.SaveChangesAsync();
-            return new ServiceResponse<bool>()
-            {
-                Data = true,
-                Message = "Account verified successfully",
-                ResponseCode = 200,
-                Success = true,
-            };
+            return new ServiceResponse<bool>() { Data = true, Message = "Account verified successfully", ResponseCode = 200, Success = true, };
         }
     }
 }

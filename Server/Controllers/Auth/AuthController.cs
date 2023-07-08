@@ -59,17 +59,10 @@ namespace OptechX.Portal.Server.Controllers.Auth
         /// <param name="verificationToken"></param>
         /// <returns></returns>
         [HttpPost("verify-account/{verificationToken}")]
-        public async Task<ActionResult<int>> VerifyAccount(string verificationToken)
+        public async Task<IActionResult> VerifyAccount(string verificationToken)
         {
             var response = await _authRepo.VerifyAccount(verificationToken);
-
-            switch (response.ResponseCode)
-            {
-                case 200:
-                    return Ok(response);
-                default:
-                    return BadRequest(response.Message);
-            }
+            return Ok(response);
         }
 
         /// <summary>
@@ -93,11 +86,7 @@ namespace OptechX.Portal.Server.Controllers.Auth
         public async Task<ActionResult<bool>> RequestNewVerificationToken(string emailAddress)
         {
             var response = await _authRepo.GetNewVerificationToken(emailAddress);
-            if (response.Success)
-            {
-                return Ok(response);
-            }
-            return BadRequest(response);
+            return Ok(response);
         }
 
 
@@ -106,11 +95,7 @@ namespace OptechX.Portal.Server.Controllers.Auth
         public async Task<ActionResult<bool>> SetNewPassword([FromBody] SetPasswordRequest request)
         {
             var response = await _authRepo.SetNewPassword(request);
-            if (response.Success)
-            {
-                return Ok(response);
-            }
-            return BadRequest(response);
+            return Ok(response);
         }
     }
 }
