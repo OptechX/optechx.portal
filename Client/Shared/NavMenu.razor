@@ -13,14 +13,14 @@
 
 <div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
     <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="oi oi-home" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
         <AuthorizeView>
             <!-- Authorized -->
             <Authorized>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                        <span class="oi oi-home" aria-hidden="true"></span> Home
+                    </NavLink>
+                </div>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="ApplicationLibrary">
                         <span class="oi oi-folder" aria-hidden="true"></span> Application Library
@@ -46,8 +46,28 @@
             <!-- Not Authorized -->
             <NotAuthorized>
                 <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                        <span class="oi bi-person-circle" aria-hidden="true"></span> Login
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
                     <NavLink class="nav-link" href="register">
-                        <span class="oi oi-pencil" aria-hidden="true"></span> Regiser
+                        <span class="oi bi-pencil-fill" aria-hidden="true"></span> Register
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="account/verify-account">
+                        <span class="oi bi-patch-check-fill" aria-hidden="true" style="color: #1DA1F2;"></span> Verify Account
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="account/password-reset">
+                        <span class="oi bi-person-badge" aria-hidden="true"></span> Reset Password
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="account/set-password">
+                        <span class="oi bi-key" aria-hidden="true"></span> Set New Password
                     </NavLink>
                 </div>
             </NotAuthorized>

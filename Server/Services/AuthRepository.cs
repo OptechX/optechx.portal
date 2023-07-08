@@ -151,18 +151,12 @@ namespace OptechX.Portal.Server.Services
             };
         }
 
-        public async Task<ServiceResponse<string>> Register(UserRegister userRegister)
+        public async Task<ServiceResponse<bool>> Register(UserRegister userRegister)
         {
             var userExists = await _dbContext.UserAccounts!.FirstOrDefaultAsync(u => u.EmailAddress == userRegister.Email.ToLower());
             if (userExists != null)
             {
-                return new ServiceResponse<string>
-                {
-                    Data = "Conflict",
-                    Message = "User account already exists",
-                    ResponseCode = 409,
-                    Success = false,
-                };
+                return new ServiceResponse<bool> { Data = false, Message = "User account already exists", ResponseCode = 409, Success = false, };
             }
             UserAccount userAccount = new();
             var userCount = await _dbContext.UserAccounts!.CountAsync();
@@ -198,13 +192,7 @@ namespace OptechX.Portal.Server.Services
                 subject: "Welcome to OptechX!",
                 html: emailTemplate);
 
-            return new ServiceResponse<string>
-            {
-                Data = "Created",
-                Message = "User account created successfully",
-                ResponseCode = 201,
-                Success = true,
-            };
+            return new ServiceResponse<bool> { Data = true, Message = "User account created succesfully. Please check your email to verify account.", ResponseCode = 201, Success = true };
         }
 
         // Password Reset Request

@@ -4,6 +4,7 @@
 @inject IToastService ToastService
 @inject ICountryListService CountryListService
 @inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
 
 <PageTitle>OptechX Portal</PageTitle>
 
@@ -23,14 +24,14 @@
         <!-- Password -->
         <div class="form-group mb-3">
             <label for="password" class="required">Password</label>
-            <InputText id="password" @bind-Value="user.Password" class="form-control"></InputText>
+            <InputText id="password" @bind-Value="user.Password" class="form-control" type="password"></InputText>
             <ValidationMessage For="@(() => user.Password)" />
         </div>
 
         <!-- Confirm Password -->
         <div class="form-group mb-3">
             <label for="confirmPassword">Confirm Password</label>
-            <InputText id="password" @bind-Value="user.ConfirmPassword" class="form-control"></InputText>
+            <InputText id="password" @bind-Value="user.ConfirmPassword" class="form-control" type="password"></InputText>
             <ValidationMessage For="@(() => user.ConfirmPassword)" />
         </div>
 
@@ -72,10 +73,14 @@ else
 
     async void HandleRegistration()
     {
+        ToastService.ShowInfo("Processing account registration");
+        await JSRuntime.InvokeVoidAsync("console.log", user);
         var result = await AuthService.Register(user);
-        if (result.Data == 201)
+        await JSRuntime.InvokeVoidAsync("console.log", result);
+        if (result.Success == true)
         {
             ToastService.ShowSuccess(result.Message!);
+            await Task.Delay(3000);
             NavigationManager.NavigateTo("/");
         }
         else

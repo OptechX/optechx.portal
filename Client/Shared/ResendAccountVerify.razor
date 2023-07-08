@@ -8,7 +8,12 @@
 
 <h3>Re-Request Account Verification</h3>
 
-<p>Please provide your email address to request a new account verification token. If you've already requested one before, you can also <a href="/account/verify-account">click here</a> to quickly verify your account.</p>
+<p>
+    Please provide your email address to request a new account verification <i class="bi bi-patch-check-fill" style="color: #1DA1F2;"></i>
+    token.
+</p>
+
+<p>If you've already requested one before, you can also <a href="/account/verify-account">click here</a> to quickly verify your account.</p>
 
 <EditForm Model="resendVerifyTokenRequest" OnValidSubmit="HandleResetRequest">
     <DataAnnotationsValidator></DataAnnotationsValidator>

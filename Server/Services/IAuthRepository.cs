@@ -5,7 +5,7 @@ namespace OptechX.Portal.Server.Services
 {
 	public interface IAuthRepository
 	{
-        Task<ServiceResponse<string>> Register(UserRegister userRegister);
+        Task<ServiceResponse<bool>> Register(UserRegister userRegister);
 		Task<ServiceResponse<UserLoginResponse>> Login(UserLogin userLogin);
         Task<ServiceResponse<bool>> VerifyAccount(string verificationToken);
 		Task<ServiceResponse<bool>> ResetPassword(string emailAddress);

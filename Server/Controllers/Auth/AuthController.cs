@@ -21,7 +21,7 @@ namespace OptechX.Portal.Server.Controllers.Auth
         /// <param name="request"></param>
         /// <returns></returns>
         [HttpPost("register")]
-        public async Task<IActionResult> Register(UserRegister request)
+        public async Task<IActionResult> Register([FromBody] UserRegister request)
         {
             var response = await _authRepo.Register(request);
 
