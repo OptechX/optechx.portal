@@ -7,8 +7,8 @@ namespace OptechX.Portal.Shared.Models.User
         [Required(ErrorMessage = "Valid email address requried"), EmailAddress]
         public string Email { get; set; } = null!;
 
-        [RegularExpression(@"^(?=.*[A-Z])(?=.*\d)(?=.*[a-z])(?=.*\W)[A-Za-z\d\W]{16,100}$",
-            ErrorMessage = "Password length required 16-100 characters with at least one uppercase, lowercase, digit, and special character")]
+        [RegularExpression(@"^(?=.*[A-Z])(?=.*\d)(?=.*[a-z])(?=.*\W)[A-Za-z\d\W]{8,32}$",
+            ErrorMessage = "Password length required 8-32 characters with at least one uppercase, lowercase, digit, and special character")]
         public string Password { get; set; } = null!;
 
         [Compare("Password", ErrorMessage = "Passwords do not match")]
