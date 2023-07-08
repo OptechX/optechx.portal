@@ -43,14 +43,7 @@ namespace OptechX.Portal.Server.Controllers.Auth
         public async Task<ActionResult<UserLoginResponse>> Login([FromBody] UserLogin request)
         {
             var response = await _authRepo.Login(request);
-
-            switch (response.ResponseCode)
-            {
-                case 200:
-                    return Ok(response.Data);
-                default:
-                    return BadRequest(response.Message);
-            }
+            return Ok(response);
         }
 
         /// <summary>

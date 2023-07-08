@@ -16,9 +16,8 @@
 @code {
     protected override async Task OnInitializedAsync()
     {
-        // Check if the user is authorized
-        var userIsAuthorized = await LocalStorageService.GetItemAsync<bool>("isAuthenticated");
-        if (userIsAuthorized)
+        var userIsAuthorized = await LocalStorageService.GetItemAsync<string>("authToken");
+        if (!string.IsNullOrEmpty(userIsAuthorized))
         {
             NavigationManager.NavigateTo("/");
         }

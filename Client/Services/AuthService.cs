@@ -41,7 +41,6 @@ namespace OptechX.Portal.Client.Services
         /// <returns></returns>
         public async Task<ServiceResponse<UserLoginResponse>> Login(UserLogin request)
         {
-            var response = new ServiceResponse<UserLoginResponse>();
             var result = await _httpClient.PostAsJsonAsync("api/auth/login", request);
             var content = await result.Content.ReadFromJsonAsync<ServiceResponse<UserLoginResponse>>();
             if (content != null)
@@ -50,11 +49,7 @@ namespace OptechX.Portal.Client.Services
             }
             else
             {
-                response.Data = new UserLoginResponse();
-                response.Message = "Not Found";
-                response.ResponseCode = 404;
-                response.Success = false;
-                return response;
+                return new ServiceResponse<UserLoginResponse>() { Data = null, Message = "Not Found", ResponseCode = 404, Success = false };
             }
         }
 

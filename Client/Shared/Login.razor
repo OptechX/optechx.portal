@@ -4,6 +4,7 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IAuthService AuthService
 @inject IToastService ToastService
+@inject IJSRuntime JSRuntime
 
 <PageTitle>OptechX Portal</PageTitle>
 
@@ -21,25 +22,47 @@
         <label for="password">Password</label>
         <InputText id="password" @bind-Value="userLogin.Password" class="form-control" type="password"></InputText>
     </div>
-    <button type="submit" class="btn btn-primary">Login</button>
+
+    <!-- Submit button -->
+    @if (showSubmitButton)
+    {
+        <button type="submit" class="btn btn-primary">Login</button>
+    }
+    else
+    {
+        <button type="submit" class="btn btn-primary btn-secondary" style="cursor: not-allowed; color: grey; font-style: italic;" disabled>Requesting...</button>
+    }
     <ValidationSummary />
 </EditForm>
 
 @code {
     private UserLogin userLogin = new UserLogin();
+    private bool showSubmitButton;
 
-    private async void HandleLogin()
+    protected override void OnInitialized()
     {
+        base.OnInitialized();
+        showSubmitButton = true;
+    }
+
+    private async Task HandleLogin()
+    {
+        showSubmitButton = false;
         var result = await AuthService.Login(userLogin);
         if (result.Success)
         {
             ToastService.ShowSuccess("Login successful");
-            await LocalStorage.SetItemAsync<bool>("isAuthenticated", true);
-            await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            if (!string.IsNullOrEmpty(result?.Data?.JWT))
+            {
+                await JSRuntime.InvokeVoidAsync("console.log", result.Data.JWT);
+                await LocalStorage.SetItemAsync<string>("authToken", result!.Data!.JWT);
+                await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            }
         }
         else
         {
             ToastService.ShowError("Incorrect email or password");
+            showSubmitButton = true;
         }
     }
 }
