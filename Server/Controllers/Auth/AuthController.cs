@@ -97,10 +97,20 @@ namespace OptechX.Portal.Server.Controllers.Auth
             {
                 return Ok(response);
             }
-            else
+            return BadRequest(response);
+        }
+
+
+
+        [HttpPost("set-new-password")]
+        public async Task<ActionResult<bool>> SetNewPassword([FromBody] SetPasswordRequest request)
+        {
+            var response = await _authRepo.SetNewPassword(request);
+            if (response.Success)
             {
-                return BadRequest();
+                return Ok(response);
             }
+            return BadRequest(response);
         }
     }
 }

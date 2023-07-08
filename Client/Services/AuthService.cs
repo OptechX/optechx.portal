@@ -24,7 +24,7 @@ namespace OptechX.Portal.Client.Services
             var requestUri = $"request-new-verification-token/{emailAddress}";
             var result = await _httpClient.PostAsync(requestUri, null);
             var content = await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
-            if (content is not null)
+            if (content != null)
             {
                 return new ServiceResponse<bool>
                 {
@@ -50,13 +50,9 @@ namespace OptechX.Portal.Client.Services
             var response = new ServiceResponse<UserLoginResponse>();
             var result = await _httpClient.PostAsJsonAsync("api/auth/login", request);
             var content = await result.Content.ReadFromJsonAsync<ServiceResponse<UserLoginResponse>>();
-            if (content is not null)
+            if (content != null)
             {
-                response.Data = content.Data;
-                response.Message = content.Message;
-                response.ResponseCode = content.ResponseCode;
-                response.Success = content.Success;
-                return response;
+                return content;
             }
             else
             {
@@ -77,15 +73,9 @@ namespace OptechX.Portal.Client.Services
         {
             var result = await _httpClient.PostAsJsonAsync("api/auth/register", request);
             var content = await result.Content.ReadFromJsonAsync<ServiceResponse<int>>();
-            if (content is not null)
+            if (content != null)
             {
-                return new ServiceResponse<int>
-                {
-                    Data = content.Data,
-                    Message = content.Message,
-                    ResponseCode = content.ResponseCode,
-                    Success = content.Success,
-                };
+                return content;
             }
             else
             {
@@ -109,19 +99,33 @@ namespace OptechX.Portal.Client.Services
             var requestUri = $"api/auth/reset-password/{userEmail}";
             var result = await _httpClient.PostAsync(requestUri, null);
             var content = await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
-            if (content is not null)
+            if (content != null)
             {
-                return new ServiceResponse<bool>
-                {
-                    Data = content.Data,
-                    Message = content.Message,
-                    ResponseCode = content.ResponseCode,
-                    Success = content.Success,
-                };
+                return content;
             }
             else
             {
                 return new ServiceResponse<bool> { Data = false, Message = "Request for password reset received", ResponseCode = 204, Success = false };
+            }
+        }
+
+        /// <summary>
+        /// Sets a new password for the user account
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public async Task<ServiceResponse<bool>> SetNewPassword(SetPasswordRequest request)
+        {
+            var result = await _httpClient.PostAsJsonAsync("api/auth/set-new-password", request);
+            var content = await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
+            if (content != null)
+            {
+                return content;
+            }
+            else
+            {
+                return new ServiceResponse<bool> { Data = false, Message = "Bad request", ResponseCode = 400, Success = false };
             }
         }
 
@@ -135,15 +139,9 @@ namespace OptechX.Portal.Client.Services
             var requestUri = $"api/auth/verify-account/{verificationToken}";
             var result = await _httpClient.PostAsync(requestUri, null);
             var content = await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
-            if (content is not null)
+            if (content != null)
             {
-                return new ServiceResponse<bool>
-                {
-                    Data = content.Data,
-                    Message = content.Message,
-                    ResponseCode = content.ResponseCode,
-                    Success = content.Success,
-                };
+                return content;
             }
             else
             {
