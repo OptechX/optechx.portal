@@ -1,10 +1,8 @@
-﻿using OptechX.Portal.Shared.Models.User;
-
-namespace OptechX.Portal.Client.Services
+﻿namespace OptechX.Portal.Client.Services
 {
     public interface IUserAccountService
     {
-        IUserAccountRequiredFields UserAccountRequiredFields { get; }
+        IUserAccReqData UserAccountRequiredFields { get; }
         Task LoadUserAccountRequiredFieldsAsync();
     }
 }

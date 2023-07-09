@@ -3,7 +3,7 @@ using System.Net.Http.Json;
 
 namespace OptechX.Portal.Client.Services
 {
-    public interface IUserAccountRequiredFields
+    public interface IUserAccReqData
     {
         public Guid Id { get; set; }
         public string EmailAddress { get; set; }
@@ -21,7 +21,7 @@ namespace OptechX.Portal.Client.Services
         public string? UserIcon { get; set; }
     }
 
-    public class UserAccountRequiredFields : IUserAccountRequiredFields
+    public class UserAccountRequiredFields : IUserAccReqData
     {
         public Guid Id { get; set; }
         [EmailAddress]
@@ -49,7 +49,7 @@ namespace OptechX.Portal.Client.Services
             _httpClient = httpClient;
         }
 
-        public IUserAccountRequiredFields UserAccountRequiredFields { get; set; } = new UserAccountRequiredFields();
+        public IUserAccReqData UserAccountRequiredFields { get; set; } = new UserAccountRequiredFields();
 
         public async Task LoadUserAccountRequiredFieldsAsync()
         {
