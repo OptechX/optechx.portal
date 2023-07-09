@@ -15,7 +15,6 @@ namespace OptechX.Portal.Server.Controllers.User
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class UserController : ControllerBase
     {
         private readonly ApiDbContext _dbContext;
@@ -24,6 +23,13 @@ namespace OptechX.Portal.Server.Controllers.User
         {
             _dbContext = dbContext;
         }
+
+        // GET: /api/user/x
+        //[HttpGet("get")]
+        //public async Task<IActionResult> GetUserBasicsX()
+        //{
+
+        //}
 
         // GET: /api/user
         [HttpGet]
