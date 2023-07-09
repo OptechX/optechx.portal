@@ -25,6 +25,7 @@ public class Program
         builder.Services.AddScoped<IApplicationService, ApplicationService>();
         builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
         builder.Services.AddScoped<IAuthService, AuthService>();
+        builder.Services.AddScoped<IUserAccountService, UserAccountService>();
 
         builder.Services.AddOptions();
         builder.Services.AddAuthorizationCore();
