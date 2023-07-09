@@ -107,8 +107,8 @@ namespace OptechX.Portal.Server.Services
             {
                 new Claim(ClaimTypes.Email, user.EmailAddress),
                 new Claim("AccountId", user.Id.ToString()),
-                new Claim("BillingType", user.BillingType.ToString()),
-                new Claim("AccountTier", user.AccountTier.ToString()),
+                //new Claim("BillingType", user.BillingType.ToString()),
+                //new Claim("AccountTier", user.AccountTier.ToString()),
             };
 
             var token = new JwtSecurityToken(
