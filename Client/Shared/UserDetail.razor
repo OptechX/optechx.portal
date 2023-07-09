@@ -1,0 +1,77 @@
+﻿@inject IUserAccountService UserAccountService
+
+<div class="row ml-4">
+    <h3>@pageTitle</h3>
+</div>
+
+<EditForm Model="UserAccountService.UserAccountRequiredFields" OnValidSubmit="HandlePublishUpdate">
+    <DataAnnotationsValidator></DataAnnotationsValidator>
+
+    <!-- Account ID (RO) -->
+    <!--<div class="form-floating mb-3">
+        <InputText id="accountId" @bind-Value="UserAccountService.UserAccountRequiredFields.Id.ToString()" class="form-control" readonly></InputText>
+        <label for="accountId">Account Id</label>
+    </div>-->
+
+    <!-- Email Address (RW) -->
+    <!--<div class="form-floating mb-3">
+        <InputText id="email" @bind-Value="UserAccountService.UserAccountRequiredFields.EmailAddress" class="form-control"></InputText>
+        <label for="email">Email Address</label>
+    </div>-->
+
+    <!-- Company (RW) -->
+    <!--<div class="form-floating mb-3">
+        <InputText id="company" @bind-Value="UserAccountService.UserAccountRequiredFields.Company" class="form-control"></InputText>
+        <label for="company">Company</label>
+    </div>-->
+
+    <!-- Tax ID (RW) -->
+    <!--<div class="form-floating mb-3">
+        <InputText id="TaxId" @bind-Value="UserAccountService.UserAccountRequiredFields.TaxId" class="form-control"></InputText>
+        <label for="TaxId">Tax ID</label>
+    </div>-->
+
+    <!-- ROW -->
+    <!--<div class="form-row mb-3">-->
+        <!-- FirstName (RW) -->
+        <!--<div class="col">
+            <div class="form-floating">
+                <InputText id="firstName" @bind-Value="UserAccountService.UserAccountRequiredFields.FirstName" class="form-control"></InputText>
+                <label for="firstName">First Name</label>
+            </div>
+        </div>-->
+
+        <!-- LastName (RW) -->
+        <!--<div class="col">
+            <div class="form-floating">
+                <InputText id="lastName" @bind-Value="UserAccountService.UserAccountRequiredFields.LastName" class="form-control"></InputText>
+                <label for="lastName">Last Name</label>
+            </div>
+        </div>
+    </div>-->
+    <!-- END ROW -->
+    <!-- Submit button -->
+    <!--@if (showSubmitButton)
+    {
+        <button type="submit" class="btn btn-primary mb-3">Reset Password</button>
+    }
+    else
+    {
+        <button type="submit" class="btn btn-primary btn-secondary" style="cursor: not-allowed; color: grey; font-style: italic;" disabled>Requesting...</button>
+    }-->
+</EditForm>
+
+@code {
+    private string pageTitle = "User Settings";
+    private bool showSubmitButton;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await UserAccountService.LoadUserAccountRequiredFieldsAsync();
+        showSubmitButton = true;
+    }
+
+    private void HandlePublishUpdate()
+    {
+    }
+}

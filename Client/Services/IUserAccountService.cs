@@ -2,10 +2,9 @@
 
 namespace OptechX.Portal.Client.Services
 {
-	public interface IUserAccountService
-	{
-        UserAccountRequiredFields UserAccountRequiredFields { get; }
+    public interface IUserAccountService
+    {
+        IUserAccountRequiredFields UserAccountRequiredFields { get; }
         Task LoadUserAccountRequiredFieldsAsync();
     }
 }
-

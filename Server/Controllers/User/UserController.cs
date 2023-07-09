@@ -25,13 +25,50 @@ namespace OptechX.Portal.Server.Controllers.User
             _dbContext = dbContext;
         }
 
+        // GET: /api/user
+        [HttpGet]
+        public async Task<ActionResult<UserAccountRequiredFields>> GetUserBasics()
+        {
+            var accountId = User.FindFirstValue("AccountId");
+            var user = await _dbContext.UserAccounts!.FirstOrDefaultAsync(u => u.Id == Guid.Parse(accountId!));
+            if (user != null)
+            {
+                UserAccountRequiredFields response = new()
+                {
+                    Id = user.Id,
+                    EmailAddress = user.EmailAddress,
+                    Company = user.Company,
+                    TaxId = user.TaxId,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    PhoneNumber = user.PhoneNumber,
+                    Address1 = user.Address1,
+                    Address2 = user.Address2,
+                    City = user.City,
+                    State = user.State,
+                    PostalCode = user.PostalCode,
+                    Country = user.Country,
+                    UserIcon = user.UserIcon,
+                    //Role = user.Role,
+                    //EnterpriseAgreement = user.EnterpriseAgreement,
+                    //MicrosoftEnterpriseAgreementNumber = user.MicrosoftEnterpriseAgreementNumber,
+                    //BillingType = user.BillingType,
+                    //AccountTier = user.AccountTier,
+                    //AppLockerStorageAvailable = user.AppLockerStorageAvailable,
+                    //AppLockerStorageUsed = user.AppLockerStorageUsed,
+                    //StripeSubscriptionDetail = user.StripeSubscriptionDetail,
+                };
+                return Ok(response);
+            }
+            return NotFound();
+        }
+
         // GET: /api/user/billingtype
         [HttpGet("billingtype")]
         public async Task<ActionResult<string>> GetBillingType()
         {
             var accountId = User.FindFirstValue("AccountId");
             var user = await _dbContext.UserAccounts!.FirstOrDefaultAsync(u => u.Id == Guid.Parse(accountId!));
-
             if (user != null)
             {
                 return Ok(user.BillingType.ToString());
