@@ -1,4 +1,5 @@
 ﻿@page "/"
+@using System.Security.Claims
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject ILocalStorageService LocalStorage
 
@@ -9,7 +10,8 @@
 <AuthorizeView>
     <Authorized>
         <h3>OptechX Portal</h3>
-        <h5>@if (!string.IsNullOrEmpty(userEmail)){ @userEmail } Welcome back!  </h5>
+        <h5>@if (!string.IsNullOrEmpty(userEmail))
+        {@userEmail} Welcome back!  </h5>
         Let's admire your <a href="army">your beloved army</a>
     </Authorized>
     <NotAuthorized>
@@ -19,7 +21,7 @@
 
 
 @code {
-    private string userEmail = string.Empty;
+private string userEmail = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
@@ -31,7 +33,7 @@
     private async Task<string> GetAccountId()
     {
         var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var accountIdClaim = authenticationState.User.Claims.FirstOrDefault(claim => claim.Type == "AccountId");
+        var accountIdClaim = authenticationState.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Email); //"http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress");
         if (!string.IsNullOrEmpty(accountIdClaim?.Value))
         {
             return accountIdClaim!.Value;
@@ -40,5 +42,5 @@
         {
             return string.Empty;
         }
-    }
+}
 }
