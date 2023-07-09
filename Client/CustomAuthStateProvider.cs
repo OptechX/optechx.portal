@@ -22,18 +22,14 @@ namespace OptechX.Portal.Client
             string authToken = await _localStorageService.GetItemAsStringAsync("authToken");
             var identity = new ClaimsIdentity();
             _httpClient.DefaultRequestHeaders.Authorization = null;
-
             if (!string.IsNullOrEmpty(authToken))
             {
                 identity = new ClaimsIdentity(ParseClaimsFromJwt(authToken), "jwt");
                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authToken);
             }
-
             var user = new ClaimsPrincipal(identity);
             var state = new AuthenticationState(user);
-
             NotifyAuthenticationStateChanged(Task.FromResult(state));
-
             return state;
         }
 
@@ -52,16 +48,13 @@ namespace OptechX.Portal.Client
             var payload = jwt.Split('.')[1];
             var jsonBytes = ParseBase64WithoutPadding(payload);
             var keyValuePairs = JsonSerializer.Deserialize<Dictionary<string, object>>(jsonBytes);
-
             if (keyValuePairs != null)
             {
                 var claims = keyValuePairs.Select(kvp => new Claim(kvp.Key, kvp.Value?.ToString() ?? ""));
                 return claims;
             }
-
             return Enumerable.Empty<Claim>();
         }
-
     }
 }
 
