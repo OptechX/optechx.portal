@@ -31,23 +31,32 @@ namespace OptechX.Portal.Shared.Models.User.Constants
         SMB,
 
         /// <summary>
-        /// OptechX Enterprise Plan
+        /// OptechX Enterprise Plan - assigned through admin/reseller only
         /// </summary>
         [EnumMember(Value = "Enterprise")]
         ENTERPRISE,
 
         /// <summary>
-        /// OptechX 
+        /// OptechX Government Plan - assigned through admin only
         /// </summary>
         [EnumMember(Value = "Government")]
         GOVERNMENT,
 
+        /// <summary>
+        /// VIP User - assigned manually
+        /// </summary>
         [EnumMember(Value = "VIP")]
         VIP,
 
+        /// <summary>
+        /// Founder User - assigned manually
+        /// </summary>
         [EnumMember(Value = "Founder")]
         FOUNDER,
 
+        /// <summary>
+        /// Shareholder Class - assigned manually
+        /// </summary>
         [EnumMember(Value = "Shareholder")]
         SHAREHOLDER,
 
@@ -57,9 +66,15 @@ namespace OptechX.Portal.Shared.Models.User.Constants
         [EnumMember(Value = "Account Paused")]
         PAUSED,
 
+        /// <summary>
+        /// For special use only
+        /// </summary>
         [EnumMember(Value = "Other")]
         OTHER,
 
+        /// <summary>
+        /// Account has been deleted
+        /// </summary>
         [EnumMember(Value = "Record Closed")]
         CLOSED
     }
