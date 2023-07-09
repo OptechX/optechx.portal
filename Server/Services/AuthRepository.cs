@@ -61,13 +61,7 @@ namespace OptechX.Portal.Server.Services
                 subject: "Welcome to OptechX!",
                 html: emailTemplate);
 
-            return new ServiceResponse<bool>
-            {
-                Data = true,
-                Message = "Request received successfully",
-                ResponseCode = 201,
-                Success = true,
-            };
+            return new ServiceResponse<bool> { Data = true, Message = "Request received successfully", ResponseCode = 201, Success = true, };
         }
 
         public async Task<ServiceResponse<UserLoginResponse>> Login(UserLogin userLogin)
@@ -121,7 +115,7 @@ namespace OptechX.Portal.Server.Services
                 issuer: _configuration["JWT:Issuer"],
                 audience: _configuration["JWT:Audence"],
                 claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(60),
+                expires: DateTime.UtcNow.AddHours(3),
                 signingCredentials: credentials);
             var jwt = new JwtSecurityTokenHandler().WriteToken(token);
 
