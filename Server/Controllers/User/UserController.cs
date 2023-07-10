@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -24,24 +25,95 @@ namespace OptechX.Portal.Server.Controllers.User
             _dbContext = dbContext;
         }
 
-        // GET: /api/user/x
-        //[HttpGet("get")]
-        //public async Task<IActionResult> GetUserBasicsX()
-        //{
-
-        //}
+        private ReturnedJwtPayload? GetAccountIdFromToken()
+        {
+            var authHeader = Request.Headers["Authorization"].FirstOrDefault();
+            if (authHeader != null && authHeader.StartsWith("Bearer "))
+            {
+                string token = authHeader["Bearer ".Length..].Trim().Replace("\"", "");
+                var jwtSecurityToken = new JwtSecurityToken(token);
+                ReturnedJwtPayload returnedJwtPayload = new()
+                {
+                    EmailAddress = jwtSecurityToken.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Email)?.Value,
+                    AccountId = jwtSecurityToken.Claims.FirstOrDefault(claim => claim.Type == "AccountId")?.Value,
+                    Expiration = jwtSecurityToken.Claims.FirstOrDefault(claim => claim.Type == "exp")?.Value,
+                    Issuer = jwtSecurityToken.Claims.FirstOrDefault(claim => claim.Type == "iss")?.Value
+                };
+                if (DateTime.UtcNow > DateTimeOffset.FromUnixTimeSeconds(long.Parse(returnedJwtPayload.Expiration!)))
+                {
+                    ReturnedJwtPayload expiredJwtPayload = new()
+                    {
+                        EmailAddress = "expired@token.com",
+                        AccountId = Guid.Empty.ToString(),
+                        Expiration = jwtSecurityToken.Claims.FirstOrDefault(claim => claim.Type == "exp")?.Value,
+                        Issuer = jwtSecurityToken.Claims.FirstOrDefault(claim => claim.Type == "iss")?.Value
+                    };
+                    return expiredJwtPayload;
+                }
+                return returnedJwtPayload;
+            }
+            else
+            {
+                ReturnedJwtPayload invalidJwtPayload = new()
+                {
+                    EmailAddress = "invalid@token.com",
+                    AccountId = Guid.Empty.ToString(),
+                    Expiration = DateTime.UtcNow.ToFileTimeUtc().ToString(),
+                    Issuer = "http://error.com/",
+                };
+                return invalidJwtPayload;
+            }
+        }
 
         // GET: /api/user
         [HttpGet]
-        public async Task<ActionResult<UserAccountRequiredFields>> GetUserBasics()
+        public async Task<IActionResult> GetUserBasics()
         {
-            var accountId = User.FindFirstValue("AccountId");
-            var user = await _dbContext.UserAccounts!.FirstOrDefaultAsync(u => u.Id == Guid.Parse(accountId!));
-            if (user != null)
+            var authHeader = Request.Headers["Authorization"].FirstOrDefault();
+            if (authHeader != null && authHeader.StartsWith("Bearer "))
             {
-                UserAccountRequiredFields response = new()
+                string token = authHeader["Bearer ".Length..].Trim().Replace("\"", "");
+                var jwtSecurityToken = new JwtSecurityToken(token);
+                ReturnedJwtPayload returnedJwtPayload = new()
                 {
-                    Id = user.Id,
+                    EmailAddress = jwtSecurityToken.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Email)?.Value,
+                    AccountId = jwtSecurityToken.Claims.FirstOrDefault(claim => claim.Type == "AccountId")?.Value,
+                    Expiration = jwtSecurityToken.Claims.FirstOrDefault(claim => claim.Type == "exp")?.Value,
+                    Issuer = jwtSecurityToken.Claims.FirstOrDefault(claim => claim.Type == "iss")?.Value
+                };
+                if (DateTime.UtcNow > DateTimeOffset.FromUnixTimeSeconds(long.Parse(returnedJwtPayload.Expiration!)))
+                {
+                    ReturnedJwtPayload expiredJwtPayload = new()
+                    {
+                        EmailAddress = "expired@token.com",
+                        AccountId = Guid.Empty.ToString(),
+                        Expiration = jwtSecurityToken.Claims.FirstOrDefault(claim => claim.Type == "exp")?.Value,
+                        Issuer = jwtSecurityToken.Claims.FirstOrDefault(claim => claim.Type == "iss")?.Value
+                    };
+                    UserData response2 = new()
+                    {
+                        Id = expiredJwtPayload.AccountId,
+                        EmailAddress = expiredJwtPayload.EmailAddress,
+                        Company = "fail",
+                        TaxId = "fail",
+                        FirstName = "fail",
+                        LastName = "fail",
+                        PhoneNumber = "fail",
+                        Address1 = "fail",
+                        Address2 = "fail",
+                        City = "fail",
+                        State = "fail",
+                        PostalCode = "fail",
+                        Country = "fail",
+                        UserIcon = "fail",
+                    };
+                    return Ok(response2);
+                }
+
+                var user = await _dbContext.UserAccounts!.FirstOrDefaultAsync(u => u.Id == Guid.Parse(returnedJwtPayload.AccountId!));
+                UserData response = new()
+                {
+                    Id = user!.Id.ToString(),
                     EmailAddress = user.EmailAddress,
                     Company = user.Company,
                     TaxId = user.TaxId,
@@ -55,18 +127,30 @@ namespace OptechX.Portal.Server.Controllers.User
                     PostalCode = user.PostalCode,
                     Country = user.Country,
                     UserIcon = user.UserIcon,
-                    //Role = user.Role,
-                    //EnterpriseAgreement = user.EnterpriseAgreement,
-                    //MicrosoftEnterpriseAgreementNumber = user.MicrosoftEnterpriseAgreementNumber,
-                    //BillingType = user.BillingType,
-                    //AccountTier = user.AccountTier,
-                    //AppLockerStorageAvailable = user.AppLockerStorageAvailable,
-                    //AppLockerStorageUsed = user.AppLockerStorageUsed,
-                    //StripeSubscriptionDetail = user.StripeSubscriptionDetail,
                 };
                 return Ok(response);
             }
-            return NotFound();
+            else
+            {
+                UserData response = new()
+                {
+                    Id = "fail",
+                    EmailAddress = "fail@fail.com",
+                    Company = "fail",
+                    TaxId = "fail",
+                    FirstName = "fail",
+                    LastName = "fail",
+                    PhoneNumber = "fail",
+                    Address1 = "fail",
+                    Address2 = "fail",
+                    City = "fail",
+                    State = "fail",
+                    PostalCode = "fail",
+                    Country = "fail",
+                    UserIcon = "fail",
+                };
+                return Ok(response);
+            }
         }
 
         // GET: /api/user/billingtype
