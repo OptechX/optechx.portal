@@ -18,32 +18,34 @@
             <Authorized>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                        <span class="oi oi-home" aria-hidden="true"></span> Home
+                        &nbsp;<span class="oi bi-house-door" aria-hidden="true"></span> Home
                     </NavLink>
                 </div>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="applicationlibrary">
-                        <span class="oi oi-folder" aria-hidden="true"></span> Application Library
+                        &nbsp;<span class="oi bi-window-stack" aria-hidden="true"></span> Application Library
                     </NavLink>
                 </div>
+                <!-- Image Builder -->
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="applicationlibrary">
-                        <span class="oi bi-hammer" aria-hidden="true"></span> Image Builder
+                        &nbsp;<span class="oi bi-hammer" aria-hidden="true"></span> Image Builder
                     </NavLink>
                 </div>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="build">
-                        <span class="oi oi-wrench" aria-hidden="true"></span> Build
+                        &nbsp;<span class="oi bi-wrench-adjustable" aria-hidden="true"></span> Build
                     </NavLink>
                 </div>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="army">
-                        <span class="oi oi-wrench" aria-hidden="true"></span> My Army
+                        &nbsp;<span class="oi bi-wrench-adjustable" aria-hidden="true"></span> My Army
                     </NavLink>
                 </div>
+                <!-- Logout User -->
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" @onclick="@(() => Logout())">
-                        <span class="oi oi-account-logout" aria-hidden="true"></span> Logout
+                        &nbsp;<span class="oi bi-box-arrow-left" aria-hidden="true"></span> Logout
                     </NavLink>
                 </div>
 
@@ -59,27 +61,28 @@
             <NotAuthorized>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                        <span class="oi bi-person-circle" aria-hidden="true"></span> Login
+                        &nbsp;<span class="oi bi-person-circle" aria-hidden="true"></span> Login
                     </NavLink>
                 </div>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="register">
-                        <span class="oi bi-pencil-fill" aria-hidden="true"></span> Register
+                        &nbsp;<span class="oi bi-pencil-fill" aria-hidden="true"></span> Register
                     </NavLink>
                 </div>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="account/verify-account">
-                        <span class="oi bi-patch-check-fill" aria-hidden="true" style="color: #1DA1F2;"></span> Verify Account
+                        @*&nbsp;<span class="oi bi-patch-check-fill" aria-hidden="true" style="color: #1DA1F2;"></span> Verify Account*@
+                        &nbsp;<span class="oi bi-patch-check-fill" aria-hidden="true"></span> Verify Account
                     </NavLink>
                 </div>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="account/password-reset">
-                        <span class="oi bi-person-badge" aria-hidden="true"></span> Reset Password
+                        &nbsp;<span class="oi bi-person-badge" aria-hidden="true"></span> Reset Password
                     </NavLink>
                 </div>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="account/set-password">
-                        <span class="oi bi-key" aria-hidden="true"></span> Set New Password
+                        &nbsp;<span class="oi bi-key" aria-hidden="true"></span> Set New Password
                     </NavLink>
                 </div>
             </NotAuthorized>
