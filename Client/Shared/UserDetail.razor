@@ -2,6 +2,8 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject ILocalStorageService LocalStorageService
 @inject IUserAccountService UserAccountService
+@inject ICountryListService CountryListService
+@inject NavigationManager NavigationManager
 
 <div class="row ml-4">
     <h3>@pageTitle</h3>
@@ -12,7 +14,7 @@
 
     <!-- Account ID (RO) -->
     <div class="form-floating mb-3">
-        <InputText id="accountId" @bind-Value="UserAccountService.UserDatas.Id" class="form-control" readonly></InputText>
+        <InputText id="accountId" @bind-Value="UserAccountService.UserDatas.Id" class="form-control readonly-bg" readonly></InputText>
         <label for="accountId">Account Id</label>
     </div>
     <!-- Email Address (RW) -->
@@ -27,8 +29,8 @@
     </div>
     <!-- Tax ID (RW) -->
     <div class="form-floating mb-3">
-        <InputText id="TaxId" @bind-Value="UserAccountService.UserDatas.TaxId" class="form-control"></InputText>
-        <label for="TaxId">Tax ID</label>
+        <InputText id="taxId" @bind-Value="UserAccountService.UserDatas.TaxId" class="form-control"></InputText>
+        <label for="taxId">Tax ID</label>
     </div>
     <!-- ROW -->
     <div class="row mb-3">
@@ -47,16 +49,75 @@
             </div>
         </div>
     </div>
-
+    <!-- END ROW -->
+    <!-- Address 1 (RW) -->
+    <div class="form-floating mb-3">
+        <InputText id="address1" @bind-Value="UserAccountService.UserDatas.Address1" class="form-control"></InputText>
+        <label for="address1">Address Line 1</label>
+    </div>
+    <!-- Address 2 (RW) -->
+    <div class="form-floating mb-3">
+        <InputText id="address2" @bind-Value="UserAccountService.UserDatas.Address2" class="form-control"></InputText>
+        <label for="address2">Address Line 2</label>
+    </div>
+    <!-- ROW -->
+    <div class="row mb-3">
+        <div class="col">
+            <!-- City (RW) -->
+            <div class="form-floating">
+                <InputText id="city" @bind-Value="UserAccountService.UserDatas.City" class="form-control"></InputText>
+                <label for="city">City</label>
+            </div>
+        </div>
+        <div class="col">
+            <!-- State (RW) -->
+            <div class="form-floating">
+                <InputText id="state" @bind-Value="UserAccountService.UserDatas.State" class="form-control"></InputText>
+                <label for="state">State</label>
+            </div>
+        </div>
+        <div class="col">
+            <!-- PostalCode (RW) -->
+            <div class="form-floating">
+                <InputText id="postalCode" @bind-Value="UserAccountService.UserDatas.PostalCode" class="form-control"></InputText>
+                <label for="postalCode">Post Code/ZIP</label>
+            </div>
+        </div>
+    </div>
+    <!-- END ROW -->
+    <!-- ROW -->
+    <div class="row mb-3">
+        <div class="col">
+            <!-- Country (RW) -->
+            <div class="form-floating">
+                <InputSelect id="country" @bind-Value="UserAccountService.UserDatas.Country" class="form-control">
+                    @foreach (var country in CountryListService.Countries)
+                    {
+                        <option value="@country" selected="@IsCountrySelected(country)">@country</option>
+                    }
+                </InputSelect>
+                <label for="country">Country</label>
+            </div>
+        </div>
+        <div class="col">
+            <!-- PhoneNumber (RW) -->
+            <div class="form-floating">
+                <InputText id="phoneNumber" @bind-Value="UserAccountService.UserDatas.PhoneNumber" class="form-control"></InputText>
+                <label for="phoneNumber">Phone Number</label>
+            </div>
+        </div>
+    </div>
     <!-- END ROW -->
     <!-- Submit button -->
     @if (showSubmitButton)
     {
-        <button type="submit" class="btn btn-primary mb-3">Reset Password</button>
+        <button type="submit" class="btn btn-primary mb-3">Update Account</button>
+        <button class="btn btn-danger mb-3" @onclick="@(() => NavigationManager.NavigateTo("/"))">Cancel</button>
     }
     else
     {
-        <button type="submit" class="btn btn-primary btn-secondary" style="cursor: not-allowed; color: grey; font-style: italic;" disabled>Requesting...</button>
+        <button type="submit" class="btn btn-secondary mb-3" style="cursor: not-allowed; color: grey; font-style: italic;" disabled>Updating...</button>
+        <button class="btn btn-danger mb-3" @onclick="@(() => NavigationManager.NavigateTo("/"))">Cancel</button>
     }
 </EditForm>
 
@@ -65,13 +126,21 @@
     private bool showSubmitButton;
 
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
+        await CountryListService.LoadCountryListAsync();
         showSubmitButton = true;
+
+    }
+
+    private bool IsCountrySelected(string country)
+    {
+        return country == UserAccountService.UserDatas.Country;
     }
 
     private void HandlePublishUpdate()
     {
+        showSubmitButton = false;
     }
 
 }
