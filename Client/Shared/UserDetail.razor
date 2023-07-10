@@ -1,54 +1,53 @@
-﻿@inject IUserAccountService UserAccountService
+﻿@using OptechX.Portal.Shared.Models.User
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ILocalStorageService LocalStorageService
+@inject IUserAccountService UserAccountService
 
 <div class="row ml-4">
     <h3>@pageTitle</h3>
 </div>
 
-<EditForm Model="UserAccountService.UserAccountRequiredFields" OnValidSubmit="HandlePublishUpdate">
+<EditForm Model="UserAccountService.UserDatas" OnValidSubmit="HandlePublishUpdate">
     <DataAnnotationsValidator></DataAnnotationsValidator>
 
     <!-- Account ID (RO) -->
-    <!--<div class="form-floating mb-3">
-        <InputText id="accountId" @bind-Value="UserAccountService.UserAccountRequiredFields.Id.ToString()" class="form-control" readonly></InputText>
+    <div class="form-floating mb-3">
+        <InputText id="accountId" @bind-Value="UserAccountService.UserDatas.Id" class="form-control" readonly></InputText>
         <label for="accountId">Account Id</label>
-    </div>-->
-
+    </div>
     <!-- Email Address (RW) -->
-    <!--<div class="form-floating mb-3">
-        <InputText id="email" @bind-Value="UserAccountService.UserAccountRequiredFields.EmailAddress" class="form-control"></InputText>
+    <div class="form-floating mb-3">
+        <InputText id="email" @bind-Value="UserAccountService.UserDatas.EmailAddress" class="form-control"></InputText>
         <label for="email">Email Address</label>
-    </div>-->
-
+    </div>
     <!-- Company (RW) -->
-    <!--<div class="form-floating mb-3">
-        <InputText id="company" @bind-Value="UserAccountService.UserAccountRequiredFields.Company" class="form-control"></InputText>
-        <label for="company">Company</label>
-    </div>-->
-
+    <div class="form-floating mb-3">
+        <InputText id="company" @bind-Value="UserAccountService.UserDatas.Company" class="form-control"></InputText>
+        <label for="company">Company Name</label>
+    </div>
     <!-- Tax ID (RW) -->
-    <!--<div class="form-floating mb-3">
-        <InputText id="TaxId" @bind-Value="UserAccountService.UserAccountRequiredFields.TaxId" class="form-control"></InputText>
+    <div class="form-floating mb-3">
+        <InputText id="TaxId" @bind-Value="UserAccountService.UserDatas.TaxId" class="form-control"></InputText>
         <label for="TaxId">Tax ID</label>
-    </div>-->
-
+    </div>
     <!-- ROW -->
-    <!--<div class="form-row mb-3">-->
-        <!-- FirstName (RW) -->
-        <!--<div class="col">
+    <div class="row mb-3">
+        <div class="col">
+            <!-- FirstName (RW) -->
             <div class="form-floating">
-                <InputText id="firstName" @bind-Value="UserAccountService.UserAccountRequiredFields.FirstName" class="form-control"></InputText>
+                <InputText id="firstName" @bind-Value="UserAccountService.UserDatas.FirstName" class="form-control"></InputText>
                 <label for="firstName">First Name</label>
             </div>
-        </div>-->
-
-        <!-- LastName (RW) -->
-        <!--<div class="col">
+        </div>
+        <div class="col">
+            <!-- LastName (RW) -->
             <div class="form-floating">
-                <InputText id="lastName" @bind-Value="UserAccountService.UserAccountRequiredFields.LastName" class="form-control"></InputText>
+                <InputText id="lastName" @bind-Value="UserAccountService.UserDatas.LastName" class="form-control"></InputText>
                 <label for="lastName">Last Name</label>
             </div>
         </div>
-    </div>-->
+    </div>
+
     <!-- END ROW -->
     <!-- Submit button -->
     @if (showSubmitButton)
@@ -65,13 +64,19 @@
     private string pageTitle = "User Settings";
     private bool showSubmitButton;
 
-    protected override async Task OnInitializedAsync()
+
+    protected override void OnInitialized()
     {
-        await UserAccountService.LoadUserAccountRequiredFieldsAsync();
         showSubmitButton = true;
     }
 
     private void HandlePublishUpdate()
     {
     }
+
 }
+
+
+
+
+
