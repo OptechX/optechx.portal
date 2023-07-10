@@ -1,10 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
-namespace OptechX.Portal.Shared.Models.User
+﻿namespace OptechX.Portal.Shared.Models.User
 {
-    public class UserAccountRequiredFields
+    public class UserData
     {
-        public Guid Id { get; set; }
-        [EmailAddress]
+        public string Id { get; set; } = null!;
         public string EmailAddress { get; set; } = null!;
         public string? Company { get; set; }
         public string? TaxId { get; set; }

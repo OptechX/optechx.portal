@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Text.Json;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
+using OptechX.Portal.Client.Services;
 
 namespace OptechX.Portal.Client
 {
@@ -10,11 +11,14 @@ namespace OptechX.Portal.Client
     {
         private readonly ILocalStorageService _localStorageService;
         private readonly HttpClient _httpClient;
+        private readonly IUserAccountService _userAccountService;
 
-        public CustomAuthStateProvider(ILocalStorageService localStorageService, HttpClient httpClient)
+        public CustomAuthStateProvider(ILocalStorageService localStorageService, HttpClient httpClient,
+            IUserAccountService userAccountService)
         {
             _localStorageService = localStorageService;
             _httpClient = httpClient;
+            _userAccountService = userAccountService;
         }
 
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
@@ -24,8 +28,18 @@ namespace OptechX.Portal.Client
             _httpClient.DefaultRequestHeaders.Authorization = null;
             if (!string.IsNullOrEmpty(authToken))
             {
-                identity = new ClaimsIdentity(ParseClaimsFromJwt(authToken), "jwt");
-                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authToken);
+                try
+                {
+                    identity = new ClaimsIdentity(ParseClaimsFromJwt(authToken), "jwt");
+                    _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authToken);
+                    await _userAccountService.LoadUserDatasAsync();
+                }
+                catch (Exception)
+                {
+                    await _localStorageService.RemoveItemAsync("authToken");
+                    identity = new ClaimsIdentity();
+                }
+                
             }
             var user = new ClaimsPrincipal(identity);
             var state = new AuthenticationState(user);
