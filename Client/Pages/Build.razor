@@ -1,5 +1,4 @@
 ﻿@page "/build"
-@inject IBananaService BananaService
 @inject IUnitService UnitService
 @inject IToastService ToastService
 @attribute [Authorize]
@@ -41,16 +40,8 @@
     {
         var selectedUnit = UnitService.Units.FirstOrDefault(unit => unit.Id == selectedUnitId);
 
-        if (BananaService.Bananas < selectedUnit?.BananaCost)
-        {
-            needMoreBananas = true;
-            ToastService.ShowError("Not enough bananas");
-            return;
-        }
-
         needMoreBananas = false;
 
-        BananaService.EatBananas(selectedUnit!.BananaCost);
         UnitService.AddUnit(selectedUnitId);
     }
 }
