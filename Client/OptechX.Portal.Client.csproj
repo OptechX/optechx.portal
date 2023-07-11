@@ -25,6 +25,7 @@
   <ItemGroup>
     <Content Remove="wwwroot\icons\" />
     <Content Remove="wwwroot\img\" />
+    <Content Remove="Pages\ImageBuilder.razor" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="wwwroot\icons\" />
