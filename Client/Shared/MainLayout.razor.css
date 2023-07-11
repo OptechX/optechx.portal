@@ -38,7 +38,7 @@ main {
 
 @media (max-width: 640.98px) {
     .top-row:not(.auth) {
-/*        display: none;*/
+        display: none;
     }
 
     .top-row.auth {
@@ -63,9 +63,10 @@ main {
     }
 
     .top-row {
-        position: sticky;
+        display: none;
+        /*position: sticky;
         top: 0;
-        z-index: 1;
+        z-index: 1;*/
     }
 
     .top-row.auth ::deep a:first-child {
