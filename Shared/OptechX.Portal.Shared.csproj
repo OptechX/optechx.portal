@@ -19,6 +19,7 @@
     <None Remove="Models\User\Constants\" />
     <None Remove="Models\Generic\" />
     <None Remove="Models\Engine\ImageBuilds\" />
+    <None Remove="Models\Forms\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Models\" />
@@ -30,6 +31,7 @@
     <Folder Include="Models\User\Constants\" />
     <Folder Include="Models\Generic\" />
     <Folder Include="Models\Engine\ImageBuilds\" />
+    <Folder Include="Models\Forms\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.9" />

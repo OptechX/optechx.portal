@@ -2,21 +2,27 @@
 using Microsoft.EntityFrameworkCore;
 using OptechX.Portal.Server.Models;
 using OptechX.Portal.Shared.Models.Engine.Applications;
+using OptechX.Portal.Shared.Models.Forms;
 using OptechX.Portal.Shared.Models.User;
 
 namespace OptechX.Portal.Server.Data
 {
-	public class ApiDbContext : DbContext
-	{
+    public class ApiDbContext : DbContext
+    {
+        // Engine
         public DbSet<Application>? Applications { get; set; }
 
         // User
         public DbSet<UserAccount>? UserAccounts { get; set; }
 
+        // Forms
+        public DbSet<EditionResult> EditionResults { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
             modelBuilder.ApplyConfiguration(new ApplicationConfiguration());
+            modelBuilder.ApplyConfiguration(new EditionResultConfiguration()); // Add this line to apply the EditionResultConfiguration
 
             base.OnModelCreating(modelBuilder);
         }
@@ -37,4 +43,3 @@ namespace OptechX.Portal.Server.Data
         }
     }
 }
-
