@@ -125,12 +125,11 @@
     private string pageTitle = "User Settings";
     private bool showSubmitButton;
 
-
     protected override async Task OnInitializedAsync()
     {
         await CountryListService.LoadCountryListAsync();
+        await UserAccountService.LoadUserDatasAsync();
         showSubmitButton = true;
-
     }
 
     private bool IsCountrySelected(string country)
