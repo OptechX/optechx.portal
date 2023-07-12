@@ -14,6 +14,7 @@ public class Program
 
         // Add services to the container.
         builder.Services.AddDbContext<ApiDbContext>();
+        builder.Services.AddSwaggerGen();
         builder.Services.AddControllersWithViews();
         builder.Services.AddRazorPages();
         builder.Services.AddScoped<IEmailService, EmailService>();
@@ -50,6 +51,11 @@ public class Program
 
         app.UseBlazorFrameworkFiles();
         app.UseStaticFiles();
+        app.UseSwagger();
+        app.UseSwaggerUI(c =>
+        {
+            c.SwaggerEndpoint("v1/swagger.json", "Blazor API v1");
+        });
 
         app.UseRouting();
 
