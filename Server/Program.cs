@@ -54,7 +54,7 @@ public class Program
         app.UseSwagger();
         app.UseSwaggerUI(c =>
         {
-            c.SwaggerEndpoint("v1/swagger.json", "Blazor API v1");
+            c.SwaggerEndpoint("v1/swagger.json", "OptechX Blazor API v1");
         });
 
         app.UseRouting();
