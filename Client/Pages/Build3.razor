@@ -8,7 +8,9 @@
 
 <PageTitle>OptechX Portal</PageTitle>
 
-<EditForm Model="imageBuild">
+<h3>Build Image</h3>
+
+<EditForm Model="imageBuild" OnValidSubmit="HandleBuildImageSubmit">
     <!-- ROW 1 -->
     <div class="row mb-3">
         <!-- COLUMN 1 -->
@@ -73,9 +75,10 @@
                                  ValueExpression="@(()=>imageBuild.WindowsVersion)"
                                  Value="@imageBuild.WindowsVersion"
                                  ValueChanged="@((string value) => OnBuildChanged(value))">
-                        <option value="">Select option...</option>
-                        <option value="Windows 10">Windows 10</option>
-                        <option value="Windows 11">Windows 11</option>
+                        @foreach (string version in Versions)
+                        {
+                            <option value="@version">@version</option>
+                        }
                     </InputSelect>
                 }
                 else
@@ -86,32 +89,120 @@
         </div>
         <!-- COLUMN 2 -->
         <div class="col-6">
-            <!-- Windows Edition -->
+            <!-- Windows Arch (x64, x86) -->
             <div class="form-group mb-4">
-                <label for="edition">Edition</label>
-                @if (!isEditionReadOnly)
+                <label for="arch">CPU Arch</label>
+                @if (!isArchReadOnly)
                 {
-                    <InputSelect id="edition"
+                    <InputSelect id="arch"
                                  class="form-control"
-                                 ValueExpression="@(()=>imageBuild.WindowsEdition)"
-                                 Value="@imageBuild.WindowsEdition"
-                                 ValueChanged="@((string value) => OnEditionChanged(value))">
-                        @foreach (string edition in Editions)
+                                 ValueExpression="@(()=>imageBuild.Arch)"
+                                 Value="@imageBuild.Arch"
+                                 ValueChanged="@((string value) => OnArchChanged(value))">
+                        @foreach (string arch in Archs)
                         {
-                            <option value="@edition">@edition</option>
+                            <option value="@arch">@arch</option>
                         }
                     </InputSelect>
                 }
                 else
                 {
-                    <input id="edition" value="@imageBuild.WindowsEdition" class="form-control light-gray-input" readonly />
+                    <input id="arch" value="@imageBuild.Arch" class="form-control light-gray-input" readonly />
                 }
             </div>
         </div>
     </div>
+    <!-- ROW 3 -->
+    <div class="row mb-3">
+        <!-- COLUMN 1 -->
+        <div class="col-6">
+            <!-- Lcid (Language) -->
+            <div class="form-group mb-4">
+                <label for="lcid">Language</label>
+                @if (!isLcidReadOnly)
+                {
+                    <InputSelect id="lcid"
+                                 class="form-control"
+                                 ValueExpression="@(()=>imageBuild.Language)"
+                                 Value="@imageBuild.Language"
+                                 ValueChanged="@((string value) => OnLcidChanged(value))">
+                        @foreach (string lcid in Lcids)
+                        {
+                            <option value="@lcid">@lcid</option>
+                        }
+                    </InputSelect>
+                }
+                else
+                {
+                    <input id="build" value="@imageBuild.Language" class="form-control light-gray-input" readonly />
+                }
+            </div>
+        </div>
+        <!-- COLUMN 2 -->
+        <div class="col-6">
+            <!-- Image Format (WIM, ISO, VHD, etc) -->
+            <div class="form-group mb-4">
+                <label for="format">Image Format</label>
+                @if (!isFormatReadOnly)
+                {
+                    <InputSelect id="format"
+                                 class="form-control"
+                                 ValueExpression="@(()=>imageBuild.ImageFormat)"
+                                 Value="@imageBuild.ImageFormat"
+                                 ValueChanged="@((string value) => OnFormatChanged(value))">
+                        @foreach (string format in ImageFormats)
+                        {
+                            <option value="@format">@format</option>
+                        }
+                    </InputSelect>
+                }
+                else
+                {
+                    <input id="arch" value="@imageBuild.ImageFormat" class="form-control light-gray-input" readonly />
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Submit button -->
+    @if (isFormatReadOnly)
+    {
+        <button type="submit" class="btn btn-primary mb-3">Submit</button>
+        <button @onclick="RefreshPageAsync" class="btn btn-warning mb-3">Reset Form</button>
+    }
+    else
+    {
+        <button type="submit" class="btn btn-secondary mb-3" style="cursor: not-allowed; font-style: italic;" disabled>Submit</button>
+        <button @onclick="RefreshPageAsync" class="btn btn-warning mb-3">Reset Form</button>
+    }
 </EditForm>
 
-<button @onclick="RefreshPage" class="btn btn-warning">Reset Form</button>
+
+
+<p>Instructions to Build an Image:</p>
+
+<ul>
+    <li>
+        <strong>Windows Release</strong> Select the release of Windows to use as a base image.
+    </li>
+    <li>
+        <strong>Edition:</strong> Choose from the available Editions of Windows based on Release to use. This allows different core technologies to be used out of the box.
+    </li>
+    <li>
+        <strong>Build:</strong> Windows Build is the date code used by Microsoft to indicate which security patches are installed in the base image. Selecting the first item includes the latest security patches and bug fixes and is usually considered the best choice.
+    </li>
+    <li>
+        <strong>CPU Arch:</strong> Select the CPU architecture to target. <strong>x64</strong> is recommended for corporate use by Microsoft on earlier editions and only available from Build 2004 inclusive. Drivers and Applications available are dependant on the CPU Arch selected.
+    </li>
+    <li>
+        <strong>Language:</strong> Base language for Windows installation.
+    </li>
+    <li>
+        <strong>Image Format:</strong> Image Format is the deliverable media format. For deployments, WIM is the recommended option.
+    </li>
+</ul>
+
+<p>Once each option is selected, OptechX will store the data and allow you to make the next decision. Use the <strong>Reset Form</strong> button to start again.</p>
 
 @code {
     ImageBuildBasic imageBuild = new();
@@ -120,13 +211,23 @@
     bool isBuildReadOnly;
     bool isArchReadOnly;
     bool isLcidReadOnly;
+    bool isFormatReadOnly;
+
+    // this string will be edited by each OnChanged event
+    private string? apiSearchString;
 
     private List<string> Editions = new() { "Select value..." };
     private List<string> Versions = new() { "Select value..." };
     private List<string> Archs = new() { "Select value..." };
     private List<string> Lcids = new() { "Select value..." };
+    private List<string> ImageFormats = new() { "WIM", "ISO", "VHDX", "VHD", "ZIP" };
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
+    {
+        await InitializeAsync();
+    }
+
+    private async Task InitializeAsync()
     {
         // Set the flag when the page loads
         isReleaseReadOnly = false;
@@ -134,53 +235,73 @@
         isBuildReadOnly = true;
         isArchReadOnly = true;
         isLcidReadOnly = true;
+        isFormatReadOnly = true;
+        apiSearchString = string.Empty;
+
+        // Perform any additional asynchronous initialization tasks here if needed
+        await Task.CompletedTask;
     }
 
     // this goes first
     private async Task OnReleaseChanged(string value)
     {
+        ToastService.ShowInfo("Release selected");
         isReleaseReadOnly = true;
         imageBuild.WindowsRelease = value;
-        await FormsService.GetWinReleaseApiResultsAsync(select: value.ToString());
-        foreach (string edition in FormsService!.WinReleaseApiResults!.EditionResult!)
+        apiSearchString = value;
+        await FormsService.GetWinReleaseApiResultsAsync(select: apiSearchString);
+        var tasks = FormsService!.WinReleaseApiResults!.EditionResult!.Select(edition =>
         {
             Editions = Editions.Append(edition).ToList();
-        }
+            return Task.CompletedTask;
+        });
+        await Task.WhenAll(tasks);
         isEditionReadOnly = false;
     }
 
     // this goes second
     private async Task OnEditionChanged(string value)
     {
+        ToastService.ShowInfo("Edition selected");
         isEditionReadOnly = true;
         imageBuild.WindowsEdition = value;
-        await FormsService.GetWinEditionApiResultsAsync(select: value.ToString());
-        foreach (string version in FormsService!.WinEditionApiResults!.VersionResult!)
+        apiSearchString = apiSearchString + $"::{value}";
+        await FormsService.GetWinEditionApiResultsAsync(select: apiSearchString);
+        var tasks = FormsService!.WinEditionApiResults!.VersionResult!.Select(version =>
         {
             Versions = Versions.Append(version).ToList();
-        }
+            Versions = Versions.OrderDescending().ToList();
+            return Task.CompletedTask;
+        });
+        await Task.WhenAll(tasks);
         isBuildReadOnly = false;
     }
 
     // this goes third
     private async Task OnBuildChanged(string value)
     {
+        ToastService.ShowInfo("Build selected");
         isBuildReadOnly = true;
         imageBuild.WindowsVersion = value;
-        await FormsService.GetWinVersionApiResultsAsync(select: value.ToString());
-        foreach (string arch in FormsService!.WinVersionApiResults!.ArchResult!)
+        apiSearchString = apiSearchString + $"::{value}";
+        await FormsService.GetWinVersionApiResultsAsync(select: apiSearchString);
+        var tasks = FormsService!.WinVersionApiResults!.ArchResult!.Select(arch =>
         {
             Archs = Archs.Append(arch).ToList();
-        }
+            return Task.CompletedTask;
+        });
+        await Task.WhenAll(tasks);
         isArchReadOnly = false;
     }
 
     // this goes fourth
     private async Task OnArchChanged(string value)
     {
+        ToastService.ShowInfo("CPU Arch selected");
         isArchReadOnly = true;
         imageBuild.Arch = value;
-        await FormsService.GetWinArchApiResultsAsync(select: value.ToString());
+        apiSearchString = apiSearchString + $"::{value}";
+        await FormsService.GetWinArchApiResultsAsync(select: apiSearchString);
         var tasks = FormsService!.WinArchApiResults.LcidResult!.Select(lcid =>
         {
             Lcids = Lcids.Append(lcid).ToList();
@@ -194,8 +315,19 @@
     // this goes fifth
     private async Task OnLcidChanged(string value)
     {
+        ToastService.ShowInfo("Language selected");
         isLcidReadOnly = true;
         imageBuild.Language = value;
+        isFormatReadOnly = false;
+        await Task.CompletedTask;
+    }
+
+    // this goes sixth
+    private async Task OnFormatChanged(string value)
+    {
+        ToastService.ShowInfo("Image Format selected");
+        isFormatReadOnly = true;
+        imageBuild.ImageFormat = value;
         await Task.CompletedTask;
     }
 
@@ -206,4 +338,9 @@
         await Task.Run(() => NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true));
     }
 
+    // submit order
+    private async Task HandleBuildImageSubmit()
+    {
+        await Task.CompletedTask;
+    }
 }
