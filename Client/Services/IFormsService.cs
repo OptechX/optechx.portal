@@ -4,9 +4,17 @@ namespace OptechX.Portal.Client.Services
 {
 	public interface IFormsService
 	{
-		EditionResult editionResult { get; }
+		WinVersionApiResult WinVersionApiResults { get; }
+		Task GetWinVersionApiResultsAsync(string select);
 
-		Task GetEditionResultsAsync(string releaseSelect);
+		WinEditionApiResult WinEditionApiResults { get; }
+		Task GetWinEditionApiResultsAsync(string select);
+
+		WinReleaseApiResult WinReleaseApiResults { get; }
+		Task GetWinReleaseApiResultsAsync(string select);
+
+		WinArchApiResult WinArchApiResults { get; }
+		Task GetWinArchApiResultsAsync(string select);
 	}
 }
 

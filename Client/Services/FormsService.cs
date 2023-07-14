@@ -12,14 +12,44 @@ namespace OptechX.Portal.Client.Services
             _httpClient = httpClient;
         }
 
-        public EditionResult editionResult { get; set; } = new();
+        public WinVersionApiResult WinVersionApiResults { get; set; } = new();
+        public WinEditionApiResult WinEditionApiResults { get; set; } = new();
+        public WinReleaseApiResult WinReleaseApiResults { get; set; } = new();
+        public WinArchApiResult WinArchApiResults { get; set; } = new();
 
-        public async Task GetEditionResultsAsync(string releaseSelect)
+        public async Task GetWinArchApiResultsAsync(string select)
         {
-            var response = await _httpClient.GetFromJsonAsync<EditionResult>("api/FormsResponder/ReleaseResult/{releaseSelect}");
+            var response = await _httpClient.GetFromJsonAsync<WinArchApiResult>($"api/FormsResponder/winarchresult/{select}");
             if (response != null)
             {
-                editionResult = response!;
+                WinArchApiResults = response!;
+            }
+        }
+
+        public async Task GetWinEditionApiResultsAsync(string select)
+        {
+            var response = await _httpClient.GetFromJsonAsync<WinEditionApiResult>($"api/FormsResponder/wineditionresult/{select}");
+            if (response != null)
+            {
+                WinEditionApiResults = response!;
+            }
+        }
+
+        public async Task GetWinReleaseApiResultsAsync(string select)
+        {
+            var response = await _httpClient.GetFromJsonAsync<WinReleaseApiResult>($"api/FormsResponder/winreleaseresult/{select}");
+            if (response != null)
+            {
+                WinReleaseApiResults = response!;
+            }
+        }
+
+        public async Task GetWinVersionApiResultsAsync(string select)
+        {
+            var response = await _httpClient.GetFromJsonAsync<WinVersionApiResult>($"api/FormsResponder/winversionresult/{select}");
+            if (response != null)
+            {
+                WinVersionApiResults = response!;
             }
         }
     }

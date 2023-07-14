@@ -1,17 +1,21 @@
 ﻿@page "/buildimage"
 @using OptechX.Portal.Shared.Models.Engine.ImageBuilds
+@inject NavigationManager NavigationManager
 @inject IToastService ToastService
+@inject IFormsService FormsService
+
+@inject IJSRuntime JSRuntime
 
 <PageTitle>OptechX Portal</PageTitle>
 
 <EditForm Model="imageBuild">
-    <!-- ROW -->
+    <!-- ROW 1 -->
     <div class="row mb-3">
         <!-- COLUMN 1 -->
         <div class="col-6">
             <!-- Windows Release (Win10, Win11) -->
             <div class="form-group mb-4">
-                <label for="release">Release</label>
+                <label for="release">Windows Release</label>
                 @if (!isReleaseReadOnly)
                 {
                     <InputSelect id="release"
@@ -19,33 +23,187 @@
                                  ValueExpression="@(()=>imageBuild.WindowsRelease)"
                                  Value="@imageBuild.WindowsRelease"
                                  ValueChanged="@((string value) => OnReleaseChanged(value))">
+                        <option value="">Select option...</option>
                         <option value="Windows 10">Windows 10</option>
                         <option value="Windows 11">Windows 11</option>
                     </InputSelect>
                 }
                 else
                 {
-                    <input id="release" value="@imageBuild.WindowsRelease" class="form-control" readonly />
+                    <input id="release" value="@imageBuild.WindowsRelease" class="form-control light-gray-input" readonly />
+                }
+            </div>
+        </div>
+        <!-- COLUMN 2 -->
+        <div class="col-6">
+            <!-- Windows Edition -->
+            <div class="form-group mb-4">
+                <label for="edition">Edition</label>
+                @if (!isEditionReadOnly)
+                {
+                    <InputSelect id="edition"
+                                 class="form-control"
+                                 ValueExpression="@(()=>imageBuild.WindowsEdition)"
+                                 Value="@imageBuild.WindowsEdition"
+                                 ValueChanged="@((string value) => OnEditionChanged(value))">
+                        @foreach (string edition in Editions)
+                        {
+                            <option value="@edition">@edition</option>
+                        }
+                    </InputSelect>
+                }
+                else
+                {
+                    <input id="edition" value="@imageBuild.WindowsEdition" class="form-control light-gray-input" readonly />
+                }
+            </div>
+        </div>
+    </div>
+    <!-- ROW 2 -->
+    <div class="row mb-3">
+        <!-- COLUMN 1 -->
+        <div class="col-6">
+            <!-- Windows Version (19H2, 20H1, 20H2, etc) -->
+            <div class="form-group mb-4">
+                <label for="build">Build</label>
+                @if (!isBuildReadOnly)
+                {
+                    <InputSelect id="build"
+                                 class="form-control"
+                                 ValueExpression="@(()=>imageBuild.WindowsVersion)"
+                                 Value="@imageBuild.WindowsVersion"
+                                 ValueChanged="@((string value) => OnBuildChanged(value))">
+                        <option value="">Select option...</option>
+                        <option value="Windows 10">Windows 10</option>
+                        <option value="Windows 11">Windows 11</option>
+                    </InputSelect>
+                }
+                else
+                {
+                    <input id="build" value="@imageBuild.WindowsVersion" class="form-control light-gray-input" readonly />
+                }
+            </div>
+        </div>
+        <!-- COLUMN 2 -->
+        <div class="col-6">
+            <!-- Windows Edition -->
+            <div class="form-group mb-4">
+                <label for="edition">Edition</label>
+                @if (!isEditionReadOnly)
+                {
+                    <InputSelect id="edition"
+                                 class="form-control"
+                                 ValueExpression="@(()=>imageBuild.WindowsEdition)"
+                                 Value="@imageBuild.WindowsEdition"
+                                 ValueChanged="@((string value) => OnEditionChanged(value))">
+                        @foreach (string edition in Editions)
+                        {
+                            <option value="@edition">@edition</option>
+                        }
+                    </InputSelect>
+                }
+                else
+                {
+                    <input id="edition" value="@imageBuild.WindowsEdition" class="form-control light-gray-input" readonly />
                 }
             </div>
         </div>
     </div>
 </EditForm>
 
+<button @onclick="RefreshPage" class="btn btn-warning">Reset Form</button>
+
 @code {
     ImageBuildBasic imageBuild = new();
     bool isReleaseReadOnly;
+    bool isEditionReadOnly;
+    bool isBuildReadOnly;
+    bool isArchReadOnly;
+    bool isLcidReadOnly;
+
+    private List<string> Editions = new() { "Select value..." };
+    private List<string> Versions = new() { "Select value..." };
+    private List<string> Archs = new() { "Select value..." };
+    private List<string> Lcids = new() { "Select value..." };
 
     protected override void OnInitialized()
     {
         // Set the flag when the page loads
         isReleaseReadOnly = false;
+        isEditionReadOnly = true;
+        isBuildReadOnly = true;
+        isArchReadOnly = true;
+        isLcidReadOnly = true;
     }
 
-    private Task OnReleaseChanged(string value)
+    // this goes first
+    private async Task OnReleaseChanged(string value)
     {
-        imageBuild.WindowsRelease = value;
         isReleaseReadOnly = true;
-        return Task.CompletedTask;
+        imageBuild.WindowsRelease = value;
+        await FormsService.GetWinReleaseApiResultsAsync(select: value.ToString());
+        foreach (string edition in FormsService!.WinReleaseApiResults!.EditionResult!)
+        {
+            Editions = Editions.Append(edition).ToList();
+        }
+        isEditionReadOnly = false;
     }
+
+    // this goes second
+    private async Task OnEditionChanged(string value)
+    {
+        isEditionReadOnly = true;
+        imageBuild.WindowsEdition = value;
+        await FormsService.GetWinEditionApiResultsAsync(select: value.ToString());
+        foreach (string version in FormsService!.WinEditionApiResults!.VersionResult!)
+        {
+            Versions = Versions.Append(version).ToList();
+        }
+        isBuildReadOnly = false;
+    }
+
+    // this goes third
+    private async Task OnBuildChanged(string value)
+    {
+        isBuildReadOnly = true;
+        imageBuild.WindowsVersion = value;
+        await FormsService.GetWinVersionApiResultsAsync(select: value.ToString());
+        foreach (string arch in FormsService!.WinVersionApiResults!.ArchResult!)
+        {
+            Archs = Archs.Append(arch).ToList();
+        }
+        isArchReadOnly = false;
+    }
+
+    // this goes fourth
+    private async Task OnArchChanged(string value)
+    {
+        isArchReadOnly = true;
+        imageBuild.Arch = value;
+        await FormsService.GetWinArchApiResultsAsync(select: value.ToString());
+        var tasks = FormsService!.WinArchApiResults.LcidResult!.Select(lcid =>
+        {
+            Lcids = Lcids.Append(lcid).ToList();
+            return Task.CompletedTask;
+        });
+        await Task.WhenAll(tasks);
+        isLcidReadOnly = false;
+    }
+
+
+    // this goes fifth
+    private async Task OnLcidChanged(string value)
+    {
+        isLcidReadOnly = true;
+        imageBuild.Language = value;
+        await Task.CompletedTask;
+    }
+
+
+    // refresh the page
+    private async Task RefreshPageAsync()
+    {
+        await Task.Run(() => NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true));
+    }
+
 }

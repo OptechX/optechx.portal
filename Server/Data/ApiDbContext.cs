@@ -16,13 +16,19 @@ namespace OptechX.Portal.Server.Data
         public DbSet<UserAccount>? UserAccounts { get; set; }
 
         // Forms
-        public DbSet<EditionResult> EditionResults { get; set; }
+        public DbSet<WinReleaseApiResult> WinReleaseApiResults { get; set; }
+        public DbSet<WinEditionApiResult> WinEditionApiResults { get; set; }
+        public DbSet<WinVersionApiResult> WinVersionApiResults { get; set; }
+        public DbSet<WinArchApiResult> WinArchApiResults { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
             modelBuilder.ApplyConfiguration(new ApplicationConfiguration());
-            modelBuilder.ApplyConfiguration(new EditionResultConfiguration()); // Add this line to apply the EditionResultConfiguration
+            modelBuilder.ApplyConfiguration(new WinReleaseApiResultConfiguration());
+            modelBuilder.ApplyConfiguration(new WinEditionApiResultConfiguration());
+            modelBuilder.ApplyConfiguration(new WinVersionApiResultConfiguration());
+            modelBuilder.ApplyConfiguration(new WinArchApiResultConfiguration());
 
             base.OnModelCreating(modelBuilder);
         }

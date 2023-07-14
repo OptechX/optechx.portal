@@ -1,22 +1,22 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace OptechX.Portal.Shared.Models.Forms
 {
-    public class EditionResult
+    public class WinReleaseApiResult
     {
         [JsonIgnore]
         public int Id { get; set; }
         public string ReleaseSelect { get; set; } = null!;
-        public List<string>? ReleaseResult { get; set; }
+        public List<string>? EditionResult { get; set; }
     }
 
-    public class EditionResultConfiguration : IEntityTypeConfiguration<EditionResult>
+    public class WinReleaseApiResultConfiguration : IEntityTypeConfiguration<WinReleaseApiResult>
     {
-        public void Configure(EntityTypeBuilder<EditionResult> builder)
+        public void Configure(EntityTypeBuilder<WinReleaseApiResult> builder)
         {
-            builder.Property(a => a.ReleaseResult)
+            builder.Property(a => a.EditionResult)
             .HasConversion(
                 v => string.Join(',', v!),
                 v => v.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList());
