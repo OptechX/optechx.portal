@@ -1,0 +1,117 @@
+﻿@page "/buildimage2"
+@using OptechX.Portal.Shared.Models.Engine.ImageBuilds
+@inject NavigationManager NavigationManager
+@inject IToastService ToastService
+@inject IFormsService FormsService
+
+@inject IJSRuntime JSRuntime
+
+<PageTitle>OptechX Portal</PageTitle>
+
+<h3>Build Image</h3>
+
+<h4>Applications</h4>
+
+<div style="height: 200px; overflow-y: auto; border: 1px solid #ccc; border-radius: 5px;" class="mb-3">
+    @foreach (string item in Items)
+    {
+        <div>
+            <span style="display: flex; align-items: center; padding-left: 10px; padding-bottom: 3px;">
+                <input type="checkbox" checked="@SelectedItems.Contains(item)" @onclick="() => ToggleItemSelection(item)" disabled="@IsReadOnly" />
+                <img src="https://raw.githubusercontent.com/OptechX/library.apps.images/main/7-Zip/icon_scaled.png" alt="Item Image" style="height: 1em; margin-right: 0.5em;" />
+                @item
+            </span>
+        </div>
+    }
+</div>
+
+@code {
+    ImageBuildBasic? imageBuild;
+
+    protected override void OnInitialized()
+    {
+        // Retrieve query parameters
+        var uri = new Uri(NavigationManager.Uri);
+        var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
+        var release = query["param1"];
+        var edition = query["param2"];
+        var version = query["param3"];
+        var arch = query["param4"];
+        var language = query["param5"];
+        var format = query["param6"];
+
+        //if (!string.IsNullOrEmpty(release))
+        //    imageBuild!.WindowsRelease = release;
+
+
+        // Initialize the imageBuild object with the retrieved values
+        imageBuild = new ImageBuildBasic
+        {
+            WindowsRelease = release,
+            WindowsEdition = edition,
+            WindowsVersion = version,
+            Arch = arch,
+            Language = language,
+            ImageFormat = format,
+        };
+    }
+
+
+
+
+
+
+    public List<string> SelectedItems { get; set; } = new List<string>();
+
+    public List<string> Items { get; set; } = new List<string>
+    {
+        "Item 1",
+        "Item 2",
+        "Item 3",
+        "Item 4",
+        "Item 5",
+        "Item 6",
+        "Item 7",
+        "Item 8",
+        "Item 9",
+        "Item 10",
+        "Item 11",
+        "Item 12",
+        "Item 13",
+        "Item 14",
+        "Item 15",
+        "Item 16",
+    };
+
+    public bool IsReadOnly { get; set; } = false;
+
+
+    private void ToggleItemSelection(string item)
+    {
+        if (SelectedItems.Contains(item))
+        {
+            SelectedItems.Remove(item);
+        }
+        else
+        {
+            SelectedItems.Add(item);
+        }
+    }
+
+    private async Task RunButtonAsync()
+    {
+        IsReadOnly = true; // Disable checkbox list
+        StateHasChanged(); // Notify Blazor to re-render the component
+
+        await Task.Run(() =>
+        {
+            foreach (string i in SelectedItems)
+            {
+                ToastService.ShowInfo($"App selected: {i}");
+            }
+        });
+
+        //IsReadOnly = false; // Enable checkbox list after task completion
+        //StateHasChanged(); // Notify Blazor to re-render the component
+    }
+}

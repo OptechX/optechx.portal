@@ -342,7 +342,7 @@
     private async Task HandleBuildImageSubmit()
     {
         var queryParams = $"?param1={imageBuild.WindowsRelease}&param2={imageBuild.WindowsEdition}&param3={imageBuild.WindowsVersion}&param4={imageBuild.Arch}&param5={imageBuild.Language}&param6={imageBuild.ImageFormat}";
-        await Task.Run(() => NavigationManager.NavigateTo("/nextpage" + queryParams));
+        await Task.Run(() => NavigationManager.NavigateTo("/buildimage2" + queryParams));
         await Task.CompletedTask;
     }
 }
