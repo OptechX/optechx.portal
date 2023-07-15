@@ -1,4 +1,5 @@
 ﻿@page "/buildimage2"
+@using OptechX.Portal.Shared.Models.Forms
 @using OptechX.Portal.Shared.Models.Engine.ImageBuilds
 @inject NavigationManager NavigationManager
 @inject IToastService ToastService
@@ -12,18 +13,72 @@
 
 <h4>Applications</h4>
 
-<div style="height: 200px; overflow-y: auto; border: 1px solid #ccc; border-radius: 5px;" class="mb-3">
-    @foreach (string item in Items)
-    {
-        <div>
-            <span style="display: flex; align-items: center; padding-left: 10px; padding-bottom: 3px;">
-                <input type="checkbox" checked="@SelectedItems.Contains(item)" @onclick="() => ToggleItemSelection(item)" disabled="@IsReadOnly" />
-                <img src="https://raw.githubusercontent.com/OptechX/library.apps.images/main/7-Zip/icon_scaled.png" alt="Item Image" style="height: 1em; margin-right: 0.5em;" />
-                @item
-            </span>
+<!-- Scroll View -->
+@*<div style="height: 200px; overflow-y: auto; border: 1px solid #ccc; border-radius: 5px;" class="mb-3">
+        @foreach (string item in Items)
+        {
+            <div>
+                <span style="display: flex; align-items: center; padding-left: 10px; padding-bottom: 3px;">
+                    <input type="checkbox" checked="@SelectedItems.Contains(item)" @onclick="() => ToggleItemSelection(item)" disabled="@IsReadOnly" />
+                    <img src="https://raw.githubusercontent.com/OptechX/library.apps.images/main/7-Zip/icon_scaled.png" alt="Item Image" style="height: 1em; margin-right: 0.5em;" />
+                    @item
+                </span>
+            </div>
+        }
+    </div>*@
+
+<!-- Scroll View Table Like -->
+@*<div style="height: 200px; overflow-y: auto; border: 1px solid #ccc; border-radius: 5px;" class="mb-3">
+        <div style="display: flex; align-items: center; padding-left: 10px; font-weight: bold;">
+            <span style="flex-basis: 20px;">Checkbox</span>
+            <span style="flex-basis: 20px;">Image</span>
+            <span>Item</span>
         </div>
-    }
+        @foreach (string item in Items)
+        {
+            <div style="display: flex; align-items: center; padding-left: 10px; padding-bottom: 3px;">
+                <input type="checkbox" checked="@SelectedItems.Contains(item)" @onclick="() => ToggleItemSelection(item)" disabled="@IsReadOnly" />
+                <img src="https://raw.githubusercontent.com/OptechX/library.apps.images/main/7-Zip/icon_scaled.png" alt="Item Image" style="height: 1em; margin-right: 0.5em; flex-basis: 20px;" />
+                <span>@item</span>
+            </div>
+        }
+    </div>*@
+
+<!-- Table View -->
+<div style="height: 200px; overflow-y: auto; border: 1px solid #ccc; border-radius: 5px;" class="mb-3">
+    <table style="width: 100%;">
+        <thead>
+            <tr>
+                <th style="width: 20px; padding-left: 3px;"><i class="bi bi-check-square"></i></th>
+                <th style="width: 20px;"></th>
+                <th>Item</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (string item in Items)
+            {
+                <tr>
+                    <td style="padding-left: 3px;">
+                        <label style="display: inline-block; padding-left: 3px;">
+                            <input type="checkbox" checked="@SelectedItems.Contains(item)" @onclick="() => ToggleItemSelection(item)" disabled="@IsReadOnly" />
+                        </label>
+                    </td>
+                    <td style="display: flex; align-items: stretch;">
+                        <div style="border: 1px solid #ccc; padding: 4px;">
+                            <img src="https://raw.githubusercontent.com/OptechX/library.apps.images/main/7-Zip/icon_scaled.png" alt="Item Image" style="height: 1em; margin-right: 0.5em;" />
+                        </div>
+                    </td>
+                    <td>
+                        @item
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
 </div>
+
+
+<img src="https://raw.githubusercontent.com/OptechX/library.apps.images/main/7-Zip/icon_scaled.png" alt="Item Image" />
 
 @code {
     ImageBuildBasic? imageBuild;
@@ -64,7 +119,7 @@
     public List<string> SelectedItems { get; set; } = new List<string>();
 
     public List<string> Items { get; set; } = new List<string>
-    {
+{
         "Item 1",
         "Item 2",
         "Item 3",
@@ -91,10 +146,16 @@
         if (SelectedItems.Contains(item))
         {
             SelectedItems.Remove(item);
+            ToastService.ShowInfo($"Item Removed 1: {item}");
+            ToastService.ShowError($"Item Removed 2: {item}");
+            ToastService.ShowSuccess($"Item Removed 3: {item}");
+            ToastService.ShowWarning($"Item Removed 4: {item}");
+            ToastService.ShowToast(ToastLevel.Success, message: "<i class=\"bi bi-twitter\">");
         }
         else
         {
             SelectedItems.Add(item);
+            ToastService.ShowInfo($"Item Added: {item}");
         }
     }
 

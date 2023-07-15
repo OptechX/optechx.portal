@@ -59,6 +59,36 @@ namespace OptechX.Portal.Server.Controllers.Forms
             }
             return NotFound();
         }
+
+        [HttpGet("appresult/{selectString}")]
+        public async Task<ActionResult<List<ApplicationTableApiResult>>> GetApplicationByArch(string selectString)
+        {
+            var applications = await _context.Applications!
+                .Where(app => app.CpuArch != null && app.CpuArch.Any(c => c != null && c.Contains(selectString)))
+                .ToListAsync();
+            if (applications == null || applications.Count == 0)
+            {
+                return NotFound();
+            }
+            var mappedApplicationTableApiResult = new List<ApplicationTableApiResult>();
+            foreach (var appResult in applications)
+            {
+                var mappedAppTblApiResult = new ApplicationTableApiResult
+                {
+                    Id = appResult.Id,
+                    Name = appResult.Name,
+                    Publisher = appResult.Publisher,
+                    Version = appResult.Version,
+                    Icon = appResult.Icon,
+                    Docs = appResult.Docs,
+                    LastUpdated = appResult.LastUpdate.ToString("yyyy-MM-dd"),
+                    Category = appResult.ApplicationCategory.ToString(),
+                };
+                mappedApplicationTableApiResult.Add(mappedAppTblApiResult);
+            }
+            return Ok(mappedApplicationTableApiResult);
+        }
+
     }
 }
 
