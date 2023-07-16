@@ -26,12 +26,14 @@
     <Content Remove="wwwroot\icons\" />
     <Content Remove="wwwroot\img\" />
     <Content Remove="Pages\ImageBuilder.razor" />
+    <Content Remove="wwwroot\img\oem-logos\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="wwwroot\icons\" />
     <Folder Include="Services\" />
     <Folder Include="wwwroot\img\" />
     <Folder Include="Pages\Account\" />
+    <Folder Include="wwwroot\img\oem-logos\" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Services\" />

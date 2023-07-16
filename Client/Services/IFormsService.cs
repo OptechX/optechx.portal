@@ -17,7 +17,10 @@ namespace OptechX.Portal.Client.Services
 		Task GetWinArchApiResultsAsync(string select);
 
 		List<ApplicationTableApiResult> ApplicationTableApiResults { get; }
-		Task ApplicationTableApiResultsAsync(string select);
+		Task GetApplicationTableApiResultsAsync(string select);
+
+		List<DriverTableApiResult> DriverTableApiResults { get; set; }
+		Task GetDriverTableApiResultsAsync(string select);
     }
 }
 

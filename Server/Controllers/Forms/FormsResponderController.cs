@@ -64,18 +64,22 @@ namespace OptechX.Portal.Server.Controllers.Forms
         public async Task<ActionResult<List<ApplicationTableApiResult>>> GetApplicationByArch(string selectString)
         {
             var applications = await _context.Applications!
-                .Where(app => app.CpuArch != null && app.CpuArch.Any(c => c != null && c.Contains(selectString)))
                 .ToListAsync();
-            if (applications == null || applications.Count == 0)
+
+            var filteredApplications = applications
+                .Where(app => app.CpuArchString != null && app.CpuArchString.Split(',', StringSplitOptions.RemoveEmptyEntries).Any(c => c.Contains(selectString)))
+                .ToList();
+
+            if (filteredApplications.Count == 0)
             {
                 return NotFound();
             }
-            var mappedApplicationTableApiResult = new List<ApplicationTableApiResult>();
-            foreach (var appResult in applications)
-            {
-                var mappedAppTblApiResult = new ApplicationTableApiResult
+
+            var mappedApplicationTableApiResult = filteredApplications
+                .Select(appResult => new ApplicationTableApiResult
                 {
                     Id = appResult.Id,
+                    Uid = appResult.UID,
                     Name = appResult.Name,
                     Publisher = appResult.Publisher,
                     Version = appResult.Version,
@@ -83,12 +87,39 @@ namespace OptechX.Portal.Server.Controllers.Forms
                     Docs = appResult.Docs,
                     LastUpdated = appResult.LastUpdate.ToString("yyyy-MM-dd"),
                     Category = appResult.ApplicationCategory.ToString(),
-                };
-                mappedApplicationTableApiResult.Add(mappedAppTblApiResult);
-            }
+                })
+                .ToList();
+
             return Ok(mappedApplicationTableApiResult);
         }
 
+        [HttpGet("driverresult/{selectString}")]
+        public async Task<ActionResult<List<DriverTableApiResult>>> GetDrivedrByArch(string selectString)
+        {
+            var driverCores = await _context.DriverCores!
+                .ToListAsync();
+
+            var filteredDriversCores = driverCores
+                .Where(x => x.SupportedWinReleaseString != null && x.SupportedWinReleaseString.Split(',', StringSplitOptions.RemoveEmptyEntries).Any(c => c.Contains(selectString)))
+                .ToList();
+
+            if (filteredDriversCores.Count == 0)
+                return NotFound();
+
+            var mappedDriverTableApiResult = filteredDriversCores
+                .Select(m => new DriverTableApiResult
+                {
+                    Id = m.Id,
+                    Uid = m.UID,
+                    Oem = m.Oem.ToString(),
+                    Make = m.Make,
+                    Model = m.Model,
+                    LastUpdated = m.LastUpdated,
+                })
+                .ToList();
+
+            return Ok(mappedDriverTableApiResult);
+        }
     }
 }
 

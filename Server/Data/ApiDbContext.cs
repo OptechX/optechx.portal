@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using OptechX.Portal.Server.Models;
 using OptechX.Portal.Shared.Models.Engine.Applications;
+using OptechX.Portal.Shared.Models.Engine.Drivers;
 using OptechX.Portal.Shared.Models.Forms;
 using OptechX.Portal.Shared.Models.User;
 
@@ -11,6 +12,8 @@ namespace OptechX.Portal.Server.Data
     {
         // Engine
         public DbSet<Application>? Applications { get; set; }
+        public DbSet<Driver>? Drivers { get; set; }
+        public DbSet<DriverCore>? DriverCores { get; set; }
 
         // User
         public DbSet<UserAccount>? UserAccounts { get; set; }
@@ -25,6 +28,7 @@ namespace OptechX.Portal.Server.Data
         {
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
             modelBuilder.ApplyConfiguration(new ApplicationConfiguration());
+            modelBuilder.ApplyConfiguration(new DriverCoreConfiguration());
             modelBuilder.ApplyConfiguration(new WinReleaseApiResultConfiguration());
             modelBuilder.ApplyConfiguration(new WinEditionApiResultConfiguration());
             modelBuilder.ApplyConfiguration(new WinVersionApiResultConfiguration());

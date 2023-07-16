@@ -9,91 +9,157 @@
 
 <PageTitle>OptechX Portal</PageTitle>
 
-<h3>Build Image</h3>
-
-<h4>Applications</h4>
-
-<!-- Scroll View -->
-@*<div style="height: 200px; overflow-y: auto; border: 1px solid #ccc; border-radius: 5px;" class="mb-3">
-        @foreach (string item in Items)
-        {
-            <div>
-                <span style="display: flex; align-items: center; padding-left: 10px; padding-bottom: 3px;">
-                    <input type="checkbox" checked="@SelectedItems.Contains(item)" @onclick="() => ToggleItemSelection(item)" disabled="@IsReadOnly" />
-                    <img src="https://raw.githubusercontent.com/OptechX/library.apps.images/main/7-Zip/icon_scaled.png" alt="Item Image" style="height: 1em; margin-right: 0.5em;" />
-                    @item
-                </span>
-            </div>
-        }
-    </div>*@
-
-<!-- Scroll View Table Like -->
-@*<div style="height: 200px; overflow-y: auto; border: 1px solid #ccc; border-radius: 5px;" class="mb-3">
-        <div style="display: flex; align-items: center; padding-left: 10px; font-weight: bold;">
-            <span style="flex-basis: 20px;">Checkbox</span>
-            <span style="flex-basis: 20px;">Image</span>
-            <span>Item</span>
-        </div>
-        @foreach (string item in Items)
-        {
-            <div style="display: flex; align-items: center; padding-left: 10px; padding-bottom: 3px;">
-                <input type="checkbox" checked="@SelectedItems.Contains(item)" @onclick="() => ToggleItemSelection(item)" disabled="@IsReadOnly" />
-                <img src="https://raw.githubusercontent.com/OptechX/library.apps.images/main/7-Zip/icon_scaled.png" alt="Item Image" style="height: 1em; margin-right: 0.5em; flex-basis: 20px;" />
-                <span>@item</span>
-            </div>
-        }
-    </div>*@
+<h3>Applications</h3>
 
 <!-- Table View -->
 <div style="height: 200px; overflow-y: auto; border: 1px solid #ccc; border-radius: 5px;" class="mb-3">
     <table style="width: 100%;">
         <thead>
-            <tr>
+            <tr class="mb-3">
                 <th style="width: 20px; padding-left: 3px;"><i class="bi bi-check-square"></i></th>
                 <th style="width: 20px;"></th>
-                <th>Item</th>
+                <th>Publisher</th>
+                <th>Name</th>
+                <th>Version</th>
+                <th style="width: fit-content;">Category</th>
+                <th>Last Updated</th>
+                <th>Docs</th>
             </tr>
         </thead>
         <tbody>
-            @foreach (string item in Items)
-            {
+            @foreach (var item in FormsService.ApplicationTableApiResults)
+                {
                 <tr>
                     <td style="padding-left: 3px;">
                         <label style="display: inline-block; padding-left: 3px;">
-                            <input type="checkbox" checked="@SelectedItems.Contains(item)" @onclick="() => ToggleItemSelection(item)" disabled="@IsReadOnly" />
+                            <input type="checkbox" checked="@SelectedItems.Contains(item.Uid!)" @onclick="() => ToggleItemSelection(item.Uid!)" disabled="@IsReadOnly" />
                         </label>
                     </td>
-                    <td style="display: flex; align-items: stretch;">
-                        <div style="border: 1px solid #ccc; padding: 4px;">
-                            <img src="https://raw.githubusercontent.com/OptechX/library.apps.images/main/7-Zip/icon_scaled.png" alt="Item Image" style="height: 1em; margin-right: 0.5em;" />
-                        </div>
+                    <td style="display: flex; align-items: center;">
+                        <img src="@item.Icon" alt="Item Image" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />
                     </td>
                     <td>
-                        @item
+                        @item.Publisher
+                    </td>
+                    <td>
+                        @item.Name
+                    </td>
+                    <td>
+                        @item.Version
+                    </td>
+                    <td>
+                        @switch (@item.Category)
+                            {
+                                case "INTERNET":<i class="bi bi-globe2 custom-icon"></i>; break;
+                            }
+                    </td>
+                    <td>
+                        @item.LastUpdated
+                    </td>
+                    <td>
+                        <a href="@item.Docs" target="_blank" class="btn btn-primary btn-sm">Open Docs</a>
                     </td>
                 </tr>
-            }
+                }
+        </tbody>
+    </table>
+</div>
+
+<h3>Drivers</h3>
+
+<!-- Drivers Table View -->
+<div style="height: 200px; overflow-y: auto; border: 1px solid #ccc; border-radius: 5px;" class="mb-3">
+    <table style="width: 100%;">
+        <thead>
+            <tr class="mb-3">
+                <th style="width: 30px; padding-left: 3px;"><i class="bi bi-check-square"></i></th>
+                <th style="width: 30px;"></th>
+                <th style="width: fit-content;">
+                    Make&nbsp;
+                    <button @onclick="() => SortByColumn(sortColumnMake)" class="btn btn-primary btn-sm" style="cursor: pointer;">
+                        @((MarkupString)(SortColumn == "Make" ? (SortAscending ? "&#x25B2;" : "&#x25BC;") : "&#x2195;"))
+                    </button>
+                </th>
+                <th style="width: fit-content;">
+                    Model&nbsp;
+                    <button @onclick="() => SortByColumn(sortColumModel)" class="btn btn-primary btn-sm" style="cursor: pointer;">
+                        @((MarkupString)(SortColumn == "Model" ? (SortAscending ? "&#x25B2;" : "&#x25BC;") : "&#x2195;"))
+                    </button>
+                </th>
+                <th style="width: fit-content;">
+                    Updated&nbsp;
+                    <button @onclick="() => SortByColumn(sortColumnUpdated)" class="btn btn-primary btn-sm" style="cursor: pointer;">
+                        @((MarkupString)(SortColumn == "Updated" ? (SortAscending ? "&#x25B2;" : "&#x25BC;") : "&#x2195;"))
+                    </button>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in FormsService.DriverTableApiResults)
+                {
+                <tr>
+                    <td style="padding-left: 3px;">
+                        <label style="display: inline-block; padding-left: 3px;">
+                            <input type="checkbox" checked="@SelectedItems.Contains(item.Uid!)" @onclick="() => ToggleItemSelection(item.Uid!)" disabled="@IsReadOnly" />
+                        </label>
+                    </td>
+                    <td style="display: flex; align-items: center;">
+                        @switch (item.Oem)
+                        {
+                            case "Dell":<img src="/img/oem-logos/Dell_Logo.png" alt="Dell logo" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" /> break;
+                            case "Lenovo": <img src="/img/oem-logos/Lenovo_Corporate_Logo.png" alt="Lenovo Logo" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />break;
+                            case "Microsoft": <img src="/img/oem-logos/microsoft-icon.png" alt="Lenovo Logo" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />break;
+                            case "Acer": <img src="/img/oem-logos/Acer_Logo.png" alt="Lenovo Logo" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />break;
+                            case "Asus": <img src="/img/oem-logos/ASUS_Logo.png" alt="Lenovo Logo" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />break;
+                            case "HP": <img src="/img/oem-logos/HP_New_Logo_2D.png" alt="Lenovo Logo" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />break;
+                        }
+                    </td>
+                    <td>
+                        @item.Make
+                    </td>
+                    <td>
+                        @item.Model
+                    </td>
+                    <td>
+                        @item.LastUpdated.ToShortDateString()
+                    </td>
+                </tr>
+                }
         </tbody>
     </table>
 </div>
 
 
-<img src="https://raw.githubusercontent.com/OptechX/library.apps.images/main/7-Zip/icon_scaled.png" alt="Item Image" />
 
 @code {
     ImageBuildBasic? imageBuild;
 
-    protected override void OnInitialized()
+    public bool IsReadOnly { get; set; }
+    public bool IsDriverReadOnly { get; set; }
+    private string sortColumModel = "Model";
+    private string sortColumnUpdated = "Updated";
+    private string sortColumnMake = "Make";
+
+    public List<string> SelectedItems { get; set; } = new List<string>();
+    public List<string> SelectedApplicationItems { get; set; } = new List<string>();
+    public List<string> SelectedDriverItems { get; set; } = new List<string>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await InitializeAsync();
+    }
+
+    private async Task InitializeAsync()
     {
         // Retrieve query parameters
         var uri = new Uri(NavigationManager.Uri);
         var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
-        var release = query["param1"];
-        var edition = query["param2"];
-        var version = query["param3"];
-        var arch = query["param4"];
-        var language = query["param5"];
-        var format = query["param6"];
+        var release = query["param1"];  // Windows 10
+        var edition = query["param2"];  // Enterprise
+        var version = query["param3"];  // 21H1
+        var arch = query["param4"];     // x64
+        var language = query["param5"]; // Danish
+        var format = query["param6"];   // ISO
 
         //if (!string.IsNullOrEmpty(release))
         //    imageBuild!.WindowsRelease = release;
@@ -109,36 +175,17 @@
             Language = language,
             ImageFormat = format,
         };
+
+        // Perform any additional asynchronous initialization tasks here if needed
+        var getApplicationTask = arch != null ? FormsService.GetApplicationTableApiResultsAsync(select: arch.ToLower()) : Task.CompletedTask;
+        var getDriverTask = release != null ? FormsService.GetDriverTableApiResultsAsync(select: release) : Task.CompletedTask;
+
+        await Task.WhenAll(getApplicationTask, getDriverTask);
+
+        // Unlock all fields
+        IsReadOnly = false;
+        IsDriverReadOnly = false;
     }
-
-
-
-
-
-
-    public List<string> SelectedItems { get; set; } = new List<string>();
-
-    public List<string> Items { get; set; } = new List<string>
-{
-        "Item 1",
-        "Item 2",
-        "Item 3",
-        "Item 4",
-        "Item 5",
-        "Item 6",
-        "Item 7",
-        "Item 8",
-        "Item 9",
-        "Item 10",
-        "Item 11",
-        "Item 12",
-        "Item 13",
-        "Item 14",
-        "Item 15",
-        "Item 16",
-    };
-
-    public bool IsReadOnly { get; set; } = false;
 
 
     private void ToggleItemSelection(string item)
@@ -175,4 +222,39 @@
         //IsReadOnly = false; // Enable checkbox list after task completion
         //StateHasChanged(); // Notify Blazor to re-render the component
     }
+
+    // Sort Functions
+    private string? SortColumn { get; set; }
+    private bool SortAscending { get; set; } = true;
+
+    private void SortByColumn(string column)
+    {
+        if (SortColumn == column)
+        {
+            SortAscending = !SortAscending;
+        }
+        else
+        {
+            SortColumn = column;
+            SortAscending = true;
+        }
+
+        FormsService.DriverTableApiResults = SortData(FormsService.DriverTableApiResults);
+    }
+
+    private List<DriverTableApiResult> SortData(List<DriverTableApiResult> data)
+    {
+        switch (SortColumn)
+        {
+            case "Make":
+                return SortAscending ? data.OrderBy(item => item.Make).ToList() : data.OrderByDescending(item => item.Make).ToList();
+            case "Model":
+                return SortAscending ? data.OrderBy(item => item.Model).ToList() : data.OrderByDescending(item => item.Model).ToList();
+            case "Updated":
+                return SortAscending ? data.OrderBy(item => item.LastUpdated).ToList() : data.OrderByDescending(item => item.LastUpdated).ToList();
+            default:
+                return data;
+        }
+    }
+
 }

@@ -17,13 +17,23 @@ namespace OptechX.Portal.Client.Services
         public WinReleaseApiResult WinReleaseApiResults { get; set; } = new();
         public WinArchApiResult WinArchApiResults { get; set; } = new();
         public List<ApplicationTableApiResult> ApplicationTableApiResults { get; set; } = new();
+        public List<DriverTableApiResult> DriverTableApiResults { get; set; } = new();
 
-        public async Task ApplicationTableApiResultsAsync(string select)
+        public async Task GetApplicationTableApiResultsAsync(string select)
         {
-            var response = await _httpClient.GetFromJsonAsync<List<ApplicationTableApiResult>> ($"api/FormsResponder/appresult/{select}");
+            var response = await _httpClient.GetFromJsonAsync<List<ApplicationTableApiResult>>($"api/FormsResponder/appresult/{select}");
             if (response != null)
             {
                 ApplicationTableApiResults = response!;
+            }
+        }
+
+        public async Task GetDriverTableApiResultsAsync(string select)
+        {
+            var response = await _httpClient.GetFromJsonAsync<List<DriverTableApiResult>>($"api/FormsResponder/driverresult/{select}");
+            if (response != null)
+            {
+                DriverTableApiResults = response!;
             }
         }
 
