@@ -11,32 +11,66 @@
 
 <h3>Applications</h3>
 
-<!-- Table View -->
-<div style="height: 200px; overflow-y: auto; border: 1px solid #ccc; border-radius: 5px;" class="mb-3">
-    <table style="width: 100%;">
+<!-- Application Table View -->
+<div style="height: 300px; overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="mb-3">
+    <table class="table table-responsive custom-table">
         <thead>
-            <tr class="mb-3">
+            <tr>
                 <th style="width: 20px; padding-left: 3px;"><i class="bi bi-check-square"></i></th>
                 <th style="width: 20px;"></th>
-                <th>Publisher</th>
-                <th>Name</th>
-                <th>Version</th>
-                <th style="width: fit-content;">Category</th>
-                <th>Last Updated</th>
-                <th>Docs</th>
+                <th>
+                    <div class="d-flex align-items-center">
+                        <span style="white-space: nowrap;">Publisher</span>&nbsp;
+                        <button @onclick="() => SortByAppColumn(sortColumnAppPublisher)" class="btn btn-primary btn-sm ml-2" style="cursor: pointer;">
+                            @((MarkupString)(SortColumn == "Publisher" ? (SortAscending ? "&#x25B2;" : "&#x25BC;") : "&#x2195;"))
+                        </button>
+                    </div>
+                </th>
+                <th>
+                    <div class="d-flex align-items-center">
+                        <span style="white-space: nowrap;">Name</span>&nbsp;
+                        <button @onclick="() => SortByAppColumn(sortColumnAppName)" class="btn btn-primary btn-sm ml-2" style="cursor: pointer;">
+                            @((MarkupString)(SortColumn == "Name" ? (SortAscending ? "&#x25B2;" : "&#x25BC;") : "&#x2195;"))
+                        </button>
+                    </div>
+                </th>
+                <th>
+                    <div class="d-flex align-items-center">
+                        <span style="white-space: nowrap;">Version</span>&nbsp;
+                        <button @onclick="() => SortByAppColumn(sortColumnAppVersion)" class="btn btn-primary btn-sm ml-2" style="cursor: pointer;">
+                            @((MarkupString)(SortColumn == "Version" ? (SortAscending ? "&#x25B2;" : "&#x25BC;") : "&#x2195;"))
+                        </button>
+                    </div>
+                </th>
+                <th>
+                    <div class="d-flex align-items-center">
+                        <span style="white-space: nowrap;">Category</span>&nbsp;
+                        <button @onclick="() => SortByAppColumn(sortColumnAppCategory)" class="btn btn-primary btn-sm ml-2" style="cursor: pointer;">
+                            @((MarkupString)(SortColumn == "Category" ? (SortAscending ? "&#x25B2;" : "&#x25BC;") : "&#x2195;"))
+                        </button>
+                    </div>
+                </th>
+                <th>
+                    <div class="d-flex align-items-center">
+                        <span style="white-space: nowrap;">Last Updated</span>&nbsp;
+                        <button @onclick="() => SortByAppColumn(sortColumnAppLastUpdated)" class="btn btn-primary btn-sm ml-2" style="cursor: pointer;">
+                            @((MarkupString)(SortColumn == "Last Updated" ? (SortAscending ? "&#x25B2;" : "&#x25BC;") : "&#x2195;"))
+                        </button>
+                    </div>
+                </th>
             </tr>
         </thead>
         <tbody>
             @foreach (var item in FormsService.ApplicationTableApiResults)
-                {
+            {
                 <tr>
                     <td style="padding-left: 3px;">
                         <label style="display: inline-block; padding-left: 3px;">
-                            <input type="checkbox" checked="@SelectedItems.Contains(item.Uid!)" @onclick="() => ToggleItemSelection(item.Uid!)" disabled="@IsReadOnly" />
+                            <input type="checkbox" checked="@SelectedAppItems.Contains(item.Uid!)" @onclick="() => ToggleAppItemSelection(item.Uid!)" disabled="@IsApplicationReadOnly" />
                         </label>
                     </td>
                     <td style="display: flex; align-items: center;">
-                        <img src="@item.Icon" alt="Item Image" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />
+                        <img src="@item.Icon" alt="@item.Publisher @item.Name logo" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />
                     </td>
                     <td>
                         @item.Publisher
@@ -49,58 +83,81 @@
                     </td>
                     <td>
                         @switch (@item.Category)
-                            {
-                                case "INTERNET":<i class="bi bi-globe2 custom-icon"></i>; break;
-                            }
+                        {
+                            case "INTERNET":<i class="bi bi-globe2 custom-icon"></i>; break;
+                        }
                     </td>
                     <td>
                         @item.LastUpdated
                     </td>
                     <td>
-                        <a href="@item.Docs" target="_blank" class="btn btn-primary btn-sm">Open Docs</a>
+                        <a href="@item.Docs" target="_blank" class="btn btn-primary btn-sm">Docs</a>
                     </td>
                 </tr>
-                }
+            }
         </tbody>
     </table>
 </div>
+@if (!IsFormEnabled)
+{
+    <button type="submit" class="btn btn-secondary mb-4" style="cursor: not-allowed; font-style: italic;" disabled>Save Applications</button>
+}
+else
+{
+    @if (IsAppSaved && IsDriverSaved)
+    {
+        <!-- Save Applications Button -->
+        <button type="submit" class="btn btn-secondary mb-4" style="cursor: not-allowed; font-style: italic;" disabled>Save Applications</button>
+    }
+    else
+    {
+        <!-- Save Applications Button -->
+        <button class="btn btn-success mb-4" @onclick="SaveApplicationsButtonAsync">Save Applications</button>
+    }
+}
 
 <h3>Drivers</h3>
 
 <!-- Drivers Table View -->
-<div style="height: 200px; overflow-y: auto; border: 1px solid #ccc; border-radius: 5px;" class="mb-3">
-    <table style="width: 100%;">
+<div style="height: 300px; overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="mb-3">
+    <table class="table table-responsive custom-table">
         <thead>
-            <tr class="mb-3">
+            <tr>
                 <th style="width: 30px; padding-left: 3px;"><i class="bi bi-check-square"></i></th>
                 <th style="width: 30px;"></th>
-                <th style="width: fit-content;">
-                    Make&nbsp;
-                    <button @onclick="() => SortByColumn(sortColumnMake)" class="btn btn-primary btn-sm" style="cursor: pointer;">
-                        @((MarkupString)(SortColumn == "Make" ? (SortAscending ? "&#x25B2;" : "&#x25BC;") : "&#x2195;"))
-                    </button>
+                <th>
+                    <div class="d-flex align-items-center">
+                        <span style="white-space: nowrap;">Make</span>&nbsp;
+                        <button @onclick="() => SortByColumn(sortColumnMake)" class="btn btn-primary btn-sm ml-2" style="cursor: pointer;">
+                            @((MarkupString)(SortColumn == "Make" ? (SortAscending ? "&#x25B2;" : "&#x25BC;") : "&#x2195;"))
+                        </button>
+                    </div>
                 </th>
-                <th style="width: fit-content;">
-                    Model&nbsp;
-                    <button @onclick="() => SortByColumn(sortColumModel)" class="btn btn-primary btn-sm" style="cursor: pointer;">
-                        @((MarkupString)(SortColumn == "Model" ? (SortAscending ? "&#x25B2;" : "&#x25BC;") : "&#x2195;"))
-                    </button>
+                <th>
+                    <div class="d-flex align-items-center">
+                        <span style="white-space: nowrap;">Model</span>&nbsp;
+                        <button @onclick="() => SortByColumn(sortColumnModel)" class="btn btn-primary btn-sm ml-2" style="cursor: pointer;">
+                            @((MarkupString)(SortColumn == "Model" ? (SortAscending ? "&#x25B2;" : "&#x25BC;") : "&#x2195;"))
+                        </button>
+                    </div>
                 </th>
-                <th style="width: fit-content;">
-                    Updated&nbsp;
-                    <button @onclick="() => SortByColumn(sortColumnUpdated)" class="btn btn-primary btn-sm" style="cursor: pointer;">
-                        @((MarkupString)(SortColumn == "Updated" ? (SortAscending ? "&#x25B2;" : "&#x25BC;") : "&#x2195;"))
-                    </button>
+                <th>
+                    <div class="d-flex align-items-center">
+                        <span style="white-space: nowrap;">Updated</span>&nbsp;
+                        <button @onclick="() => SortByColumn(sortColumnUpdated)" class="btn btn-primary btn-sm ml-2" style="cursor: pointer;">
+                            @((MarkupString)(SortColumn == "Updated" ? (SortAscending ? "&#x25B2;" : "&#x25BC;") : "&#x2195;"))
+                        </button>
+                    </div>
                 </th>
             </tr>
         </thead>
         <tbody>
             @foreach (var item in FormsService.DriverTableApiResults)
-                {
+            {
                 <tr>
                     <td style="padding-left: 3px;">
                         <label style="display: inline-block; padding-left: 3px;">
-                            <input type="checkbox" checked="@SelectedItems.Contains(item.Uid!)" @onclick="() => ToggleItemSelection(item.Uid!)" disabled="@IsReadOnly" />
+                            <input type="checkbox" checked="@SelectedDriverItems.Contains(item.Uid!)" @onclick="() => ToggleDriverItemSelection(item.Uid!)" disabled="@IsDriverReadOnly" />
                         </label>
                     </td>
                     <td style="display: flex; align-items: center;">
@@ -124,24 +181,69 @@
                         @item.LastUpdated.ToShortDateString()
                     </td>
                 </tr>
-                }
+            }
         </tbody>
     </table>
 </div>
+@if (!IsFormEnabled)
+{
+    <button type="submit" class="btn btn-secondary mb-4" style="cursor: not-allowed; font-style: italic;" disabled>Save Drivers</button>
+    <button @onclick="RefreshPageAsync" class="btn btn-warning mb-4">Reset Form</button>
+    <button type="submit" class="btn btn-secondary mb-4" style="cursor: not-allowed; font-style: italic;" disabled>Submit</button>
+}
+else
+{
+    @if (IsAppSaved && IsDriverSaved)
+    {
+        <!-- Save Drivers Button -->
+        <button type="submit" class="btn btn-secondary mb-4" style="cursor: not-allowed; font-style: italic;" disabled>Save Drivers</button>
+        <button @onclick="RefreshPageAsync" class="btn btn-warning mb-4">Reset Form</button>
+        <button @onclick="RefreshPageAsync" class="btn btn-primary mb-4">Submit</button>
+    }
+    else
+    {
+        <!-- Save Drivers Button -->
+        <button class="btn btn-success mb-4" @onclick="SaveDriversButtonAsync">Save Drivers</button>
+        <button @onclick="RefreshPageAsync" class="btn btn-warning mb-4">Reset Form</button>
+        <button type="submit" class="btn btn-secondary mb-4" style="cursor: not-allowed; font-style: italic;" disabled>Submit</button>
+    }
+}
 
 
+
+
+
+<h5>Instructions</h5>
+
+<p>Scroll the table for <strong>Applications</strong> and <strong>Drivers</strong> to find the items you wish to include in your SOE image. Select the items by clicking on the checkbox to add it to the list.</p>
+
+<ul>
+    <li><i class="bi bi-check-square"></i> is a selected item</li>
+    <li><i class="bi bi-square"></i> is an unselected item</li>
+</ul>
+
+<p>Press the <strong>Save Applications</strong> and <strong>Save Drivers</strong> buttons once the selections are confirmed. This will enable the <strong>Submit</strong> button to be enabled.</p>
+
+<p>Once each option is selected, OptechX will store the data and allow you to make the next decision. Use the <strong>Reset Form</strong> button to start again.</p>
 
 @code {
     ImageBuildBasic? imageBuild;
 
-    public bool IsReadOnly { get; set; }
+    public bool IsApplicationReadOnly { get; set; }
     public bool IsDriverReadOnly { get; set; }
-    private string sortColumModel = "Model";
+    public bool IsAppSaved { get; set; }
+    public bool IsDriverSaved { get; set; }
+    public bool IsFormEnabled { get; set; } = false;
+    private string sortColumnModel = "Model";
     private string sortColumnUpdated = "Updated";
     private string sortColumnMake = "Make";
+    private string sortColumnAppPublisher = "Publisher";
+    private string sortColumnAppName = "Name";
+    private string sortColumnAppVersion = "Version";
+    private string sortColumnAppCategory = "Category";
+    private string sortColumnAppLastUpdated = "Last Updated";
 
-    public List<string> SelectedItems { get; set; } = new List<string>();
-    public List<string> SelectedApplicationItems { get; set; } = new List<string>();
+    public List<string> SelectedAppItems { get; set; } = new List<string>();
     public List<string> SelectedDriverItems { get; set; } = new List<string>();
 
     protected override async Task OnInitializedAsync()
@@ -183,49 +285,113 @@
         await Task.WhenAll(getApplicationTask, getDriverTask);
 
         // Unlock all fields
-        IsReadOnly = false;
+        IsFormEnabled = true;
+        IsApplicationReadOnly = false;
         IsDriverReadOnly = false;
+        IsAppSaved = false;
+        IsDriverSaved = false;
+
+        // empty all lists
+        SelectedAppItems.Clear();
+        SelectedDriverItems.Clear();
     }
 
 
-    private void ToggleItemSelection(string item)
+    private void ToggleAppItemSelection(string item)
     {
-        if (SelectedItems.Contains(item))
+        if (SelectedAppItems.Contains(item))
         {
-            SelectedItems.Remove(item);
-            ToastService.ShowInfo($"Item Removed 1: {item}");
-            ToastService.ShowError($"Item Removed 2: {item}");
-            ToastService.ShowSuccess($"Item Removed 3: {item}");
-            ToastService.ShowWarning($"Item Removed 4: {item}");
-            ToastService.ShowToast(ToastLevel.Success, message: "<i class=\"bi bi-twitter\">");
+            SelectedAppItems.Remove(item);
+            ToastService.ShowWarning($"Application removed: {item}");
         }
         else
         {
-            SelectedItems.Add(item);
-            ToastService.ShowInfo($"Item Added: {item}");
+            SelectedAppItems.Add(item);
+            ToastService.ShowInfo($"Application added: {item}");
         }
     }
 
-    private async Task RunButtonAsync()
+    private void ToggleDriverItemSelection(string item)
     {
-        IsReadOnly = true; // Disable checkbox list
+        if (SelectedDriverItems.Contains(item))
+        {
+            SelectedDriverItems.Remove(item);
+            ToastService.ShowWarning($"Driver removed: {item}");
+        }
+        else
+        {
+            SelectedDriverItems.Add(item);
+            ToastService.ShowInfo($"Driver added: {item}");
+        }
+    }
+
+    private async Task SaveApplicationsButtonAsync()
+    {
+        IsAppSaved = true;
+        IsApplicationReadOnly = true; // Disable checkbox list
         StateHasChanged(); // Notify Blazor to re-render the component
 
         await Task.Run(() =>
         {
-            foreach (string i in SelectedItems)
+            foreach (string i in SelectedAppItems)
             {
                 ToastService.ShowInfo($"App selected: {i}");
             }
         });
+    }
 
-        //IsReadOnly = false; // Enable checkbox list after task completion
-        //StateHasChanged(); // Notify Blazor to re-render the component
+    private async Task SaveDriversButtonAsync()
+    {
+        IsDriverSaved = true;
+        IsDriverReadOnly = true; // Disable checkbox list
+        StateHasChanged(); // Notify Blazor to re-render the component
+
+        await Task.Run(() =>
+        {
+            foreach (string i in SelectedDriverItems)
+            {
+                ToastService.ShowInfo($"Driver selected: {i}");
+            }
+        });
     }
 
     // Sort Functions
     private string? SortColumn { get; set; }
     private bool SortAscending { get; set; } = true;
+
+    private void SortByAppColumn(string column)
+    {
+        if (SortColumn == column)
+        {
+            SortAscending = !SortAscending;
+        }
+        else
+        {
+            SortColumn = column;
+            SortAscending = true;
+        }
+
+        FormsService.ApplicationTableApiResults = SortAppData(FormsService.ApplicationTableApiResults);
+    }
+
+    private List<ApplicationTableApiResult> SortAppData(List<ApplicationTableApiResult> data)
+    {
+        switch (SortColumn)
+        {
+            case "Publisher":
+                return SortAscending ? data.OrderBy(item => item.Publisher).ToList() : data.OrderByDescending(item => item.Publisher).ToList();
+            case "Name":
+                return SortAscending ? data.OrderBy(item => item.Name).ToList() : data.OrderByDescending(item => item.Name).ToList();
+            case "Version":
+                return SortAscending ? data.OrderBy(item => item.Version).ToList() : data.OrderByDescending(item => item.Version).ToList();
+            case "Category":
+                return SortAscending ? data.OrderBy(item => item.Category).ToList() : data.OrderByDescending(item => item.Category).ToList();
+            case "Last Updated":
+                return SortAscending ? data.OrderBy(item => item.LastUpdated).ToList() : data.OrderByDescending(item => item.LastUpdated).ToList();
+            default:
+                return data;
+        }
+    }
 
     private void SortByColumn(string column)
     {
@@ -257,4 +423,9 @@
         }
     }
 
+    // refresh the page
+    private async Task RefreshPageAsync()
+    {
+        await Task.Run(() => NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true));
+    }
 }

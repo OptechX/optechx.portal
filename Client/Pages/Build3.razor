@@ -167,19 +167,19 @@
     <!-- Submit button -->
     @if (isFormatReadOnly)
     {
-        <button type="submit" class="btn btn-primary mb-3">Submit</button>
-        <button @onclick="RefreshPageAsync" class="btn btn-warning mb-3">Reset Form</button>
+        <button type="submit" class="btn btn-primary mb-4">Submit</button>
+        <button @onclick="RefreshPageAsync" class="btn btn-warning mb-4">Reset Form</button>
     }
     else
     {
-        <button type="submit" class="btn btn-secondary mb-3" style="cursor: not-allowed; font-style: italic;" disabled>Submit</button>
-        <button @onclick="RefreshPageAsync" class="btn btn-warning mb-3">Reset Form</button>
+        <button type="submit" class="btn btn-secondary mb-4" style="cursor: not-allowed; font-style: italic;" disabled>Submit</button>
+        <button @onclick="RefreshPageAsync" class="btn btn-warning mb-4">Reset Form</button>
     }
 </EditForm>
 
 
 
-<p>Instructions to Build an Image:</p>
+<h5>Instructions</h5>
 
 <ul>
     <li>

@@ -1,3 +1,21 @@
-﻿.custom-icon {
+﻿/* Custom Styles */
+.custom-icon {
     margin-left: 4px;
 }
+
+.custom-table {
+    border-collapse: collapse;
+}
+
+    .custom-table td,
+    .custom-table th {
+        border: none;
+    }
+
+    .custom-table thead th {
+        border-bottom: none;
+    }
+
+    .custom-table tbody tr {
+        border-bottom: none;
+    }
