@@ -187,6 +187,7 @@ else
 </div>
 @if (!IsFormEnabled)
 {
+    <!-- Preload of page buttons -->
     <button type="submit" class="btn btn-secondary mb-4" style="cursor: not-allowed; font-style: italic;" disabled>Save Drivers</button>
     <button @onclick="RefreshPageAsync" class="btn btn-warning mb-4">Reset Form</button>
     <button type="submit" class="btn btn-secondary mb-4" style="cursor: not-allowed; font-style: italic;" disabled>Submit</button>
@@ -198,7 +199,7 @@ else
         <!-- Save Drivers Button -->
         <button type="submit" class="btn btn-secondary mb-4" style="cursor: not-allowed; font-style: italic;" disabled>Save Drivers</button>
         <button @onclick="RefreshPageAsync" class="btn btn-warning mb-4">Reset Form</button>
-        <button @onclick="RefreshPageAsync" class="btn btn-primary mb-4">Submit</button>
+        <button @onclick="SubmitAsync" class="btn btn-primary mb-4">Submit</button>
     }
     else
     {
@@ -208,9 +209,6 @@ else
         <button type="submit" class="btn btn-secondary mb-4" style="cursor: not-allowed; font-style: italic;" disabled>Submit</button>
     }
 }
-
-
-
 
 
 <h5>Instructions</h5>
@@ -427,5 +425,15 @@ else
     private async Task RefreshPageAsync()
     {
         await Task.Run(() => NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true));
+    }
+
+    // refresh the page
+    private async Task SubmitAsync()
+    {
+        foreach (string s in SelectedAppItems)
+        {
+            await JSRuntime.InvokeVoidAsync("console.log", s);
+        }
+
     }
 }
