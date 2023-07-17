@@ -1,0 +1,241 @@
+﻿@page "/buildimage3"
+@using OptechX.Portal.Shared.Models.Forms
+@using OptechX.Portal.Shared.Models.Engine.ImageBuilds
+@inject NavigationManager NavigationManager
+@inject IToastService ToastService
+@inject IFormsService FormsService
+
+<h3>Windows Components</h3>
+
+
+<!-- AUTOMATION -->
+<h4>Automation of Build</h4>
+
+<!-- CI Apps -->
+<div class="check-slider">
+    <label>
+        <input type="checkbox" @bind="@IsContinuousIntegrationApplicationsChecked" />
+        <span class="slider"></span>
+    </label>
+    <div class="slider-text">CI Application Updates</div>
+</div>
+
+<!-- CI Drivers -->
+<div class="check-slider">
+    <label>
+        <input type="checkbox" @bind="@IsContinuousIntegrationDriversChecked" />
+        <span class="slider"></span>
+    </label>
+    <div class="slider-text">CI Driver Updates</div>
+</div>
+
+<!-- CI Security Patches -->
+<div class="check-slider">
+    <label>
+        <input type="checkbox" @bind="@IsIntegrateSecurityPatchesChecked" />
+        <span class="slider"></span>
+    </label>
+    <div class="slider-text">CI Security Patches</div>
+</div>
+
+<!-- CI Deploy -->
+<div class="check-slider">
+    <label>
+        <input type="checkbox" @bind="@IsContinuousDeploymentChecked" />
+        <span class="slider"></span>
+    </label>
+    <div class="slider-text">CI Build &amp; Replace Image</div>
+</div>
+
+<!-- Notify Build Complete -->
+<div class="check-slider">
+    <label>
+        <input type="checkbox" @bind="@IsNotifyBuildCompleteChecked" />
+        <span class="slider"></span>
+    </label>
+    <div class="slider-text">Email Notify Image Build Compelte</div>
+</div>
+
+<!-- Notify CDCD Completed -->
+<div class="check-slider mb-4">
+    <label>
+        <input type="checkbox" @bind="@IsNotifyCICDCompletedChecked" />
+        <span class="slider"></span>
+    </label>
+    <div class="slider-text">Email Notify CI/CD Completed</div>
+</div>
+
+
+<!-- Windows Admin Account-->
+<h4>Windows Admin Account</h4>
+<div class="form-group mb-3">
+    <label for="email">Windows Admin User Account</label>
+    <InputText id="email" @bind-Value="AdminUser" class="form-control"></InputText>
+</div>
+<div class="form-group mb-4">
+    <label for="password">Windows Admin User Account</label>
+    <InputText id="password" @bind-Value="AdminPassword" class="form-control" type="password"></InputText>
+</div>
+
+
+<!-- Registry Editor -->
+<h4>Registry Edits</h4>
+<p>Registry Edits allow additional regisry keys to be added to the SOE image. Select the types from dropdowns and populate each field.</p>
+<p>The preceeding backslash is not required for the Root Key <i>ie - SOFTWARE\Microsoft\Windows</i></p>
+
+<div class="d-flex align-items-center mb-4">
+    <div>reg</div>
+    <div class="d-inline-block ms-2">
+        <select class="form-select custom-select" @bind="addDeleteOption">
+            @foreach (var option in addDeleteOptions)
+            {
+                <option value="@option">@option</option>
+            }
+        </select>
+    </div>
+    <div style="color: red; font-weight: bold;">*</div>
+    <div class="d-inline-block ms-2">
+        <select class="form-select custom-select" @bind="registryOption">
+            @foreach (var option in registryOptions)
+            {
+                <option value="@option">@option</option>
+            }
+        </select>
+    </div>
+    <div style="color: red; font-weight: bold;">*</div>
+    <input type="text" class="form-control ms-2" @bind="regCommand" placeholder="SOFTWARE\Microsoft\ExampleKey" />
+    <div style="color: red; font-weight: bold;">*</div>
+    <div class="d-inline-block ms-2">
+        <select class="form-select custom-select" @bind="regVOption">
+            @foreach (var option in regVOptions)
+            {
+                <option value="@option">@option</option>
+            }
+        </select>
+    </div>
+    <div style="color: red; font-weight: bold;">*</div>
+    <input type="text" class="form-control ms-2" @bind="regCommand2" placeholder="Example SubKey" />
+    <div class="ms-2">/t</div>
+    <div class="d-inline-block ms-2">
+        <select class="form-select custom-select" @bind="valueTypeOption">
+            @foreach (var option in valueTypeOptions)
+            {
+                <option value="@option">@option</option>
+            }
+        </select>
+    </div>
+    <div class="ms-2">/d</div>
+    <input type="text" class="form-control ms-2" @bind="regCommand3" placeholder="Example Value" />
+    <button class="btn btn-primary ms-2" @onclick="CreateRegCommand" style="white-space: nowrap;">ADD REGKEY</button>
+</div>
+
+@if (regCommands.Count >= 1)
+{
+    <table class="table mb-3">
+        <thead>
+            <tr>
+                <th>Remove</th>
+                <th>Registry Commands Added</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var command in regCommands)
+            {
+                <tr>
+                    <td>
+                        <button class="btn btn-danger btn-sm" @onclick="() => RemoveRegCommand(command)">X</button>
+                    </td>
+                    <td>@command</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<div class="row">
+    <div class="col-md-6">
+        <!-- First column content -->
+        <!-- Windows Capabilities -->
+        <h4>Windows Capabilities</h4>
+        <p>Using the <a href="https://github.com/optechx/optechx.reference.guides/windows-capabilities.pdf" target="_blank">Windows Capabilities Reference Guide</a>, paste one per line, the Windows Capabilities to include with your Windows SOE image in the field below.</p>
+        <textarea class="form-control mb-3" rows="4" style="resize: both; overflow: auto;"></textarea>
+    </div>
+    <div class="col-md-6">
+        <!-- Second column content -->
+        <!-- Windows Optional Features -->
+        <h4>Windows Optional Features</h4>
+        <p>Using the <a href="https://github.com/optechx/optechx.reference.guides/windows-optional-features.pdf" target="_blank">Windows Optional Features Reference Guide</a>, paste one per line, the Windows Optional Feature to add/remove from your Windows SOE image in the field below.</p>
+        <textarea class="form-control mb-3" rows="4" style="resize: both; overflow: auto;"></textarea>
+    </div>
+</div>
+
+
+
+
+
+@code {
+    // check boxes
+    private bool IsContinuousIntegrationApplicationsChecked { get; set; } = false;
+    private bool IsContinuousIntegrationDriversChecked { get; set; } = false;
+    private bool IsIntegrateSecurityPatchesChecked { get; set; } = false;
+    private bool IsContinuousDeploymentChecked { get; set; } = false;
+    private bool IsNotifyBuildCompleteChecked { get; set; } = true;
+    private bool IsNotifyCICDCompletedChecked { get; set; } = false;
+
+    // admin user account
+    private string AdminUser { get; set; } = string.Empty;
+    private string AdminPassword { get; set; } = string.Empty;
+
+    // registry values
+    // reg [add|delete] [HKCR|HKLM|HKU|HKCC] <input text box> [/v|/ve] <input text box> /t [REG_DWORD|REG_QWORD|REG_BINARY|REG_MULTI_SZ|REG_EXPAND_SZ] /d <input text box />
+    private string[] addDeleteOptions = new[] { "ADD", "DELETE" };
+    private string[] registryOptions = new[] { "HKCR", "HKLM", "HKU", "HKCC" };
+    private string[] regVOptions = new[] { "/v", "/ve" };
+    private string[] valueTypeOptions = new[] { "REG_DWORD", "REG_QWORD", "REG_BINARY", "REG_MULTI_SZ", "REG_EXPAND_SZ" };
+    private string regCommandOutput = string.Empty;
+    private string addDeleteOption = string.Empty;
+    private string registryOption = string.Empty;
+    private string regCommand = string.Empty;
+    private string regVOption = string.Empty;
+    private string regCommand2 = string.Empty;
+    private string valueTypeOption = string.Empty;
+    private string regCommand3 = string.Empty;
+    private List<string> regCommands = new();
+    private void CreateRegCommand()
+    {
+        if (string.IsNullOrWhiteSpace(addDeleteOption) || string.IsNullOrWhiteSpace(registryOption) || string.IsNullOrWhiteSpace(regCommand) || string.IsNullOrWhiteSpace(regVOption))
+        {
+            ToastService.ShowError("Registry values with red astericks must be populated");
+        }
+        else
+        {
+            switch (addDeleteOption)
+            {
+                case "ADD":
+                    if (string.IsNullOrWhiteSpace(valueTypeOption) || string.IsNullOrWhiteSpace(regCommand3))
+                    {
+                        ToastService.ShowError("Reg Type and Data must be provided");
+                    }
+                    else
+                    {
+                        regCommandOutput = $"reg {addDeleteOption} {registryOption} {regCommand} {regVOption} {regCommand2} /t {valueTypeOption} /d {regCommand3}";
+                        regCommands.Add(regCommandOutput);
+                        addDeleteOption = registryOption = regCommand = regVOption = regCommand2 = valueTypeOption = regCommand3 = string.Empty;
+                    }
+
+                    break;
+                case "DELETE":
+                    regCommandOutput = $"reg {addDeleteOption} {registryOption} {regCommand} {regVOption} {regCommand2}";
+                    regCommands.Add(regCommandOutput);
+                    addDeleteOption = registryOption = regCommand = regVOption = regCommand2 = valueTypeOption = regCommand3 = string.Empty;
+                    break;
+            }
+        }
+    }
+
+    private void RemoveRegCommand(string command)
+    {
+        regCommands.Remove(command);
+    }
+
+}
