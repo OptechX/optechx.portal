@@ -83,7 +83,14 @@
             <InputText id="password" @bind-Value="AdminPassword" class="form-control" type="password"></InputText>
         </div>
         <div class="form-group">
-            <button class="btn btn-optechx ms-2" @onclick="SaveAdminCredentials" style="white-space: nowrap;">Save Credentials</button>
+            @if (IsHasCredentialsNotSaved)
+            {
+                <button class="btn btn-optechx" @onclick="SaveAdminCredentials" style="white-space: nowrap;">Save Credentials</button>
+            }
+            else
+            {
+                <button class="btn btn-secondary" style="cursor: not-allowed; font-style: italic;" disabled>Credentials Saved</button>
+            }
         </div>
     </div>
 </div>
@@ -168,7 +175,14 @@
             </tbody>
         </table>
         <div class="form-group">
-            <button class="btn btn-optechx ms-2" @onclick="SaveRegistryEdits" style="white-space: nowrap;">Save Reg Edits</button>
+            @if (IsHasRegEditsNotSaved)
+            {
+                <button class="btn btn-optechx" @onclick="SaveRegistryEdits" style="white-space: nowrap;">Save Reg Edits</button>
+            }
+            else
+            {
+                <button class="btn btn-secondary" style="cursor: not-allowed; font-style: italic;" disabled>Reg Edits Saved</button>
+            }
         </div>
     }
 </div>
@@ -185,7 +199,15 @@
         <h4>Windows Capabilities</h4>
         <p>Using the <a href="https://github.com/optechx/optechx.reference.guides/windows-capabilities.pdf" target="_blank">Windows Capabilities Reference Guide</a>, paste one per line, the Windows Capabilities to include with your Windows SOE image in the field below.</p>
         <textarea id="windowsCapabilitiesTextArea" class="form-control mb-3" rows="4" style="resize: both; overflow: auto;" @bind="windowsCapabilitiesValue" @attributes="GetWindowsCapablitiesAttributes()"></textarea>
-        <button class="btn btn-optechx ms-2" @onclick="SaveWindowsCapabilities" style="white-space: nowrap;">Save Windows Capabilities</button>
+        @if (IsHasWindowsCapabilitiesNotSaved)
+        {
+            <button class="btn btn-optechx" @onclick="SaveWindowsCapabilities" style="white-space: nowrap;">Save Windows Capabilities</button>
+        }
+        else
+        {
+            <button class="btn btn-secondary" style="cursor: not-allowed; font-style: italic;" disabled>Windows Capabilities Saved</button>
+        }
+        
     </div>
     <div class="col-md-6">
         <!-- Second column content -->
@@ -193,7 +215,15 @@
         <h4>Windows Optional Features</h4>
         <p>Using the <a href="https://github.com/optechx/optechx.reference.guides/windows-optional-features.pdf" target="_blank">Windows Optional Features Reference Guide</a>, paste one per line, the Windows Optional Feature to add/remove from your Windows SOE image in the field below.</p>
         <textarea id="windowsOptionalFeaturesTextArea" class="form-control mb-3" rows="4" style="resize: both; overflow: auto;" @bind="windowsOptionalFeaturesValue" @attributes="GetWindowsOptionalFeaturesAttributes()"></textarea>
-        <button class="btn btn-optechx" @onclick="SaveWindowsOptionalFeatures" style="white-space: nowrap;">Save Optional Features</button>
+        @if (IsHasWindowsOptionalFeaturesNotSaved)
+        {
+            <button class="btn btn-optechx" @onclick="SaveWindowsOptionalFeatures" style="white-space: nowrap;">Save Optional Features</button>
+        }
+        else
+        {
+            <button class="btn btn-secondary" style="cursor: not-allowed; font-style: italic;" disabled>Optional Features Saved</button>
+        }
+        
     </div>
 </div>
 
@@ -215,6 +245,12 @@ else
     private bool IsContinuousDeploymentChecked { get; set; } = false;
     private bool IsNotifyBuildCompleteChecked { get; set; } = true;
     private bool IsNotifyCICDCompletedChecked { get; set; } = false;
+
+    // buttons changed to disabled
+    private bool IsHasCredentialsNotSaved { get; set; } = true;
+    private bool IsHasRegEditsNotSaved { get; set; } = true;
+    private bool IsHasWindowsCapabilitiesNotSaved { get; set; } = true;
+    private bool IsHasWindowsOptionalFeaturesNotSaved { get; set; } = true;
 
     // admin user account
     private string AdminUser { get; set; } = string.Empty;
@@ -301,6 +337,8 @@ else
 
     private async Task SaveAdminCredentials()
     {
+        IsHasCredentialsNotSaved = false;
+        ToastService.ShowInfo("Credentials saved");
         await LocalStorage.SetItemAsStringAsync("imageParam9", AdminUser);
         await LocalStorage.SetItemAsStringAsync("imageParam10", AdminPassword);
         await LocalStorage.SetItemAsync<bool>("imageParam14", IsContinuousIntegrationApplicationsChecked);
@@ -315,7 +353,9 @@ else
 
     private async Task SaveRegistryEdits()
     {
+        IsHasRegEditsNotSaved = false;
         enableRegEditsSection = false;
+        ToastService.ShowInfo("RegEdits have been saved");
         string selectedItemsString = string.Join(",", regCommands);
         await LocalStorage.SetItemAsStringAsync("imageParam11", selectedItemsString);
         ToastService.ShowInfo("Registy settings saved");
@@ -344,8 +384,10 @@ else
 
     private async Task SaveWindowsCapabilities()
     {
+        IsHasWindowsCapabilitiesNotSaved = false;
         isWindowsCapabilitiesTextareaLocked = true;
         enableWindowsCapabilitiesSection = true;
+        ToastService.ShowInfo("Windows Capabilities saved");
         StateHasChanged();
         await Task.CompletedTask;
     }
@@ -354,6 +396,7 @@ else
     {
         isWindowsOptionalFeaturesTextareaLocked = true;
         enableWindowsOptionalFeaturesSection = true;
+        ToastService.ShowInfo("Windows Optional Features saved");
         StateHasChanged();
         await Task.CompletedTask;
     }
@@ -366,7 +409,6 @@ else
         string optionalFeaturesText = WindowsOptionalFeaturesValue;
         string[] lines2 = optionalFeaturesText.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
         string optionalFeaturesString = string.Join(",", lines2);
-
 
         await LocalStorage.SetItemAsStringAsync("imageParam12", capabilitiesString);
         await LocalStorage.SetItemAsStringAsync("imageParam13", optionalFeaturesString);
