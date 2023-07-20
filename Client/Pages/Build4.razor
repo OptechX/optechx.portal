@@ -1,6 +1,7 @@
 ﻿@page "/buildimage2"
 @using OptechX.Portal.Shared.Models.Forms
 @using OptechX.Portal.Shared.Models.Engine.ImageBuilds
+@inject ILocalStorageService LocalStorage
 @inject NavigationManager NavigationManager
 @inject IToastService ToastService
 @inject IFormsService FormsService
@@ -112,7 +113,7 @@ else
     else
     {
         <!-- Save Applications Button -->
-        <button class="btn btn-success mb-4" @onclick="SaveApplicationsButtonAsync">Save Applications</button>
+        <button class="btn btn-optechx mb-4" @onclick="SaveApplicationsButtonAsync">Save Applications</button>
     }
 }
 
@@ -204,7 +205,7 @@ else
     else
     {
         <!-- Save Drivers Button -->
-        <button class="btn btn-success mb-4" @onclick="SaveDriversButtonAsync">Save Drivers</button>
+        <button class="btn btn-optechx mb-4" @onclick="SaveDriversButtonAsync">Save Drivers</button>
         <button @onclick="RefreshPageAsync" class="btn btn-warning mb-4">Reset Form</button>
         <button type="submit" class="btn btn-secondary mb-4" style="cursor: not-allowed; font-style: italic;" disabled>Submit</button>
     }
@@ -252,14 +253,22 @@ else
     private async Task InitializeAsync()
     {
         // Retrieve query parameters
-        var uri = new Uri(NavigationManager.Uri);
-        var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
-        var release = query["param1"];  // Windows 10
-        var edition = query["param2"];  // Enterprise
-        var version = query["param3"];  // 21H1
-        var arch = query["param4"];     // x64
-        var language = query["param5"]; // Danish
-        var format = query["param6"];   // ISO
+        var release = await LocalStorage.GetItemAsStringAsync("imageParam1");
+        var edition = await LocalStorage.GetItemAsStringAsync("imageParam2");
+        var version = await LocalStorage.GetItemAsStringAsync("imageParam3");
+        var arch = await LocalStorage.GetItemAsStringAsync("imageParam4");
+        var language = await LocalStorage.GetItemAsStringAsync("imageParam5");
+        var format = await LocalStorage.GetItemAsStringAsync("imageParam6");
+
+        //await LocalStorage.SetItemAsync<string>("imageParam4", imageBuild.Arch!);
+        //var uri = new Uri(NavigationManager.Uri);
+        //var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
+        //var release = query["param1"];  // Windows 10
+        //var edition = query["param2"];  // Enterprise
+        //var version = query["param3"];  // 21H1
+        //var arch = query["param4"];     // x64
+        //var language = query["param5"]; // Danish
+        //var format = query["param6"];   // ISO
 
         //if (!string.IsNullOrEmpty(release))
         //    imageBuild!.WindowsRelease = release;
@@ -268,17 +277,19 @@ else
         // Initialize the imageBuild object with the retrieved values
         imageBuild = new ImageBuildBasic
         {
-            WindowsRelease = release,
-            WindowsEdition = edition,
-            WindowsVersion = version,
-            Arch = arch,
-            Language = language,
-            ImageFormat = format,
+            WindowsRelease = release.Replace("\"",""),
+            WindowsEdition = edition.Replace("\"", ""),
+            WindowsVersion = version.Replace("\"", ""),
+            Arch = arch.Replace("\"", ""),
+            Language = language.Replace("\"", ""),
+            ImageFormat = format.Replace("\"", ""),
         };
 
+
+
         // Perform any additional asynchronous initialization tasks here if needed
-        var getApplicationTask = arch != null ? FormsService.GetApplicationTableApiResultsAsync(select: arch.ToLower()) : Task.CompletedTask;
-        var getDriverTask = release != null ? FormsService.GetDriverTableApiResultsAsync(select: release) : Task.CompletedTask;
+        var getApplicationTask = arch != null ? FormsService.GetApplicationTableApiResultsAsync(select: imageBuild.Arch) : Task.CompletedTask;
+        var getDriverTask = release != null ? FormsService.GetDriverTableApiResultsAsync(select: imageBuild.WindowsRelease) : Task.CompletedTask;
 
         await Task.WhenAll(getApplicationTask, getDriverTask);
 
@@ -329,13 +340,16 @@ else
         IsApplicationReadOnly = true; // Disable checkbox list
         StateHasChanged(); // Notify Blazor to re-render the component
 
-        await Task.Run(() =>
-        {
-            foreach (string i in SelectedAppItems)
-            {
-                ToastService.ShowInfo($"App selected: {i}");
-            }
-        });
+        string selectedItemsString = string.Join(",", SelectedAppItems);
+        await LocalStorage.SetItemAsStringAsync("imageParam7", selectedItemsString);
+        await JSRuntime.InvokeVoidAsync("console.log", selectedItemsString);
+        //await Task.Run(() =>
+        //{
+        //    foreach (string i in SelectedAppItems)
+        //    {
+        //        ToastService.ShowInfo($"App selected: {i}");
+        //    }
+        //});
     }
 
     private async Task SaveDriversButtonAsync()
@@ -344,13 +358,16 @@ else
         IsDriverReadOnly = true; // Disable checkbox list
         StateHasChanged(); // Notify Blazor to re-render the component
 
-        await Task.Run(() =>
-        {
-            foreach (string i in SelectedDriverItems)
-            {
-                ToastService.ShowInfo($"Driver selected: {i}");
-            }
-        });
+        string selectedItemsString = string.Join(",", SelectedDriverItems);
+        await LocalStorage.SetItemAsStringAsync("imageParam8", selectedItemsString);
+        await JSRuntime.InvokeVoidAsync("console.log", selectedItemsString);
+        //await Task.Run(() =>
+        //{
+        //    foreach (string i in SelectedDriverItems)
+        //    {
+        //        ToastService.ShowInfo($"Driver selected: {i}");
+        //    }
+        //});
     }
 
     // Sort Functions
@@ -430,10 +447,7 @@ else
     // refresh the page
     private async Task SubmitAsync()
     {
-        foreach (string s in SelectedAppItems)
-        {
-            await JSRuntime.InvokeVoidAsync("console.log", s);
-        }
-
+        await Task.Run(() => NavigationManager.NavigateTo("/buildimage3"));
+        await Task.CompletedTask;
     }
 }

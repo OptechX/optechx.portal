@@ -63,3 +63,9 @@ input[type="checkbox"] {
     color: red;
     font-weight: bold;
 }
+
+/* custom colour for buttons */
+.btn-optechx {
+    background-color: #1c9cbc;
+    color: white;
+}
