@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using OptechX.Portal.Server.Models;
 using OptechX.Portal.Shared.Models.Engine.Applications;
 using OptechX.Portal.Shared.Models.Engine.Drivers;
+using OptechX.Portal.Shared.Models.Engine.ImageBuilds;
 using OptechX.Portal.Shared.Models.Forms;
 using OptechX.Portal.Shared.Models.User;
 
@@ -23,6 +24,9 @@ namespace OptechX.Portal.Server.Data
         public DbSet<WinEditionApiResult>? WinEditionApiResults { get; set; }
         public DbSet<WinVersionApiResult>? WinVersionApiResults { get; set; }
         public DbSet<WinArchApiResult>? WinArchApiResults { get; set; }
+
+        // Orders
+        public DbSet<ImageBuildBasic>? ImageBuildBasics { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
