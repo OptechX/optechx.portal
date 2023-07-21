@@ -1,14 +1,18 @@
-﻿@page "/account/settings"
-@using System.Security.Claims
+﻿@page "/buildimage2"
+@using OptechX.Portal.Client.Shared
+@using OptechX.Portal.Shared.Models.Forms
+@using OptechX.Portal.Shared.Models.Engine.ImageBuilds
+@inject IToastService ToastService
+@inject IFormsService FormsService
+@inject ILocalStorageService LocalStorage
 @inject AuthenticationStateProvider AuthenticationStateProvider
-@inject ILocalStorageService LocalStorageService
 @inject NavigationManager NavigationManager
 
 <PageTitle>OptechX Portal</PageTitle>
 
 <AuthorizeView>
     <Authorized>
-        <UserDetail />
+        <BuildImage02Component />
     </Authorized>
     <NotAuthorized>
         <p>User is not authorized. Redirecting...</p>
@@ -20,7 +24,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var isAuthd = await LocalStorageService.GetItemAsync<string>("authToken");
+        var isAuthd = await LocalStorage.GetItemAsync<string>("authToken");
         if (!string.IsNullOrEmpty(isAuthd))
         {
             accountId = await GetAccountId();
@@ -29,6 +33,7 @@
         {
             NavigationManager.NavigateTo("/");
         }
+        await GetRequiredParams();
     }
 
     private async Task<string> GetAccountId()
@@ -44,4 +49,16 @@
             return Guid.Empty.ToString();
         }
     }
+
+    private async Task GetRequiredParams()
+    {
+        var imgBuildArch = await LocalStorage.GetItemAsStringAsync("imageParam4");
+        var imgBuildRelease = await LocalStorage.GetItemAsStringAsync("imageParam1");
+        if (string.IsNullOrEmpty(imgBuildArch) || string.IsNullOrEmpty(imgBuildRelease))
+        {
+            ToastService.ShowError("Image build process not started, redirecting...");
+            NavigationManager.NavigateTo("/buildimage");
+        }
+    }
 }
+

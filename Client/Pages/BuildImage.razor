@@ -1,14 +1,16 @@
-﻿@page "/account/settings"
-@using System.Security.Claims
+﻿@page "/buildimage"
+@using OptechX.Portal.Client.Shared
+@inject ILocalStorageService LocalStorage
 @inject AuthenticationStateProvider AuthenticationStateProvider
-@inject ILocalStorageService LocalStorageService
 @inject NavigationManager NavigationManager
 
 <PageTitle>OptechX Portal</PageTitle>
 
 <AuthorizeView>
     <Authorized>
-        <UserDetail />
+        <BuildImage01Component />
+
+        <BuildImage01Instructions />
     </Authorized>
     <NotAuthorized>
         <p>User is not authorized. Redirecting...</p>
@@ -20,7 +22,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var isAuthd = await LocalStorageService.GetItemAsync<string>("authToken");
+        var isAuthd = await LocalStorage.GetItemAsync<string>("authToken");
         if (!string.IsNullOrEmpty(isAuthd))
         {
             accountId = await GetAccountId();

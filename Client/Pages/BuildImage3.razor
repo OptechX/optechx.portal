@@ -1,4 +1,5 @@
 ﻿@page "/buildimage3"
+@using OptechX.Portal.Client.Shared
 @using OptechX.Portal.Shared.Models.Forms
 @using OptechX.Portal.Shared.Models.Engine.ImageBuilds
 @inject ILocalStorageService LocalStorage
@@ -207,7 +208,7 @@
         {
             <button class="btn btn-secondary" style="cursor: not-allowed; font-style: italic;" disabled>Windows Capabilities Saved</button>
         }
-        
+
     </div>
     <div class="col-md-6">
         <!-- Second column content -->
@@ -223,7 +224,7 @@
         {
             <button class="btn btn-secondary" style="cursor: not-allowed; font-style: italic;" disabled>Optional Features Saved</button>
         }
-        
+
     </div>
 </div>
 
@@ -394,6 +395,7 @@ else
 
     private async Task SaveWindowsOptionalFeatures()
     {
+        IsHasWindowsOptionalFeaturesNotSaved = false;
         isWindowsOptionalFeaturesTextareaLocked = true;
         enableWindowsOptionalFeaturesSection = true;
         ToastService.ShowInfo("Windows Optional Features saved");

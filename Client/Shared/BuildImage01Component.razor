@@ -1,23 +1,21 @@
-﻿@page "/buildimage"
-@using OptechX.Portal.Shared.Models.Engine.ImageBuilds
+﻿@using OptechX.Portal.Shared.Models.Engine.ImageBuilds
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject ILocalStorageService LocalStorage
 @inject NavigationManager NavigationManager
 @inject IToastService ToastService
 @inject IFormsService FormsService
 
-@inject IJSRuntime JSRuntime
-
-<PageTitle>OptechX Portal</PageTitle>
-
-<h3>Build Image</h3>
+<div class="row ml-4">
+    <h3>@pageTitle</h3>
+</div>
 
 <EditForm Model="imageBuild" OnValidSubmit="HandleBuildImageSubmit">
     <!-- ROW 1 -->
-    <div class="row mb-3">
+    <div class="row mb-2">
         <!-- COLUMN 1 -->
         <div class="col-6">
             <!-- Windows Release (Win10, Win11) -->
-            <div class="form-group mb-4">
+            <div class="form-group mb-2">
                 <label for="release">Windows Release</label>
                 @if (!isReleaseReadOnly)
                 {
@@ -40,7 +38,7 @@
         <!-- COLUMN 2 -->
         <div class="col-6">
             <!-- Windows Edition -->
-            <div class="form-group mb-4">
+            <div class="form-group mb-2">
                 <label for="edition">Edition</label>
                 @if (!isEditionReadOnly)
                 {
@@ -63,11 +61,11 @@
         </div>
     </div>
     <!-- ROW 2 -->
-    <div class="row mb-3">
+    <div class="row mb-2">
         <!-- COLUMN 1 -->
         <div class="col-6">
             <!-- Windows Version (19H2, 20H1, 20H2, etc) -->
-            <div class="form-group mb-4">
+            <div class="form-group mb-2">
                 <label for="build">Build</label>
                 @if (!isBuildReadOnly)
                 {
@@ -91,7 +89,7 @@
         <!-- COLUMN 2 -->
         <div class="col-6">
             <!-- Windows Arch (x64, x86) -->
-            <div class="form-group mb-4">
+            <div class="form-group mb-2">
                 <label for="arch">CPU Arch</label>
                 @if (!isArchReadOnly)
                 {
@@ -114,11 +112,11 @@
         </div>
     </div>
     <!-- ROW 3 -->
-    <div class="row mb-3">
+    <div class="row mb-2">
         <!-- COLUMN 1 -->
         <div class="col-6">
             <!-- Lcid (Language) -->
-            <div class="form-group mb-4">
+            <div class="form-group mb-2">
                 <label for="lcid">Language</label>
                 @if (!isLcidReadOnly)
                 {
@@ -142,7 +140,7 @@
         <!-- COLUMN 2 -->
         <div class="col-6">
             <!-- Image Format (WIM, ISO, VHD, etc) -->
-            <div class="form-group mb-4">
+            <div class="form-group mb-2">
                 <label for="format">Image Format</label>
                 @if (!isFormatReadOnly)
                 {
@@ -179,34 +177,9 @@
     }
 </EditForm>
 
-
-
-<h5>Instructions</h5>
-
-<ul>
-    <li>
-        <strong>Windows Release</strong> Select the release of Windows to use as a base image.
-    </li>
-    <li>
-        <strong>Edition:</strong> Choose from the available Editions of Windows based on Release to use. This allows different core technologies to be used out of the box.
-    </li>
-    <li>
-        <strong>Build:</strong> Windows Build is the date code used by Microsoft to indicate which security patches are installed in the base image. Selecting the first item includes the latest security patches and bug fixes and is usually considered the best choice.
-    </li>
-    <li>
-        <strong>CPU Arch:</strong> Select the CPU architecture to target. <strong>x64</strong> is recommended for corporate use by Microsoft on earlier editions and only available from Build 2004 inclusive. Drivers and Applications available are dependant on the CPU Arch selected.
-    </li>
-    <li>
-        <strong>Language:</strong> Base language for Windows installation.
-    </li>
-    <li>
-        <strong>Image Format:</strong> Image Format is the deliverable media format. For deployments, WIM is the recommended option.
-    </li>
-</ul>
-
-<p>Once each option is selected, OptechX will store the data and allow you to make the next decision. Use the <strong>Reset Form</strong> button to start again.</p>
-
 @code {
+    private string pageTitle { get; } = "Build Image";
+
     ImageBuildBasic imageBuild = new();
     bool isReleaseReadOnly;
     bool isEditionReadOnly;

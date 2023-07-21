@@ -1,6 +1,4 @@
-﻿@page "/buildimage2"
-@using OptechX.Portal.Shared.Models.Forms
-@using OptechX.Portal.Shared.Models.Engine.ImageBuilds
+﻿@using OptechX.Portal.Shared.Models.Forms
 @inject ILocalStorageService LocalStorage
 @inject NavigationManager NavigationManager
 @inject IToastService ToastService
@@ -8,9 +6,10 @@
 
 @inject IJSRuntime JSRuntime
 
-<PageTitle>OptechX Portal</PageTitle>
 
-<h3>Applications</h3>
+<div class="row ml-4">
+    <h3>@sectionTitleApplications</h3>
+</div>
 
 <!-- Application Table View -->
 <div style="height: 300px; overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="mb-3">
@@ -99,25 +98,21 @@
         </tbody>
     </table>
 </div>
-@if (!IsFormEnabled)
+@if (IsAppSaved)
 {
-    <button type="submit" class="btn btn-secondary mb-4" style="cursor: not-allowed; font-style: italic;" disabled>Save Applications</button>
+    <!-- Save Applications Button -->
+    <button type="submit" class="btn btn-secondary mb-4" style="cursor: not-allowed; font-style: italic;" disabled>Applications Saved</button>
 }
 else
 {
-    @if (IsAppSaved && IsDriverSaved)
-    {
-        <!-- Save Applications Button -->
-        <button type="submit" class="btn btn-secondary mb-4" style="cursor: not-allowed; font-style: italic;" disabled>Save Applications</button>
-    }
-    else
-    {
-        <!-- Save Applications Button -->
-        <button class="btn btn-optechx mb-4" @onclick="SaveApplicationsButtonAsync">Save Applications</button>
-    }
+    <!-- Save Applications Button -->
+    <button class="btn btn-optechx mb-4" @onclick="SaveApplicationsButtonAsync">Save Applications</button>
 }
 
-<h3>Drivers</h3>
+
+<div class="row ml-4">
+    <h3>@sectionTitleDrivers</h3>
+</div>
 
 <!-- Drivers Table View -->
 <div style="height: 300px; overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="mb-3">
@@ -186,53 +181,46 @@ else
         </tbody>
     </table>
 </div>
-@if (!IsFormEnabled)
-{
-    <!-- Preload of page buttons -->
-    <button type="submit" class="btn btn-secondary mb-4" style="cursor: not-allowed; font-style: italic;" disabled>Save Drivers</button>
-    <button @onclick="RefreshPageAsync" class="btn btn-warning mb-4">Reset Form</button>
-    <button type="submit" class="btn btn-secondary mb-4" style="cursor: not-allowed; font-style: italic;" disabled>Submit</button>
-}
-else
-{
-    @if (IsAppSaved && IsDriverSaved)
+<div class="mb-4">
+    @if (IsSubmitEnabled == 3)
     {
         <!-- Save Drivers Button -->
-        <button type="submit" class="btn btn-secondary mb-4" style="cursor: not-allowed; font-style: italic;" disabled>Save Drivers</button>
-        <button @onclick="RefreshPageAsync" class="btn btn-warning mb-4">Reset Form</button>
-        <button @onclick="SubmitAsync" class="btn btn-primary mb-4">Submit</button>
+        <button type="submit" class="btn btn-secondary" style="cursor: not-allowed; font-style: italic;" disabled>Drivers Saved</button>
+        <button @onclick="RefreshPageAsync" class="btn btn-warning">Reset Form</button>
+        <button @onclick="SubmitAsync" class="btn btn-primary">Submit</button>
     }
     else
     {
-        <!-- Save Drivers Button -->
-        <button class="btn btn-optechx mb-4" @onclick="SaveDriversButtonAsync">Save Drivers</button>
-        <button @onclick="RefreshPageAsync" class="btn btn-warning mb-4">Reset Form</button>
-        <button type="submit" class="btn btn-secondary mb-4" style="cursor: not-allowed; font-style: italic;" disabled>Submit</button>
+        @if (IsDriverSaved)
+        {
+            <!-- Save Drivers Button -->
+            <button type="submit" class="btn btn-secondary" style="cursor: not-allowed; font-style: italic;" disabled>Drivers Saved</button>
+            <button @onclick="RefreshPageAsync" class="btn btn-warning">Reset Form</button>
+            <button type="submit" class="btn btn-secondary" style="cursor: not-allowed; font-style: italic;" disabled>Submit</button>
+
+        }
+        else
+        {
+            <!-- Save Drivers Button -->
+            <button class="btn btn-optechx" @onclick="SaveDriversButtonAsync">Save Drivers</button>
+            <button @onclick="RefreshPageAsync" class="btn btn-warning">Reset Form</button>
+            <button type="submit" class="btn btn-secondary" style="cursor: not-allowed; font-style: italic;" disabled>Submit</button>
+        }
+
     }
-}
+</div>
 
-
-<h5>Instructions</h5>
-
-<p>Scroll the table for <strong>Applications</strong> and <strong>Drivers</strong> to find the items you wish to include in your SOE image. Select the items by clicking on the checkbox to add it to the list.</p>
-
-<ul>
-    <li><i class="bi bi-check-square"></i> is a selected item</li>
-    <li><i class="bi bi-square"></i> is an unselected item</li>
-</ul>
-
-<p>Press the <strong>Save Applications</strong> and <strong>Save Drivers</strong> buttons once the selections are confirmed. This will enable the <strong>Submit</strong> button to be enabled.</p>
-
-<p>Once each option is selected, OptechX will store the data and allow you to make the next decision. Use the <strong>Reset Form</strong> button to start again.</p>
+<BuildImage02Instructions />
 
 @code {
-    ImageBuildBasic? imageBuild;
+    private string sectionTitleApplications { get; } = "Applications";
+    private string sectionTitleDrivers { get; } = "Drivers";
 
-    public bool IsApplicationReadOnly { get; set; }
-    public bool IsDriverReadOnly { get; set; }
-    public bool IsAppSaved { get; set; }
-    public bool IsDriverSaved { get; set; }
-    public bool IsFormEnabled { get; set; } = false;
+    private bool IsApplicationReadOnly { get; set; }
+    private bool IsDriverReadOnly { get; set; }
+    private bool IsAppSaved { get; set; }
+    private bool IsDriverSaved { get; set; }
+    private int IsSubmitEnabled { get; set; }
     private string sortColumnModel = "Model";
     private string sortColumnUpdated = "Updated";
     private string sortColumnMake = "Make";
@@ -242,8 +230,8 @@ else
     private string sortColumnAppCategory = "Category";
     private string sortColumnAppLastUpdated = "Last Updated";
 
-    public List<string> SelectedAppItems { get; set; } = new List<string>();
-    public List<string> SelectedDriverItems { get; set; } = new List<string>();
+    private List<string> SelectedAppItems { get; set; } = new List<string>();
+    private List<string> SelectedDriverItems { get; set; } = new List<string>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -252,49 +240,19 @@ else
 
     private async Task InitializeAsync()
     {
-        // Retrieve query parameters
-        var release = await LocalStorage.GetItemAsStringAsync("imageParam1");
-        var edition = await LocalStorage.GetItemAsStringAsync("imageParam2");
-        var version = await LocalStorage.GetItemAsStringAsync("imageParam3");
-        var arch = await LocalStorage.GetItemAsStringAsync("imageParam4");
-        var language = await LocalStorage.GetItemAsStringAsync("imageParam5");
-        var format = await LocalStorage.GetItemAsStringAsync("imageParam6");
-
-        //await LocalStorage.SetItemAsync<string>("imageParam4", imageBuild.Arch!);
-        //var uri = new Uri(NavigationManager.Uri);
-        //var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
-        //var release = query["param1"];  // Windows 10
-        //var edition = query["param2"];  // Enterprise
-        //var version = query["param3"];  // 21H1
-        //var arch = query["param4"];     // x64
-        //var language = query["param5"]; // Danish
-        //var format = query["param6"];   // ISO
-
-        //if (!string.IsNullOrEmpty(release))
-        //    imageBuild!.WindowsRelease = release;
-
-
-        // Initialize the imageBuild object with the retrieved values
-        imageBuild = new ImageBuildBasic
-        {
-            WindowsRelease = release.Replace("\"",""),
-            WindowsEdition = edition.Replace("\"", ""),
-            WindowsVersion = version.Replace("\"", ""),
-            Arch = arch.Replace("\"", ""),
-            Language = language.Replace("\"", ""),
-            ImageFormat = format.Replace("\"", ""),
-        };
-
-
+        var imgBuildArch = await LocalStorage.GetItemAsStringAsync("imageParam4");
+        imgBuildArch = imgBuildArch.Replace("\"", "");
+        var imgBuildRelease = await LocalStorage.GetItemAsStringAsync("imageParam1");
+        imgBuildRelease = imgBuildRelease.Replace("\"", "");
 
         // Perform any additional asynchronous initialization tasks here if needed
-        var getApplicationTask = arch != null ? FormsService.GetApplicationTableApiResultsAsync(select: imageBuild.Arch) : Task.CompletedTask;
-        var getDriverTask = release != null ? FormsService.GetDriverTableApiResultsAsync(select: imageBuild.WindowsRelease) : Task.CompletedTask;
+        var getApplicationTask = imgBuildArch != null ? FormsService.GetApplicationTableApiResultsAsync(select: imgBuildArch) : Task.CompletedTask;
+        var getDriverTask = imgBuildRelease != null ? FormsService.GetDriverTableApiResultsAsync(select: imgBuildRelease) : Task.CompletedTask;
 
         await Task.WhenAll(getApplicationTask, getDriverTask);
 
         // Unlock all fields
-        IsFormEnabled = true;
+        IsSubmitEnabled = 0;
         IsApplicationReadOnly = false;
         IsDriverReadOnly = false;
         IsAppSaved = false;
@@ -338,36 +296,20 @@ else
     {
         IsAppSaved = true;
         IsApplicationReadOnly = true; // Disable checkbox list
-        StateHasChanged(); // Notify Blazor to re-render the component
-
         string selectedItemsString = string.Join(",", SelectedAppItems);
         await LocalStorage.SetItemAsStringAsync("imageParam7", selectedItemsString);
-        await JSRuntime.InvokeVoidAsync("console.log", selectedItemsString);
-        //await Task.Run(() =>
-        //{
-        //    foreach (string i in SelectedAppItems)
-        //    {
-        //        ToastService.ShowInfo($"App selected: {i}");
-        //    }
-        //});
+        IsSubmitEnabled = IsSubmitEnabled + 1;
+        StateHasChanged(); // Notify Blazor to re-render the component
     }
 
     private async Task SaveDriversButtonAsync()
     {
         IsDriverSaved = true;
         IsDriverReadOnly = true; // Disable checkbox list
-        StateHasChanged(); // Notify Blazor to re-render the component
-
         string selectedItemsString = string.Join(",", SelectedDriverItems);
         await LocalStorage.SetItemAsStringAsync("imageParam8", selectedItemsString);
-        await JSRuntime.InvokeVoidAsync("console.log", selectedItemsString);
-        //await Task.Run(() =>
-        //{
-        //    foreach (string i in SelectedDriverItems)
-        //    {
-        //        ToastService.ShowInfo($"Driver selected: {i}");
-        //    }
-        //});
+        IsSubmitEnabled = IsSubmitEnabled + 2;
+        StateHasChanged(); // Notify Blazor to re-render the component
     }
 
     // Sort Functions
