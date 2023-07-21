@@ -21,12 +21,12 @@ namespace OptechX.Portal.Shared.Models.Engine.ImageBuilds
         public string? WindowsVersion { get; set; }
         public string? Arch { get; set; }
         public string? Language { get; set; }
-        public string[]? Drivers { get; set; }
-        public string[]? Applications { get; set; }
-        public string[]? AppxProvisionedPackages { get; set; }
-        public string[]? WindowsCapabilities { get; set; }
-        public string[]? WindowsOptionalFeatures { get; set; }
-        public string[]? CustomRegistryStrings { get; set; }
+        public List<string>? Drivers { get; set; }
+        public List<string>? Applications { get; set; }
+        public List<string>? AppxProvisionedPackages { get; set; }
+        public List<string>? WindowsCapabilities { get; set; }
+        public List<string>? WindowsOptionalFeatures { get; set; }
+        public List<string>? CustomRegistryStrings { get; set; }
         public bool NotifyBuildComplete { get; set; }
         public bool NotifyCICDComplete { get; set; }
 

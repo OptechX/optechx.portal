@@ -1,4 +1,5 @@
 ﻿@using OptechX.Portal.Shared.Models.Engine.ImageBuilds
+@using System.Linq
 @inject ILocalStorageService LocalStorage
 @inject NavigationManager NavigationManager
 @inject IToastService ToastService
@@ -94,19 +95,19 @@
         isOrderBuilt = false;
 
         // Retrieve query parameters
-        release = await LocalStorage.GetItemAsStringAsync("imageParam1");
-        edition = await LocalStorage.GetItemAsStringAsync("imageParam2");
-        version = await LocalStorage.GetItemAsStringAsync("imageParam3");
-        arch = await LocalStorage.GetItemAsStringAsync("imageParam4");
-        language = await LocalStorage.GetItemAsStringAsync("imageParam5");
-        format = await LocalStorage.GetItemAsStringAsync("imageParam6");
-        apps = await LocalStorage.GetItemAsStringAsync("imageParam7");
-        drivers = await LocalStorage.GetItemAsStringAsync("imageParam8");
+        release = (await LocalStorage.GetItemAsStringAsync("imageParam1")).Replace("\"", "");
+        edition = (await LocalStorage.GetItemAsStringAsync("imageParam2")).Replace("\"", "");
+        version = (await LocalStorage.GetItemAsStringAsync("imageParam3")).Replace("\"", "");
+        arch = (await LocalStorage.GetItemAsStringAsync("imageParam4")).Replace("\"", "");
+        language = (await LocalStorage.GetItemAsStringAsync("imageParam5")).Replace("\"", "");
+        format = (await LocalStorage.GetItemAsStringAsync("imageParam6")).Replace("\"", "");
+        apps = (await LocalStorage.GetItemAsStringAsync("imageParam7")).Replace("\"", "");
+        drivers = (await LocalStorage.GetItemAsStringAsync("imageParam8")).Replace("\"","");
         adminuser = await LocalStorage.GetItemAsStringAsync("imageParam9");
         adminpass = await LocalStorage.GetItemAsStringAsync("imageParam10");
-        regkeys = await LocalStorage.GetItemAsStringAsync("imageParam11");
-        capabilities = await LocalStorage.GetItemAsStringAsync("imageParam12");
-        optionalfeatures = await LocalStorage.GetItemAsStringAsync("imageParam13");
+        regkeys = (await LocalStorage.GetItemAsStringAsync("imageParam11")).Replace("\"", "");
+        capabilities = (await LocalStorage.GetItemAsStringAsync("imageParam12")).Replace("\"", "");
+        optionalfeatures = (await LocalStorage.GetItemAsStringAsync("imageParam13")).Replace("\"", "");
         ciapps = await LocalStorage.GetItemAsync<bool>("imageParam14");
         cidrivers = await LocalStorage.GetItemAsync<bool>("imageParam15");
         cisecurity = await LocalStorage.GetItemAsync<bool>("imageParam16");
@@ -124,21 +125,21 @@
             OrderDate = DateTime.UtcNow,
             OrderLifecycle = "SUBMITTED",
             DownloadLink = null,
-            ImageFormat = format.Replace("\"", ""),
+            ImageFormat = format,
             ContinuousIntegrationApplications = ciapps,
             ContinuousIntegrationDrivers = cidrivers,
             IntegrateSecurityPatches = cisecurity,
-            WindowsRelease = release.Replace("\"", ""),
-            WindowsEdition = edition.Replace("\"", ""),
-            WindowsVersion = version.Replace("\"", ""),
-            Arch = arch.Replace("\"", ""),
-            Language = language.Replace("\"", "").Contains("English (United States)") ? "EN_US" : "MUI",
-            Drivers = drivers.Replace("\"", "").Split(','),
-            Applications = apps.Replace("\"", "").Split(','),
+            WindowsRelease = release,
+            WindowsEdition = edition,
+            WindowsVersion = version,
+            Arch = arch,
+            Language = language.Contains("English (United States)") ? "EN_US" : "MUI",
+            Drivers = drivers.Split(',').ToList(),
+            Applications = apps.Split(',').ToList(),
             AppxProvisionedPackages = null,
-            WindowsCapabilities = capabilities.Replace("\"", "").Split(','),
-            WindowsOptionalFeatures = optionalfeatures.Replace("\"", "").Split(','),
-            CustomRegistryStrings = regkeys.Replace("\"", "").Split(','),
+            WindowsCapabilities = capabilities.Split(',').ToList(),
+            WindowsOptionalFeatures = optionalfeatures.Split(',').ToList(),
+            CustomRegistryStrings = regkeys.Split(',').ToList(),
             NotifyBuildComplete = notifycicdcomplete,
             NotifyCICDComplete = notifycicdcomplete,
         };
