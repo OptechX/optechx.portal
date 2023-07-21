@@ -1,38 +1,4 @@
-﻿/* Custom Styles */
-.custom-icon {
-    margin-left: 4px;
-}
-
-.custom-table {
-    border-collapse: collapse;
-}
-
-    .custom-table td,
-    .custom-table th {
-        border: none;
-    }
-
-    .custom-table thead th {
-        border-bottom: none;
-    }
-
-    .custom-table tbody tr {
-        border-bottom: none;
-    }
-
-/* custom colour for buttons */
-.btn-optechx {
-    background-color: #1c9cbc;
-    color: white;
-}
-
-.row {
-    display: flex;
-    align-items: center;
-    padding: 10px;
-}
-
-.row-item {
+﻿.row-item {
     display: flex;
     align-items: center;
     border: 2px solid black; /* Black border color */

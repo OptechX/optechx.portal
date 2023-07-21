@@ -11,9 +11,46 @@
     <h3>@pageTitle</h3>
 </div>
 
+<div class="container">
+    @if (!isOrderBuilt)
+    {
+        <div class="row-item mb-2">
+            <div class="circle-yellow"></div>
+            <div class="text">Compiling image design</div>
+        </div>
+    }
+    else
+    {
+        <div class="row-item mb-2">
+            <div class="circle-blue"></div>
+            <div class="text">Image design compiled</div>
+        </div>
+    }
+    @if (!isOrderSubmitted)
+    {
+        <div class="row-item mb-2">
+            <div class="circle-yellow"></div>
+            <div class="text">Order waiting to be submit</div>
+        </div>
+    }
+    else
+    {
+        <div class="row-item mb-2">
+            <div class="circle-blue"></div>
+            <div class="text">Order submission complete</div>
+        </div>
+    }
+</div>
+    
 
 @code {
+    [Parameter]
+    public string? accountId { get; set; }
+
     private string pageTitle { get; } = "Order Submission";
+
+    private bool isOrderBuilt { get; set; }
+    private bool isOrderSubmitted { get; set; }
 
     private string[] keys = {
         "imageParam1", "imageParam2", "imageParam3", "imageParam4", "imageParam5",
@@ -54,6 +91,8 @@
 
     private async Task InitializeAsync()
     {
+        isOrderBuilt = false;
+
         // Retrieve query parameters
         release = await LocalStorage.GetItemAsStringAsync("imageParam1");
         edition = await LocalStorage.GetItemAsStringAsync("imageParam2");
@@ -80,12 +119,35 @@
         // Initialize the imageBuild object with the retrieved values
         imageBuild = new ImageBuildBasic
         {
+            Id = 0,
+            AccountId = accountId,
+            OrderDate = DateTime.UtcNow,
+            OrderLifecycle = "SUBMITTED",
+            DownloadLink = null,
+            ImageFormat = format.Replace("\"", ""),
+            ContinuousIntegrationApplications = ciapps,
+            ContinuousIntegrationDrivers = cidrivers,
+            IntegrateSecurityPatches = cisecurity,
             WindowsRelease = release.Replace("\"", ""),
             WindowsEdition = edition.Replace("\"", ""),
             WindowsVersion = version.Replace("\"", ""),
             Arch = arch.Replace("\"", ""),
-            Language = language.Replace("\"", ""),
-            ImageFormat = format.Replace("\"", ""),
+            Language = language.Replace("\"", "").Contains("English (United States)") ? "EN_US" : "MUI",
+            Drivers = drivers.Replace("\"", "").Split(','),
+            Applications = apps.Replace("\"", "").Split(','),
+            AppxProvisionedPackages = null,
+            WindowsCapabilities = capabilities.Replace("\"", "").Split(','),
+            WindowsOptionalFeatures = optionalfeatures.Replace("\"", "").Split(','),
+            CustomRegistryStrings = regkeys.Replace("\"", "").Split(','),
+            NotifyBuildComplete = notifycicdcomplete,
+            NotifyCICDComplete = notifycicdcomplete,
         };
+
+        await Task.Delay(2000);
+        isOrderBuilt = true;
+        StateHasChanged();
+
+        await Task.Delay(2000);
+
     }
 }

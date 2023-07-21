@@ -41,6 +41,7 @@
     <None Remove="Controllers\Auth\" />
     <None Remove="Controllers\User\" />
     <None Remove="Controllers\Forms\" />
+    <None Remove="Controllers\Orders\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Controllers\Engine\" />
@@ -52,5 +53,6 @@
     <Folder Include="Controllers\Auth\" />
     <Folder Include="Controllers\User\" />
     <Folder Include="Controllers\Forms\" />
+    <Folder Include="Controllers\Orders\" />
   </ItemGroup>
 </Project>

@@ -4,7 +4,7 @@ namespace OptechX.Portal.Shared.Models.Engine.ImageBuilds
 {
     public class ImageBuildBasic
     {
-        public string? Id { get; set; }
+        public int Id { get; set; }
         public string? AccountId { get; set; }
         public DateTime OrderDate { get; set; }
         public string? OrderLifecycle { get; set; }
