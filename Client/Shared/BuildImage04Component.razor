@@ -1,0 +1,91 @@
+﻿@using OptechX.Portal.Shared.Models.Engine.ImageBuilds
+@inject ILocalStorageService LocalStorage
+@inject NavigationManager NavigationManager
+@inject IToastService ToastService
+@inject IFormsService FormsService
+
+@inject IJSRuntime JSRuntime
+
+
+<div class="row ml-4">
+    <h3>@pageTitle</h3>
+</div>
+
+
+@code {
+    private string pageTitle { get; } = "Order Submission";
+
+    private string[] keys = {
+        "imageParam1", "imageParam2", "imageParam3", "imageParam4", "imageParam5",
+        "imageParam6", "imageParam7", "imageParam8", "imageParam9", "imageParam10",
+        "imageParam11", "imageParam12", "imageParam13", "imageParam14", "imageParam15",
+        "imageParam16", "imageParam17", "imageParam18", "imageParam19",
+    };
+
+    private string? release { get; set; }
+    private string? edition { get; set; }
+    private string? version { get; set; }
+    private string? arch { get; set; }
+    private string? language { get; set; }
+    private string? format { get; set; }
+    private string? apps { get; set; }
+    private string? drivers { get; set; }
+    private string? adminuser { get; set; }
+    private string? adminpass { get; set; }
+    private string? regkeys { get; set; }
+    private string? capabilities { get; set; }
+    private string? optionalfeatures { get; set; }
+    private bool ciapps { get; set; }
+    private bool cidrivers { get; set; }
+    private bool cisecurity { get; set; }
+    private bool cicd { get; set; }
+    private bool notifycomplete { get; set; }
+    private bool notifycicdcomplete { get; set; }
+
+    ImageBuildBasic? imageBuild;
+
+    private List<string> SelectedAppItems { get; set; } = new List<string>();
+    private List<string> SelectedDriverItems { get; set; } = new List<string>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await InitializeAsync();
+    }
+
+    private async Task InitializeAsync()
+    {
+        // Retrieve query parameters
+        release = await LocalStorage.GetItemAsStringAsync("imageParam1");
+        edition = await LocalStorage.GetItemAsStringAsync("imageParam2");
+        version = await LocalStorage.GetItemAsStringAsync("imageParam3");
+        arch = await LocalStorage.GetItemAsStringAsync("imageParam4");
+        language = await LocalStorage.GetItemAsStringAsync("imageParam5");
+        format = await LocalStorage.GetItemAsStringAsync("imageParam6");
+        apps = await LocalStorage.GetItemAsStringAsync("imageParam7");
+        drivers = await LocalStorage.GetItemAsStringAsync("imageParam8");
+        adminuser = await LocalStorage.GetItemAsStringAsync("imageParam9");
+        adminpass = await LocalStorage.GetItemAsStringAsync("imageParam10");
+        regkeys = await LocalStorage.GetItemAsStringAsync("imageParam11");
+        capabilities = await LocalStorage.GetItemAsStringAsync("imageParam12");
+        optionalfeatures = await LocalStorage.GetItemAsStringAsync("imageParam13");
+        ciapps = await LocalStorage.GetItemAsync<bool>("imageParam14");
+        cidrivers = await LocalStorage.GetItemAsync<bool>("imageParam15");
+        cisecurity = await LocalStorage.GetItemAsync<bool>("imageParam16");
+        cicd = await LocalStorage.GetItemAsync<bool>("imageParam17");
+        notifycomplete = await LocalStorage.GetItemAsync<bool>("imageParam18");
+        notifycicdcomplete = await LocalStorage.GetItemAsync<bool>("imageParam19");
+
+        await LocalStorage.RemoveItemsAsync(keys);
+
+        // Initialize the imageBuild object with the retrieved values
+        imageBuild = new ImageBuildBasic
+        {
+            WindowsRelease = release.Replace("\"", ""),
+            WindowsEdition = edition.Replace("\"", ""),
+            WindowsVersion = version.Replace("\"", ""),
+            Arch = arch.Replace("\"", ""),
+            Language = language.Replace("\"", ""),
+            ImageFormat = format.Replace("\"", ""),
+        };
+    }
+}

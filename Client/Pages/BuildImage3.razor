@@ -1,424 +1,72 @@
 ﻿@page "/buildimage3"
-@using OptechX.Portal.Client.Shared
-@using OptechX.Portal.Shared.Models.Forms
-@using OptechX.Portal.Shared.Models.Engine.ImageBuilds
-@inject ILocalStorageService LocalStorage
-@inject NavigationManager NavigationManager
 @inject IToastService ToastService
 @inject IFormsService FormsService
+@inject ILocalStorageService LocalStorage
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
 
-@inject IJSRuntime JSRuntime
+<PageTitle>OptechX Portal</PageTitle>
 
-<div class="mb-3">
-    <h3>Windows Components</h3>
-</div>
-
-
-<!-- AUTOMATION -->
-<div class="row rounded border border-dark p-3 mb-3">
-    <div class="col-md-6">
-        <h4>Automation of Build</h4>
-        <!-- CI Apps -->
-        <div class="check-slider">
-            <label>
-                <input type="checkbox" @bind="@IsContinuousIntegrationApplicationsChecked" />
-                <span class="slider"></span>
-            </label>
-            <div class="slider-text">CI Application Updates</div>
-        </div>
-
-        <!-- CI Drivers -->
-        <div class="check-slider">
-            <label>
-                <input type="checkbox" @bind="@IsContinuousIntegrationDriversChecked" />
-                <span class="slider"></span>
-            </label>
-            <div class="slider-text">CI Driver Updates</div>
-        </div>
-
-        <!-- CI Security Patches -->
-        <div class="check-slider">
-            <label>
-                <input type="checkbox" @bind="@IsIntegrateSecurityPatchesChecked" />
-                <span class="slider"></span>
-            </label>
-            <div class="slider-text">CI Security Patches</div>
-        </div>
-
-        <!-- CI Deploy -->
-        <div class="check-slider">
-            <label>
-                <input type="checkbox" @bind="@IsContinuousDeploymentChecked" />
-                <span class="slider"></span>
-            </label>
-            <div class="slider-text">CI Build &amp; Replace Image</div>
-        </div>
-
-        <!-- Notify Build Complete -->
-        <div class="check-slider">
-            <label>
-                <input type="checkbox" @bind="@IsNotifyBuildCompleteChecked" />
-                <span class="slider"></span>
-            </label>
-            <div class="slider-text">Email Notify Image Build Completion</div>
-        </div>
-
-        <!-- Notify CDCD Completed -->
-        <div class="check-slider">
-            <label>
-                <input type="checkbox" @bind="@IsNotifyCICDCompletedChecked" />
-                <span class="slider"></span>
-            </label>
-            <div class="slider-text">Email Notify CI/CD Completed</div>
-        </div>
-    </div>
-    <div class="col-md-6">
-        <!-- Windows Admin Account-->
-        <h4>Windows Admin Account</h4>
-        <div class="form-group mb-3">
-            <label for="email">Windows Admin User Account</label>
-            <InputText id="email" @bind-Value="AdminUser" class="form-control"></InputText>
-        </div>
-        <div class="form-group mb-3">
-            <label for="password">Windows Admin User Account</label>
-            <InputText id="password" @bind-Value="AdminPassword" class="form-control" type="password"></InputText>
-        </div>
-        <div class="form-group">
-            @if (IsHasCredentialsNotSaved)
-            {
-                <button class="btn btn-optechx" @onclick="SaveAdminCredentials" style="white-space: nowrap;">Save Credentials</button>
-            }
-            else
-            {
-                <button class="btn btn-secondary" style="cursor: not-allowed; font-style: italic;" disabled>Credentials Saved</button>
-            }
-        </div>
-    </div>
-</div>
-
-
-<!-- Registry Editor -->
-<div class="row rounded border border-dark p-3 mb-3">
-    <h4>Registry Edits</h4>
-    <p>Registry Edits allow additional regisry keys to be added to the SOE image. Select the types from dropdowns and populate each field.</p>
-    <p>The preceeding backslash is not required for the Root Key <i>ie - SOFTWARE\Microsoft\Windows</i></p>
-
-    @if (enableRegEditsSection)
-    {
-        <div class="d-flex align-items-center mb-4 form-group">
-            <div><strong>REG</strong></div>
-            <div class="d-inline-block ms-2">
-                <select class="form-select custom-select" @bind="addDeleteOption">
-                    @foreach (var option in addDeleteOptions)
-                    {
-                        <option value="@option">@option</option>
-                    }
-                </select>
-            </div>
-            <div style="color: red; font-weight: bold;">*</div>
-            <div class="d-inline-block ms-2">
-                <select class="form-select custom-select" @bind="registryOption">
-                    @foreach (var option in registryOptions)
-                    {
-                        <option value="@option">@option</option>
-                    }
-                </select>
-            </div>
-            <div style="color: red; font-weight: bold;">*</div>
-            <input type="text" class="form-control ms-2" @bind="regCommand" placeholder="SOFTWARE\Microsoft\ExampleKey" />
-            <div style="color: red; font-weight: bold;">*</div>
-        </div>
-        <div class="d-flex align-items-center mb-4">
-            <div class="d-inline-block ms-2">
-                <select class="form-select custom-select" @bind="regVOption">
-                    @foreach (var option in regVOptions)
-                    {
-                        <option value="@option">@option</option>
-                    }
-                </select>
-            </div>
-            <div style="color: red; font-weight: bold;">*</div>
-            <input type="text" class="form-control ms-2" @bind="regCommand2" placeholder="Example SubKey" />
-            <div class="ms-2"><strong>/t</strong></div>
-            <div class="d-inline-block ms-2">
-                <select class="form-select custom-select" @bind="valueTypeOption">
-                    @foreach (var option in valueTypeOptions)
-                    {
-                        <option value="@option">@option</option>
-                    }
-                </select>
-            </div>
-            <div class="ms-2">/d</div>
-            <input type="text" class="form-control ms-2" @bind="regCommand3" placeholder="Example Value" />
-            <button class="btn btn-optechx ms-2" @onclick="CreateRegCommand" style="white-space: nowrap;">ADD REGKEY</button>
-        </div>
-    }
-
-    @if (regCommands.Count >= 1)
-    {
-        <table class="table mb-3">
-            <thead>
-                <tr>
-                    <th>Remove</th>
-                    <th>Registry Commands Added</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var command in regCommands)
-                {
-                    <tr>
-                        <td>
-                            <button class="btn btn-danger btn-sm" @onclick="() => RemoveRegCommand(command)">X</button>
-                        </td>
-                        <td>@command</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-        <div class="form-group">
-            @if (IsHasRegEditsNotSaved)
-            {
-                <button class="btn btn-optechx" @onclick="SaveRegistryEdits" style="white-space: nowrap;">Save Reg Edits</button>
-            }
-            else
-            {
-                <button class="btn btn-secondary" style="cursor: not-allowed; font-style: italic;" disabled>Reg Edits Saved</button>
-            }
-        </div>
-    }
-</div>
-
-
-
-
-
-
-<div class="row rounded border border-dark p-3 mb-3">
-    <div class="col-md-6">
-        <!-- First column content -->
-        <!-- Windows Capabilities -->
-        <h4>Windows Capabilities</h4>
-        <p>Using the <a href="https://github.com/optechx/optechx.reference.guides/windows-capabilities.pdf" target="_blank">Windows Capabilities Reference Guide</a>, paste one per line, the Windows Capabilities to include with your Windows SOE image in the field below.</p>
-        <textarea id="windowsCapabilitiesTextArea" class="form-control mb-3" rows="4" style="resize: both; overflow: auto;" @bind="windowsCapabilitiesValue" @attributes="GetWindowsCapablitiesAttributes()"></textarea>
-        @if (IsHasWindowsCapabilitiesNotSaved)
-        {
-            <button class="btn btn-optechx" @onclick="SaveWindowsCapabilities" style="white-space: nowrap;">Save Windows Capabilities</button>
-        }
-        else
-        {
-            <button class="btn btn-secondary" style="cursor: not-allowed; font-style: italic;" disabled>Windows Capabilities Saved</button>
-        }
-
-    </div>
-    <div class="col-md-6">
-        <!-- Second column content -->
-        <!-- Windows Optional Features -->
-        <h4>Windows Optional Features</h4>
-        <p>Using the <a href="https://github.com/optechx/optechx.reference.guides/windows-optional-features.pdf" target="_blank">Windows Optional Features Reference Guide</a>, paste one per line, the Windows Optional Feature to add/remove from your Windows SOE image in the field below.</p>
-        <textarea id="windowsOptionalFeaturesTextArea" class="form-control mb-3" rows="4" style="resize: both; overflow: auto;" @bind="windowsOptionalFeaturesValue" @attributes="GetWindowsOptionalFeaturesAttributes()"></textarea>
-        @if (IsHasWindowsOptionalFeaturesNotSaved)
-        {
-            <button class="btn btn-optechx" @onclick="SaveWindowsOptionalFeatures" style="white-space: nowrap;">Save Optional Features</button>
-        }
-        else
-        {
-            <button class="btn btn-secondary" style="cursor: not-allowed; font-style: italic;" disabled>Optional Features Saved</button>
-        }
-
-    </div>
-</div>
-
-@if (enableSubmitOrderButton)
-{
-    <button class="btn btn-warning mb-2" @onclick="RefreshPageAsync" style="white-space: nowrap;">Reset Form</button>
-    <button class="btn btn-primary mb-2" @onclick="HandleSubmitOrder" style="white-space: nowrap;">Submit Order</button>
-}
-else
-{
-    <button class="btn btn-warning mb-2" @onclick="RefreshPageAsync" style="white-space: nowrap;">Reset Form</button>
-}
+<AuthorizeView>
+    <Authorized>
+        <BuildImage03Component />
+    </Authorized>
+    <NotAuthorized>
+        <p>User is not authorized. Redirecting...</p>
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
-    // check boxes
-    private bool IsContinuousIntegrationApplicationsChecked { get; set; } = false;
-    private bool IsContinuousIntegrationDriversChecked { get; set; } = false;
-    private bool IsIntegrateSecurityPatchesChecked { get; set; } = false;
-    private bool IsContinuousDeploymentChecked { get; set; } = false;
-    private bool IsNotifyBuildCompleteChecked { get; set; } = true;
-    private bool IsNotifyCICDCompletedChecked { get; set; } = false;
+    private string accountId = string.Empty;
 
-    // buttons changed to disabled
-    private bool IsHasCredentialsNotSaved { get; set; } = true;
-    private bool IsHasRegEditsNotSaved { get; set; } = true;
-    private bool IsHasWindowsCapabilitiesNotSaved { get; set; } = true;
-    private bool IsHasWindowsOptionalFeaturesNotSaved { get; set; } = true;
-
-    // admin user account
-    private string AdminUser { get; set; } = string.Empty;
-    private string AdminPassword { get; set; } = string.Empty;
-
-    // enable Registry Edits section
-    private bool enableRegEditsSection { get; set; } = true;
-
-    // enable WindowsCapabilities section
-    private bool isWindowsCapabilitiesTextareaLocked { get; set; } = false;  // false is enabled, true is disabled
-    private bool enableWindowsCapabilitiesSection { get; set; } = false;  // false is enabled, true is disabled
-
-    // enable WindowsOptionalFeatures section
-    private bool isWindowsOptionalFeaturesTextareaLocked { get; set; } = false;  // false is enabled, true is disabled
-    private bool enableWindowsOptionalFeaturesSection { get; set; } = false;  // false is enabled, true is disabled
-
-    // enable submitOrderButton
-    private bool enableSubmitOrderButton { get; set; } = false;
-
-    // registry values
-    // reg [add|delete] [HKCR|HKLM|HKU|HKCC] <input text box> [/v|/ve] <input text box> /t [REG_DWORD|REG_QWORD|REG_BINARY|REG_MULTI_SZ|REG_EXPAND_SZ] /d <input text box />
-    private string[] addDeleteOptions = new[] { "ADD", "DELETE" };
-    private string[] registryOptions = new[] { "HKCR", "HKLM", "HKU", "HKCC" };
-    private string[] regVOptions = new[] { "/v", "/ve" };
-    private string[] valueTypeOptions = new[] { "REG_DWORD", "REG_QWORD", "REG_BINARY", "REG_MULTI_SZ", "REG_EXPAND_SZ" };
-    private string regCommandOutput = string.Empty;
-    private string addDeleteOption = string.Empty;
-    private string registryOption = string.Empty;
-    private string regCommand = string.Empty;
-    private string regVOption = string.Empty;
-    private string regCommand2 = string.Empty;
-    private string valueTypeOption = string.Empty;
-    private string regCommand3 = string.Empty;
-    private List<string> regCommands = new();
-    private void CreateRegCommand()
+    protected override async Task OnInitializedAsync()
     {
-        if (string.IsNullOrWhiteSpace(addDeleteOption) || string.IsNullOrWhiteSpace(registryOption) || string.IsNullOrWhiteSpace(regCommand) || string.IsNullOrWhiteSpace(regVOption))
+        var isAuthd = await LocalStorage.GetItemAsync<string>("authToken");
+        if (!string.IsNullOrEmpty(isAuthd))
         {
-            ToastService.ShowError("Registry values with red astericks must be populated");
+            accountId = await GetAccountId();
         }
         else
         {
-            switch (addDeleteOption)
-            {
-                case "ADD":
-                    if (string.IsNullOrWhiteSpace(valueTypeOption) || string.IsNullOrWhiteSpace(regCommand3))
-                    {
-                        ToastService.ShowError("Reg Type and Data must be provided");
-                    }
-                    else
-                    {
-                        regCommandOutput = $"reg {addDeleteOption} {registryOption} {regCommand} {regVOption} {regCommand2} /t {valueTypeOption} /d {regCommand3}";
-                        regCommands.Add(regCommandOutput);
-                        addDeleteOption = registryOption = regCommand = regVOption = regCommand2 = valueTypeOption = regCommand3 = string.Empty;
-                    }
-
-                    break;
-                case "DELETE":
-                    regCommandOutput = $"reg {addDeleteOption} {registryOption} {regCommand} {regVOption} {regCommand2}";
-                    regCommands.Add(regCommandOutput);
-                    addDeleteOption = registryOption = regCommand = regVOption = regCommand2 = valueTypeOption = regCommand3 = string.Empty;
-                    break;
-            }
+            NavigationManager.NavigateTo("/");
         }
+        await GetRequiredParams();
     }
 
-    private string windowsCapabilitiesValue = string.Empty;
-    private string windowsOptionalFeaturesValue = string.Empty;
-    public string WindowsCapabilitiesValue
+    private async Task<string> GetAccountId()
     {
-        get => windowsCapabilitiesValue;
-        set => windowsCapabilitiesValue = value;
-    }
-    public string WindowsOptionalFeaturesValue
-    {
-        get => windowsOptionalFeaturesValue;
-        set => windowsOptionalFeaturesValue = value;
-    }
-
-    private void RemoveRegCommand(string command)
-    {
-        regCommands.Remove(command);
-    }
-
-    private async Task SaveAdminCredentials()
-    {
-        IsHasCredentialsNotSaved = false;
-        ToastService.ShowInfo("Credentials saved");
-        await LocalStorage.SetItemAsStringAsync("imageParam9", AdminUser);
-        await LocalStorage.SetItemAsStringAsync("imageParam10", AdminPassword);
-        await LocalStorage.SetItemAsync<bool>("imageParam14", IsContinuousIntegrationApplicationsChecked);
-        await LocalStorage.SetItemAsync<bool>("imageParam15", IsContinuousIntegrationDriversChecked);
-        await LocalStorage.SetItemAsync<bool>("imageParam16", IsIntegrateSecurityPatchesChecked);
-        await LocalStorage.SetItemAsync<bool>("imageParam17", IsContinuousDeploymentChecked);
-        await LocalStorage.SetItemAsync<bool>("imageParam18", IsNotifyBuildCompleteChecked);
-        await LocalStorage.SetItemAsync<bool>("imageParam19", IsNotifyCICDCompletedChecked);
-        enableSubmitOrderButton = true;
-        StateHasChanged(); // Notify Blazor to re-render the component
-    }
-
-    private async Task SaveRegistryEdits()
-    {
-        IsHasRegEditsNotSaved = false;
-        enableRegEditsSection = false;
-        ToastService.ShowInfo("RegEdits have been saved");
-        string selectedItemsString = string.Join(",", regCommands);
-        await LocalStorage.SetItemAsStringAsync("imageParam11", selectedItemsString);
-        ToastService.ShowInfo("Registy settings saved");
-        StateHasChanged();
-    }
-
-    private IDictionary<string, object> GetWindowsCapablitiesAttributes()
-    {
-        var attributes = new Dictionary<string, object>();
-        if (enableWindowsCapabilitiesSection)
+        var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var accountIdClaim = authenticationState.User.Claims.FirstOrDefault(claim => claim.Type == "AccountId"); //"http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress");
+        if (!string.IsNullOrEmpty(accountIdClaim?.Value))
         {
-            attributes["readonly"] = "readonly";
+            return accountIdClaim!.Value;
         }
-        return attributes;
-    }
-
-    private IDictionary<string, object> GetWindowsOptionalFeaturesAttributes()
-    {
-        var attributes = new Dictionary<string, object>();
-        if (enableWindowsOptionalFeaturesSection)
+        else
         {
-            attributes["readonly"] = "readonly";
+            return Guid.Empty.ToString();
         }
-        return attributes;
     }
 
-    private async Task SaveWindowsCapabilities()
+    private async Task GetRequiredParams()
     {
-        IsHasWindowsCapabilitiesNotSaved = false;
-        isWindowsCapabilitiesTextareaLocked = true;
-        enableWindowsCapabilitiesSection = true;
-        ToastService.ShowInfo("Windows Capabilities saved");
-        StateHasChanged();
-        await Task.CompletedTask;
-    }
+        var param1 = await LocalStorage.GetItemAsStringAsync("imageParam1");
+        var param2 = await LocalStorage.GetItemAsStringAsync("imageParam2");
+        var param3 = await LocalStorage.GetItemAsStringAsync("imageParam3");
+        var param4 = await LocalStorage.GetItemAsStringAsync("imageParam4");
+        var param5 = await LocalStorage.GetItemAsStringAsync("imageParam5");
+        var param6 = await LocalStorage.GetItemAsStringAsync("imageParam6");
+        var param7 = await LocalStorage.GetItemAsStringAsync("imageParam7");
+        var param8 = await LocalStorage.GetItemAsStringAsync("imageParam8");
 
-    private async Task SaveWindowsOptionalFeatures()
-    {
-        IsHasWindowsOptionalFeaturesNotSaved = false;
-        isWindowsOptionalFeaturesTextareaLocked = true;
-        enableWindowsOptionalFeaturesSection = true;
-        ToastService.ShowInfo("Windows Optional Features saved");
-        StateHasChanged();
-        await Task.CompletedTask;
-    }
+        bool allParamsNotEmpty = new[]
+        {
+            param1, param2, param3, param4, param5, param6, param7, param8
+        }.All(p => string.IsNullOrWhiteSpace(p));
 
-    private async Task HandleSubmitOrder()
-    {
-        string capabilitiesText = WindowsCapabilitiesValue;
-        string[] lines1 = capabilitiesText.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
-        string capabilitiesString = string.Join(",", lines1);
-        string optionalFeaturesText = WindowsOptionalFeaturesValue;
-        string[] lines2 = optionalFeaturesText.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
-        string optionalFeaturesString = string.Join(",", lines2);
-
-        await LocalStorage.SetItemAsStringAsync("imageParam12", capabilitiesString);
-        await LocalStorage.SetItemAsStringAsync("imageParam13", optionalFeaturesString);
-    }
-
-    // refresh the page
-    private async Task RefreshPageAsync()
-    {
-        await Task.Run(() => NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true));
+        if (allParamsNotEmpty)
+        {
+            ToastService.ShowError("Image build process not started, redirecting...");
+            NavigationManager.NavigateTo("/buildimage");
+        }
     }
 }

@@ -22,6 +22,13 @@
 @code {
     private string accountId = string.Empty;
 
+    private string? param1;
+    private string? param2;
+    private string? param3;
+    private string? param4;
+    private string? param5;
+    private string? param6;
+
     protected override async Task OnInitializedAsync()
     {
         var isAuthd = await LocalStorage.GetItemAsync<string>("authToken");
@@ -52,13 +59,27 @@
 
     private async Task GetRequiredParams()
     {
-        var imgBuildArch = await LocalStorage.GetItemAsStringAsync("imageParam4");
-        var imgBuildRelease = await LocalStorage.GetItemAsStringAsync("imageParam1");
-        if (string.IsNullOrEmpty(imgBuildArch) || string.IsNullOrEmpty(imgBuildRelease))
+        try
+        {
+            param1 = await LocalStorage.GetItemAsStringAsync("imageParam1") ?? null;
+            param2 = await LocalStorage.GetItemAsStringAsync("imageParam2") ?? null;
+            param3 = await LocalStorage.GetItemAsStringAsync("imageParam3") ?? null;
+            param4 = await LocalStorage.GetItemAsStringAsync("imageParam4") ?? null;
+            param5 = await LocalStorage.GetItemAsStringAsync("imageParam5") ?? null;
+            param6 = await LocalStorage.GetItemAsStringAsync("imageParam6") ?? null;
+
+            bool allParamsNotEmpty = new[] { param1, param2, param3, param4, param5, param6 }.All(p => string.IsNullOrWhiteSpace(p));
+
+            if (allParamsNotEmpty)
+            {
+                ToastService.ShowError("Image build process not started, redirecting...");
+                NavigationManager.NavigateTo("/buildimage");
+            }
+        }
+        catch
         {
             ToastService.ShowError("Image build process not started, redirecting...");
             NavigationManager.NavigateTo("/buildimage");
         }
     }
 }
-

@@ -4,9 +4,6 @@
 @inject IToastService ToastService
 @inject IFormsService FormsService
 
-@inject IJSRuntime JSRuntime
-
-
 <div class="row ml-4">
     <h3>@sectionTitleApplications</h3>
 </div>
@@ -262,7 +259,6 @@ else
         SelectedAppItems.Clear();
         SelectedDriverItems.Clear();
     }
-
 
     private void ToggleAppItemSelection(string item)
     {
