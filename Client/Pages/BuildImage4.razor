@@ -1,7 +1,4 @@
 ﻿@page "/buildimage4"
-@using OptechX.Portal.Client.Shared
-@using OptechX.Portal.Shared.Models.Forms
-@using OptechX.Portal.Shared.Models.Engine.ImageBuilds
 @inject IToastService ToastService
 @inject IFormsService FormsService
 @inject ILocalStorageService LocalStorage
@@ -12,7 +9,7 @@
 
 <AuthorizeView>
     <Authorized>
-        <BuildImage04Component accountId="@accountId" />
+        <BuildImage04Component />
     </Authorized>
     <NotAuthorized>
         <p>User is not authorized. Redirecting...</p>
@@ -20,7 +17,7 @@
 </AuthorizeView>
 
 @code {
-    public string accountId = string.Empty;
+    public string? accountId;
     private string? param1 { get; set; }
     private string? param2 { get; set; }
     private string? param3 { get; set; }
@@ -56,16 +53,7 @@
 
     private async Task<string> GetAccountId()
     {
-        var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var accountIdClaim = authenticationState.User.Claims.FirstOrDefault(claim => claim.Type == "AccountId"); //"http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress");
-        if (!string.IsNullOrEmpty(accountIdClaim?.Value))
-        {
-            return accountIdClaim!.Value;
-        }
-        else
-        {
-            return Guid.Empty.ToString();
-        }
+        return await LocalStorage.GetItemAsync<string>("accountId");
     }
 
     private async Task GetRequiredParams()

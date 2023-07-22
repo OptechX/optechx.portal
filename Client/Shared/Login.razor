@@ -1,10 +1,9 @@
 ﻿@using OptechX.Portal.Shared.Models.User
 @using OptechX.Portal.Client.Services
 @inject ILocalStorageService LocalStorage
-@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IAuthService AuthService
 @inject IToastService ToastService
-@inject IJSRuntime JSRuntime
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <PageTitle>OptechX Portal</PageTitle>
 
@@ -54,8 +53,8 @@
             ToastService.ShowSuccess("Login successful");
             if (!string.IsNullOrEmpty(result?.Data?.JWT))
             {
-                await JSRuntime.InvokeVoidAsync("console.log", result.Data.JWT);
                 await LocalStorage.SetItemAsync<string>("authToken", result!.Data!.JWT);
+                await LocalStorage.SetItemAsync<string>("accountId", result!.Data!.Id);
                 await AuthenticationStateProvider.GetAuthenticationStateAsync();
             }
         }

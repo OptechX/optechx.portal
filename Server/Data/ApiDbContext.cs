@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using Microsoft.EntityFrameworkCore;
+using OptechX.Portal.Server.Helpers;
 using OptechX.Portal.Server.Models;
 using OptechX.Portal.Shared.Models.Engine.Applications;
 using OptechX.Portal.Shared.Models.Engine.Drivers;
@@ -37,6 +38,8 @@ namespace OptechX.Portal.Server.Data
             modelBuilder.ApplyConfiguration(new WinEditionApiResultConfiguration());
             modelBuilder.ApplyConfiguration(new WinVersionApiResultConfiguration());
             modelBuilder.ApplyConfiguration(new WinArchApiResultConfiguration());
+
+            //modelBuilder.ApplyConfiguration(new ImageBuildBasicConfiguration());
 
             base.OnModelCreating(modelBuilder);
         }

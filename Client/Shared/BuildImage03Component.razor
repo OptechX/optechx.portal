@@ -1,10 +1,8 @@
-﻿@using OptechX.Portal.Client.Shared
-@using OptechX.Portal.Shared.Models.Forms
-@using OptechX.Portal.Shared.Models.Engine.ImageBuilds
+﻿@using OptechX.Portal.Shared.Models.Engine.ImageBuilds
 @inject ILocalStorageService LocalStorage
-@inject NavigationManager NavigationManager
 @inject IToastService ToastService
 @inject IFormsService FormsService
+@inject NavigationManager NavigationManager
 
 <div class="mb-3">
     <h3>@pageTitle</h3>
@@ -69,27 +67,30 @@
             <div class="slider-text">Email Notify CI/CD Completed</div>
         </div>
     </div>
+
+    <!-- Windows Admin Account-->
     <div class="col-md-6">
-        <!-- Windows Admin Account-->
         <h4>Windows Admin Account</h4>
-        <div class="form-group mb-3">
-            <label for="email">Windows Admin User Account</label>
-            <InputText id="email" @bind-Value="AdminUser" class="form-control"></InputText>
-        </div>
-        <div class="form-group mb-3">
-            <label for="password">Windows Admin User Account</label>
-            <InputText id="password" @bind-Value="AdminPassword" class="form-control" type="password"></InputText>
-        </div>
-        <div class="form-group">
+        <EditForm Model="adminCredentials" OnValidSubmit="SaveAdminCredentials">
+            <DataAnnotationsValidator></DataAnnotationsValidator>
+            <div class="form-group mb-3">
+                <label for="adminUser">Windows Admin User Account</label>
+                <InputText id="adminUser" @bind-Value="adminCredentials.DefaultAccount" class="form-control"></InputText>
+            </div>
+            <div class="form-group mb-3">
+                <label for="adminPass">Windows Admin User Password</label>
+                <InputText id="password" @bind-Value="adminCredentials.DefaultPassword" class="form-control" type="password"></InputText>
+            </div>
             @if (IsHasCredentialsNotSaved)
             {
-                <button class="btn btn-optechx" @onclick="SaveAdminCredentials" style="white-space: nowrap;">Save Credentials</button>
+                <button type="submit" class="btn btn-optechx" style="white-space: nowrap;">Save Credentials</button>
             }
             else
             {
                 <button class="btn btn-secondary" style="cursor: not-allowed; font-style: italic;" disabled>Credentials Saved</button>
             }
-        </div>
+            <ValidationSummary />
+        </EditForm>
     </div>
 </div>
 
@@ -233,6 +234,8 @@ else
 @code {
     private string pageTitle = "Windows Components";
 
+    ImageAdminCredentials adminCredentials = new ImageAdminCredentials();
+
     // check boxes
     private bool IsContinuousIntegrationApplicationsChecked { get; set; } = false;
     private bool IsContinuousIntegrationDriversChecked { get; set; } = false;
@@ -334,8 +337,8 @@ else
     {
         IsHasCredentialsNotSaved = false;
         ToastService.ShowInfo("Credentials saved");
-        await LocalStorage.SetItemAsStringAsync("imageParam9", AdminUser);
-        await LocalStorage.SetItemAsStringAsync("imageParam10", AdminPassword);
+        await LocalStorage.SetItemAsStringAsync("imageParam9", adminCredentials.DefaultAccount);
+        await LocalStorage.SetItemAsStringAsync("imageParam10", adminCredentials.DefaultPassword);
         await LocalStorage.SetItemAsync<bool>("imageParam14", IsContinuousIntegrationApplicationsChecked);
         await LocalStorage.SetItemAsync<bool>("imageParam15", IsContinuousIntegrationDriversChecked);
         await LocalStorage.SetItemAsync<bool>("imageParam16", IsIntegrateSecurityPatchesChecked);
@@ -418,7 +421,7 @@ else
             await LocalStorage.SetItemAsStringAsync("imageParam13", string.Empty);
         }
         ToastService.ShowWarning("Image order submitted");
-        NavigationManager.NavigateTo("buildimage4");
+        NavigationManager.NavigateTo("/buildimage4");
     }
 
     // refresh the page
