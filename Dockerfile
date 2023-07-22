@@ -29,7 +29,7 @@ RUN ASPNETCORE_ENVIRONMENT=Production dotnet publish -c Release -o /app/out  # S
 # WORKDIR /app/Server
 # RUN dotnet build
 # WORKDIR /app/Server
-# RUN dotnet publish -c Release -o /app/out
+# RUN ASPNETCORE_ENVIRONMENT=Production dotnet publish -c Release -o /app/out  # Set environment to Production during publish
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0-preview-alpine AS build-env-8.0-preview-alpine
 WORKDIR /app
@@ -45,7 +45,7 @@ RUN dotnet build
 WORKDIR /app/Server
 RUN dotnet build
 WORKDIR /app/Server
-RUN dotnet publish -c Release -o /app/out
+RUN ASPNETCORE_ENVIRONMENT=Production dotnet publish -c Release -o /app/out  # Set environment to Production during publish
 
 # Build runtime image
 FROM mcr.microsoft.com/dotnet/aspnet:7.0
