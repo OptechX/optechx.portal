@@ -50,4 +50,5 @@ RUN dotnet publish -c Release -o /app/out
 FROM mcr.microsoft.com/dotnet/aspnet:7.0
 WORKDIR /app
 COPY --from=build-env-7.0 /app/out .
+EXPOSE 80
 ENTRYPOINT ["dotnet", "OptechX.Portal.Server.dll"]
