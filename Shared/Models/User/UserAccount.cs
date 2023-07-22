@@ -56,7 +56,7 @@ namespace OptechX.Portal.Shared.Models.User
             IsAcceptTerms = true;
             Role = Role.USER;
             BillingType = BillingType.NONE;
-            AccountTier = Constants.AccountTier.BASIC;
+            AccountTier = AccountTier.BASIC;
             ImagesRemaining = 0;
             AppLockerStorageAvailable = 0;
             AppLockerStorageUsed = 0;

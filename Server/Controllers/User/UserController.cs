@@ -1,16 +1,10 @@
-using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OptechX.Portal.Server.Data;
+using OptechX.Portal.Server.Services;
 using OptechX.Portal.Shared.Models.User;
-using OptechX.Portal.Shared.Models.User.Constants;
 
 namespace OptechX.Portal.Server.Controllers.User
 {
@@ -19,10 +13,12 @@ namespace OptechX.Portal.Server.Controllers.User
     public class UserController : ControllerBase
     {
         private readonly ApiDbContext _dbContext;
+        private readonly IUserSvrSdService _userSvrSdService;
 
-        public UserController(ApiDbContext dbContext)
+        public UserController(ApiDbContext dbContext, IUserSvrSdService userSvrSdService)
         {
             _dbContext = dbContext;
+            _userSvrSdService = userSvrSdService;
         }
 
         private ReturnedJwtPayload? GetAccountIdFromToken()
@@ -164,6 +160,13 @@ namespace OptechX.Portal.Server.Controllers.User
                 return Ok(user.BillingType.ToString());
             }
             return NotFound();
+        }
+
+        // GET: /api/user/dashboard
+        [HttpGet("dashboard/{id}")]
+        public async Task<ActionResult<UserDashboardResponse>> GetUserDashboardAsync(string id)
+        {
+            return await _userSvrSdService.GetUserDashboardResponse(accountId: Guid.Parse(id))!;
         }
     }
 }

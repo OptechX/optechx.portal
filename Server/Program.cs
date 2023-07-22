@@ -20,6 +20,7 @@ public class Program
         builder.Services.AddScoped<IEmailService, EmailService>();
         builder.Services.AddScoped<IAuthRepository, AuthRepository>();
         builder.Services.AddScoped<IEncryptionHelperService, EncryptionHelperService>();
+        builder.Services.AddScoped<IUserSvrSdService, UserSvrSdService>();
 
         // Add authorization configuration
         builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

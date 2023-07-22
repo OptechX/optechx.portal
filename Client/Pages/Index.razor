@@ -7,9 +7,7 @@
 
 <AuthorizeView>
     <Authorized>
-        <h3>OptechX Portal</h3>
-        <h5>@if (!string.IsNullOrEmpty(userEmail))
-        {@userEmail} Welcome back!  </h5>
+        <Dashboard />
     </Authorized>
     <NotAuthorized>
         <Login />
@@ -18,7 +16,7 @@
 
 
 @code {
-private string userEmail = string.Empty;
+    private string userEmail = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {

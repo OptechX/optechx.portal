@@ -1,0 +1,176 @@
+﻿@using OptechX.Portal.Client.Shared
+@using OptechX.Portal.Shared.Models.User
+@inject IUserDashboardService UserDashboardService
+@inject ILocalStorageService LocalStorageService
+
+<div class="row ml-4">
+    <h3>@pageTitle</h3>
+</div>
+
+<div class="row d-none d-md-flex justify-content-center">
+    <div class="col-md-6 col-lg-3 mb-4">
+        <div class="card card-1 rounded">
+            <div class="card-body">
+                <h5 class="mb-3 text-center">Billing Type</h5>
+                <div class="td-center">
+                    @switch (BillingType)
+                    {
+                        case "Stripe":
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/b/ba/Stripe_Logo%2C_revised_2016.svg" alt="Stripe Logo" class="img-fluid" style="max-height: 50px;">
+                            break;
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3 mb-4">
+        <div class="card card-2 rounded">
+            <div class="card-body">
+                <h5 class="mb-3 text-center">Images</h5>
+                <div class="text-center">
+                    @switch (ImagesRemaining)
+                    {
+                        case 0:
+                            <div class="red-text">0</div>
+                            break;
+                        case 1:
+                            <div class="red-text">1</div>
+                            break;
+                        case 2:
+                            <div class="orange-text">2</div>
+                            break;
+                        case 3:
+                            <div class="green-text">3</div>
+                            break;
+                    }
+                </div>
+            </div>
+            @*<div class="card-footer">
+                    <div class="text-center">
+                        @switch (ImagesRemaining)
+                        {
+                            case 0:
+                                <div class="red-text">0</div>
+                                break;
+                            case 1:
+                                <div class="red-text">1</div>
+                                break;
+                            case 2:
+                                <div class="orange-text">2</div>
+                                break;
+                            case 3:
+                                <div class="green-text">3</div>
+                                break;
+                        }
+                    </div>
+                </div>*@
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3 mb-4">
+        <div class="card card-3 rounded">
+            <div class="card-body">
+                <h5 class="mb-3 text-center">Account Tier</h5>
+                <div class="td-center">
+                    <img src="@AccountTier(SubscriptionTier)" alt="Account Tier Logo" class="img-fluid" style="max-height: 50px;">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3 mb-4">
+        <div class="card card-4 rounded">
+            <div class="card-body">
+                <h5 class="mb-3 text-center">Support</h5>
+                <div class="text-center">
+                    <div class="d-flex flex-wrap justify-content-between">
+                        <button class="btn btn-primary mb-2 flex-shrink-1 mx-auto"><i class="fa fa-ticket" aria-hidden="true"></i> Open Ticket</button>
+                        @*<button class="btn btn-primary mb-2 flex-shrink-1 mx-auto"><i class="fa fa-whatsapp" aria-hidden="true"></i> Message</button>*@
+                    </div>
+                </div>
+            </div>
+            @*<div class="card-footer">
+                    <div class="text-center">
+                        <div class="d-flex flex-wrap justify-content-between">
+                            <button class="btn btn-primary mb-2 flex-shrink-1 mx-auto">Open Ticket</button>
+                        </div>
+                    </div>
+                </div>*@
+        </div>
+    </div>
+</div>
+
+
+
+<BuildHistoryImageUpdates />
+
+<NewsUpdates />
+
+@*<MobileDashboard BillingSvg="https://upload.wikimedia.org/wikipedia/commons/b/ba/Stripe_Logo%2C_revised_2016.svg" AccountTier="Basic" />
+
+    <BuildHistoryImageUpdates />
+
+    <MobileIndex BillingSvg="https://upload.wikimedia.org/wikipedia/commons/b/ba/Stripe_Logo%2C_revised_2016.svg" AccountTier="Basic" />*@
+
+
+
+@code {
+    private string pageTitle = "Dashboard";
+
+    UserDashboardResponse? userDashboardResponse;
+
+
+    private string BillingType = "Stripe";
+    private int ImagesRemaining = 3;
+
+    private void SendEmail()
+    {
+        Console.WriteLine("Email send");
+    }
+
+    private string SubscriptionTier = "Basic";
+
+
+
+    // init
+    protected override async Task OnInitializedAsync()
+    {
+        await InitializeAsync();
+    }
+
+    // init calls
+    private async Task InitializeAsync()
+    {
+        // get the user dashboard data from the API
+        await UserDashboardService.GetUserDashboard(accountId: await LocalStorageService.GetItemAsync<string>("accountId"));
+        userDashboardResponse = UserDashboardService.UserDashboard;
+    }
+
+    string AccountTier(string tier)
+    {
+        string subscriptionType = tier;
+        string result = string.Empty;
+
+        switch (subscriptionType)
+        {
+            case "Basic":
+                result = "/images/medal_1.svg";
+                break;
+            case "Medium":
+                result = "/images/medal_2.svg";
+                break;
+            case "Bronze":
+                result = "/images/medal_3.svg";
+                break;
+            case "Silver":
+                result = "/images/medal_4.svg";
+                break;
+            case "Gold":
+                result = "/images/medal_5.svg";
+                break;
+            default:
+                result = "Invalid subscription type.";
+                break;
+        }
+
+        return result;
+    }
+}

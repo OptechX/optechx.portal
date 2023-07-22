@@ -1,0 +1,208 @@
+﻿<div class="row d-none d-md-flex justify-content-center">
+    <div class="col-md-6 col-12 mb-4">
+        <div class="card rounded">
+            <div class="card-body">
+                <h4 class="mb-3">Build History</h4>
+                <table class="table table-hover table-responsive">
+                    <colgroup>
+                        <col style="width: 60%;">
+                        <col style="width: 25%;">
+                        <col style="width: 15%;">
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th>Order Name</th>
+                            <th>Date</th>
+                            <th><span style="display: block; text-align: center;">Status</span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < orderStatus.Count; i++)
+                        {
+                            <tr>
+                                <td>@orderStatus[i][0].ToString()</td>
+                                <td>@orderStatus[i][2].ToString()</td>
+                                <td>
+                                    <span style="display: block; text-align: center;">
+                                        @switch (orderStatus[i][1])
+                                        {
+                                            case "Complete":
+                                                <i class="fa-solid fa-check" style="color: #2cce65;"></i>
+                                                break;
+                                            case "In Progress":
+                                                <i class="fa-solid fa-clock" style="color: #ff8614;"></i>
+                                                break;
+                                            case "Building":
+                                                <i class="fa-solid fa-hammer" style="color: #ce2c4c;"></i>
+                                                break;
+                                            default:
+                                                break;
+                                        }
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-12 mb-4">
+        <div class="card rounded">
+            <div class="card-body">
+                <h4 class="mb-3">Latest Updates</h4>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th colspan="2">Package</th>
+                                <th>Version</th>
+                                <th>Publisher</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < latestUpdates.Count; i++)
+                            {
+                                <tr>
+                                    <td><img src="@latestUpdates[i][0]" style="max-width: 100%; max-height: 1.2em;" /></td>
+                                    <td>@latestUpdates[i][1]</td>
+                                    <td>@latestUpdates[i][3]</td>
+                                    <td>@latestUpdates[i][2]</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@*<div class="row d-none d-md-block">
+        <div class="col-6 mr-2">
+            <div class="card rounded">
+                <div class="card-body">
+                    <h4>Build History</h4>
+                    <table class="table table-hover table-responsive">
+                        <colgroup>
+                            <col style="width: 60%;">
+                            <col style="width: 25%;">
+                            <col style="width: 15%;">
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th>Order Name</th>
+                                <th>Date</th>
+                                <th><span style="display: block; text-align: center;">Status</span></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < orderStatus.Count; i++)
+                            {
+                                <tr>
+                                    <td>@orderStatus[i][0].ToString()</td>
+                                    <td>@orderStatus[i][2].ToString()</td>
+                                    <td>
+                                        <span style="display: block; text-align: center;">
+                                            @if (orderStatus[i][1] == "Complete")
+                                            {
+                                                <i class="fa-solid fa-check" style="color: #2cce65;"></i>
+                                            }
+                                            else if (orderStatus[i][1] == "In Progress")
+                                                {
+                                                <i class="fa-solid fa-clock" style="color: #ff8614;"></i>
+                                            }
+                                            else
+                                                {
+                                                <i class="fa-solid fa-hammer" style="color: #ce2c4c;"></i>
+                                            }
+                                        </span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 ml-2">
+            <div class="card rounded">
+                <div class="card-body">
+                    <h6>Latest Updates</h6>
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Application</th>
+                                <th>Version</th>
+                                <th>Publisher</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Row 1, Column 1</td>
+                                <td>Row 1, Column 2</td>
+                                <td>Row 1, Column 3</td>
+                            </tr>
+                            <tr>
+                                <td>Row 2, Column 1</td>
+                                <td>Row 2, Column 2</td>
+                                <td>Row 2, Column 3</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>*@
+
+
+@*<div class="d-block d-md-none">
+        <div class="card rounded">
+            <div class="card-body">
+                <h4 class="card-title">Title</h4>
+                <div class="row">
+                    <div class="col-6">
+                        @for (int i = 0; i < x.Count; i++)
+                        {
+                            <p>@x[i][0]</p>
+                        }
+                    </div>
+                    <div class="col-6">
+                        @for (int i = 0; i < x.Count; i++)
+                        {
+                            <p>@x[i][1]</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>*@
+
+
+
+@code {
+    List<List<string>> x = new List<List<string>>
+    {
+        new List<string> { "Marketing X15", "In Progress" },
+        new List<string> { "ICT x390", "In Progress" },
+        new List<string> { "Executive", "Building" },
+    };
+
+    List<List<string>> orderStatus = new List<List<string>>
+    {
+        new List<string> { "Marketing X15", "In Progress", "24/03/2023" },
+        new List<string> { "ICT x390", "In Progress", "13/01/2023" },
+        new List<string> { "Executive", "Building", "22/12/2022" },
+        new List<string> { string.Empty, string.Empty, string.Empty },
+    };
+
+    List<List<string>> latestUpdates = new List<List<string>>
+    {
+        new List<string> { "https://raw.githubusercontent.com/OptechX/library.apps/main/Utility/Igor%20Pavlov/7Zip/icon.svg", "7-Zip", "Igor Pavlov", "22.01" },
+        new List<string> { "https://github.com/OptechX/library.apps/raw/main/Microsoft-365/img/word.svg", "Word", "Microsoft", "2301.16026.20146" },
+        new List<string> { "https://github.com/OptechX/library.apps/raw/main/Lifestyle/Tencent%20Inc./WeChat/icon.png", "WeChat", "Tencent Inc.", "3.8.1.26" },
+        new List<string> { "https://github.com/OptechX/library.apps/raw/main/Entertainment/Apple%20Inc./iTunes/icon.png", "iTunes", "Apple Inc.", "12.12.8.2" },
+    };
+}

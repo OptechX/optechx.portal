@@ -1,11 +1,11 @@
 ﻿using System.Reflection;
 using Microsoft.EntityFrameworkCore;
-using OptechX.Portal.Server.Helpers;
 using OptechX.Portal.Server.Models;
 using OptechX.Portal.Shared.Models.Engine.Applications;
 using OptechX.Portal.Shared.Models.Engine.Drivers;
 using OptechX.Portal.Shared.Models.Engine.ImageBuilds;
 using OptechX.Portal.Shared.Models.Forms;
+using OptechX.Portal.Shared.Models.Generic;
 using OptechX.Portal.Shared.Models.User;
 
 namespace OptechX.Portal.Server.Data
@@ -28,6 +28,9 @@ namespace OptechX.Portal.Server.Data
 
         // Orders
         public DbSet<ImageBuildBasic>? ImageBuildBasics { get; set; }
+
+        // Generic
+        public DbSet<NewsUpdate>? NewsUpdates { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
