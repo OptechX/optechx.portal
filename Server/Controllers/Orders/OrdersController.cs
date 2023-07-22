@@ -40,7 +40,7 @@ namespace OptechX.Portal.Server.Controllers.Orders
                 _context.ImageBuildBasics.Add(imageBuildBasic);
                 await _context.SaveChangesAsync();
 
-                return Ok(imageBuildBasic);
+                return Ok();
             }
             catch (DbUpdateException ex)
             {
