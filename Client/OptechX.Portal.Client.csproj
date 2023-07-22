@@ -27,6 +27,9 @@
     <Content Remove="wwwroot\img\" />
     <Content Remove="Pages\ImageBuilder.razor" />
     <Content Remove="wwwroot\img\oem-logos\" />
+    <Content Remove="wwwroot\img\account_tiers\" />
+    <Content Remove="wwwroot\icons\twttrbs\" />
+    <Content Remove="wwwroot\icons\windows\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="wwwroot\icons\" />
@@ -34,6 +37,9 @@
     <Folder Include="wwwroot\img\" />
     <Folder Include="Pages\Account\" />
     <Folder Include="wwwroot\img\oem-logos\" />
+    <Folder Include="wwwroot\img\account_tiers\" />
+    <Folder Include="wwwroot\icons\twttrbs\" />
+    <Folder Include="wwwroot\icons\windows\" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Services\" />
