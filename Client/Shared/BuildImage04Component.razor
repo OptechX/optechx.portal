@@ -1,9 +1,10 @@
 ﻿@using OptechX.Portal.Shared.Models.Engine.ImageBuilds
-@using System.Linq
 @inject ILocalStorageService LocalStorage
-@inject NavigationManager NavigationManager
 @inject IToastService ToastService
 @inject IFormsService FormsService
+@inject IOrderManagementService OrderManagementService
+@inject IPureHttpService PureHttpService
+@inject NavigationManager NavigationManager
 
 @inject IJSRuntime JSRuntime
 
@@ -13,45 +14,154 @@
 </div>
 
 <div class="container">
-    @if (!isOrderBuilt)
+    <!-- isAccountVerified -->
+    @switch (isAccountVerified)
     {
-        <div class="row-item mb-2">
-            <div class="circle-yellow"></div>
-            <div class="text">Compiling image design</div>
-        </div>
+        case 0:
+            <div class="row-item mb-2">
+                <div class="circle-blue"></div>
+                <div class="text">Account not verified</div>
+            </div>
+            break;
+        case 1:
+            <div class="row-item mb-2">
+                <div class="circle-yellow"></div>
+                <div class="text">Account verifying in progress</div>
+            </div>
+            break;
+        case 2:
+            <div class="row-item mb-2">
+                <div class="circle-green"></div>
+                <div class="text">Account verified successfully</div>
+            </div>
+            break;
     }
-    else
+    <!-- isOrderBuilding -->
+    @switch (isOrderBuilding)
     {
-        <div class="row-item mb-2">
-            <div class="circle-blue"></div>
-            <div class="text">Image design compiled</div>
-        </div>
+        case 0:
+            <div class="row-item mb-2">
+                <div class="circle-blue"></div>
+                <div class="text">Order to be built</div>
+            </div>
+            break;
+        case 1:
+            <div class="row-item mb-2">
+                <div class="circle-yellow"></div>
+                <div class="text">Order currently building</div>
+            </div>
+            break;
+        case 2:
+            <div class="row-item mb-2">
+                <div class="circle-green"></div>
+                <div class="text">Order building has completed successfully</div>
+            </div>
+            break;
     }
-    @if (!isOrderSubmitted)
+    <!-- isOrderSubmitPrepared  -->
+    @switch (isOrderSubmitPrepared)
     {
-        <div class="row-item mb-2">
-            <div class="circle-yellow"></div>
-            <div class="text">Order waiting to be submit</div>
-        </div>
+        case 0:
+            <div class="row-item mb-2">
+                <div class="circle-blue"></div>
+                <div class="text">Order to be submitted</div>
+            </div>
+            break;
+        case 1:
+            <div class="row-item mb-2">
+                <div class="circle-yellow"></div>
+                <div class="text">Order submission in progress</div>
+            </div>
+            break;
+        case 2:
+            <div class="row-item mb-2">
+                <div class="circle-green"></div>
+                <div class="text">Order submitted successfully</div>
+            </div>
+            break;
     }
-    else
+    <!-- isPendingResponse -->
+    @switch (isPendingResponse)
     {
-        <div class="row-item mb-2">
-            <div class="circle-blue"></div>
-            <div class="text">Order submission complete</div>
-        </div>
+        case 0:
+            <div class="row-item mb-2">
+                <div class="circle-blue"></div>
+                <div class="text">Pending API system start</div>
+            </div>
+            break;
+        case 1:
+            <div class="row-item mb-2">
+                <div class="circle-yellow"></div>
+                <div class="text">System API tests started</div>
+            </div>
+            break;
+        case 2:
+            <div class="row-item mb-2">
+                <div class="circle-green"></div>
+                <div class="text">System API tests passed successfully</div>
+            </div>
+            break;
+    }
+    <!-- orderResponseCode -->
+    @switch (orderResponseCode)
+    {
+        case 0:
+            <div class="row-item mb-2">
+                <div class="circle-blue"></div>
+                <div class="text">Pending order response</div>
+            </div>
+            break;
+        case 1:
+            <div class="row-item mb-2">
+                <div class="circle-yellow"></div>
+                <div class="text">Order posted to API</div>
+            </div>
+            break;
+        case 2:
+            <div class="row-item mb-2">
+                <div class="circle-green"></div>
+                <div class="text">Order successfully posted and queued</div>
+            </div>
+            break;
+        case 3:
+            <div class="row-item mb-2">
+                <div class="circle-red"></div>
+                <div class="text">Order not received correctly (Error type 2)</div>
+            </div>
+            break;
+        case 4:
+            <div class="row-item mb-2">
+                <div class="circle-red"></div>
+                <div class="text">Unknown error, contact support</div>
+            </div>
+            break;
     }
 </div>
-    
+
+@if (orderResponseCode == 2)
+{
+    <div class="container">
+        <button class="btn btn-optechx ms-2" @onclick="SeeOrders" style="white-space: nowrap;">View Order Management</button>
+        <button class="btn btn-optechx ms-2" @onclick="ReturnToMain" style="white-space: nowrap;">Return to Main</button>
+    </div>
+}
+
 
 @code {
-    [Parameter]
-    public string? accountId { get; set; }
-
     private string pageTitle { get; } = "Order Submission";
+    private string? accountId { get; set; }
 
+    ImageBuildBasic imageBuildBasicPayload = new ImageBuildBasic();
+
+    private int isAccountVerified { get; set; }
+    private int isOrderBuilding { get; set; }
+    private int isOrderSubmitPrepared { get; set; }
+    private int isOrderSubmitted { get; set; }
+    private int isPendingResponse { get; set; }
+    private int orderResponseCode { get; set; }
+    private bool isReturnToMainOK { get; set; }
     private bool isOrderBuilt { get; set; }
-    private bool isOrderSubmitted { get; set; }
+    private int orderSubmissionStatus { get; set; }
 
     private string[] keys = {
         "imageParam1", "imageParam2", "imageParam3", "imageParam4", "imageParam5",
@@ -60,31 +170,6 @@
         "imageParam16", "imageParam17", "imageParam18", "imageParam19",
     };
 
-    private string? release { get; set; }
-    private string? edition { get; set; }
-    private string? version { get; set; }
-    private string? arch { get; set; }
-    private string? language { get; set; }
-    private string? format { get; set; }
-    private string? apps { get; set; }
-    private string? drivers { get; set; }
-    private string? adminuser { get; set; }
-    private string? adminpass { get; set; }
-    private string? regkeys { get; set; }
-    private string? capabilities { get; set; }
-    private string? optionalfeatures { get; set; }
-    private bool ciapps { get; set; }
-    private bool cidrivers { get; set; }
-    private bool cisecurity { get; set; }
-    private bool cicd { get; set; }
-    private bool notifycomplete { get; set; }
-    private bool notifycicdcomplete { get; set; }
-
-    ImageBuildBasic? imageBuild;
-
-    private List<string> SelectedAppItems { get; set; } = new List<string>();
-    private List<string> SelectedDriverItems { get; set; } = new List<string>();
-
     protected override async Task OnInitializedAsync()
     {
         await InitializeAsync();
@@ -92,63 +177,133 @@
 
     private async Task InitializeAsync()
     {
+        isAccountVerified = 0; //blue
+        isOrderBuilding = 0; //blue
+        isOrderSubmitPrepared = 0; //blue
+        isOrderSubmitted = 0; //blue
+        isPendingResponse = 0; //blue
+        orderResponseCode = 0; //blue
+        isReturnToMainOK = false;
+
         isOrderBuilt = false;
 
-        // Retrieve query parameters
-        release = (await LocalStorage.GetItemAsStringAsync("imageParam1")).Replace("\"", "");
-        edition = (await LocalStorage.GetItemAsStringAsync("imageParam2")).Replace("\"", "");
-        version = (await LocalStorage.GetItemAsStringAsync("imageParam3")).Replace("\"", "");
-        arch = (await LocalStorage.GetItemAsStringAsync("imageParam4")).Replace("\"", "");
-        language = (await LocalStorage.GetItemAsStringAsync("imageParam5")).Replace("\"", "");
-        format = (await LocalStorage.GetItemAsStringAsync("imageParam6")).Replace("\"", "");
-        apps = (await LocalStorage.GetItemAsStringAsync("imageParam7")).Replace("\"", "");
-        drivers = (await LocalStorage.GetItemAsStringAsync("imageParam8")).Replace("\"","");
-        adminuser = await LocalStorage.GetItemAsStringAsync("imageParam9");
-        adminpass = await LocalStorage.GetItemAsStringAsync("imageParam10");
-        regkeys = (await LocalStorage.GetItemAsStringAsync("imageParam11")).Replace("\"", "");
-        capabilities = (await LocalStorage.GetItemAsStringAsync("imageParam12")).Replace("\"", "");
-        optionalfeatures = (await LocalStorage.GetItemAsStringAsync("imageParam13")).Replace("\"", "");
-        ciapps = await LocalStorage.GetItemAsync<bool>("imageParam14");
-        cidrivers = await LocalStorage.GetItemAsync<bool>("imageParam15");
-        cisecurity = await LocalStorage.GetItemAsync<bool>("imageParam16");
-        cicd = await LocalStorage.GetItemAsync<bool>("imageParam17");
-        notifycomplete = await LocalStorage.GetItemAsync<bool>("imageParam18");
-        notifycicdcomplete = await LocalStorage.GetItemAsync<bool>("imageParam19");
+        // <!-- isAccountVerified -->
+        isAccountVerified = 1; //yellow
+        StateHasChanged();
+        await Task.Delay(1000);
+        await GetAccountId();
+        isAccountVerified = 2; //green
+        StateHasChanged();
+        await Task.Delay(500);
 
-        await LocalStorage.RemoveItemsAsync(keys);
+        // <!-- isOrderBuilding -->
+        isOrderBuilding = 1; //yellow
+        StateHasChanged();
+        imageBuildBasicPayload = await RetrieveStoredValues();
+        await Task.Delay(1000);
+        isOrderBuilding = 2; //green
+        StateHasChanged();
+        await Task.Delay(500);
+        await JSRuntime.InvokeVoidAsync("console.log", imageBuildBasicPayload);
 
-        // Initialize the imageBuild object with the retrieved values
-        imageBuild = new ImageBuildBasic
-        {
-            Id = 0,
-            AccountId = accountId,
-            OrderDate = DateTime.UtcNow,
-            OrderLifecycle = "SUBMITTED",
-            DownloadLink = null,
-            ImageFormat = format,
-            ContinuousIntegrationApplications = ciapps,
-            ContinuousIntegrationDrivers = cidrivers,
-            IntegrateSecurityPatches = cisecurity,
-            WindowsRelease = release,
-            WindowsEdition = edition,
-            WindowsVersion = version,
-            Arch = arch,
-            Language = language.Contains("English (United States)") ? "EN_US" : "MUI",
-            Drivers = drivers.Split(',').ToList(),
-            Applications = apps.Split(',').ToList(),
-            AppxProvisionedPackages = null,
-            WindowsCapabilities = capabilities.Split(',').ToList(),
-            WindowsOptionalFeatures = optionalfeatures.Split(',').ToList(),
-            CustomRegistryStrings = regkeys.Split(',').ToList(),
-            NotifyBuildComplete = notifycicdcomplete,
-            NotifyCICDComplete = notifycicdcomplete,
-        };
-
-        await Task.Delay(2000);
-        isOrderBuilt = true;
+        // <!-- isOrderSubmitPrepared  -->
+        isOrderSubmitPrepared = 1;
+        StateHasChanged();
+        bool isUrlActive = await PureHttpService.TestConnection(url: "http://http://localhost:5110/");
+        if (isUrlActive)
+            await LocalStorage.RemoveItemsAsync(keys);
+        isOrderSubmitPrepared = 2;
+        await Task.Delay(1000);
         StateHasChanged();
 
+        // <!-- isPendingResponse -->
         await Task.Delay(2000);
+        isPendingResponse = 1;
+        StateHasChanged();
+        await Task.Delay(1000);
 
+        // <!-- orderResponseCode -->
+        orderResponseCode = 1;
+        StateHasChanged();
+        await Task.Delay(1000);
+
+        // <!-- isPendingResponse -->
+        int result = await OrderManagementService.PostImageBuildBasicAsync(imageBuildBasic: imageBuildBasicPayload);
+        isPendingResponse = 2;
+        StateHasChanged();
+        await Task.Delay(1000);
+
+        // <!-- orderResponseCode -->
+        switch (result)
+        {
+            case 1:
+                orderResponseCode = 2; // success
+                StateHasChanged();
+                break;
+            case 2:
+                orderSubmissionStatus = 3; // fail
+                StateHasChanged();
+                break;
+            case 3:
+                orderSubmissionStatus = 3; // fail
+                StateHasChanged();
+                break;
+            default:
+                orderSubmissionStatus = 4; // fail
+                StateHasChanged();
+                break;
+        }
+    }
+
+    private async Task<ImageBuildBasic> RetrieveStoredValues()
+    {
+        ImageBuildBasic imageBuild = new ImageBuildBasic();
+
+        // Retrieve query parameters
+        imageBuild.Id = 0;
+        imageBuild.AccountId = accountId;
+        imageBuild.OrderDate = DateTime.UtcNow;
+        imageBuild.OrderLifecycle = "SUBMITTED";
+        imageBuild.DownloadLink = null;
+        imageBuild.ImageFormat = (await LocalStorage.GetItemAsStringAsync("imageParam6")).Replace("\"", "");
+        imageBuild.ContinuousIntegrationApplications = await LocalStorage.GetItemAsync<bool>("imageParam14");
+        imageBuild.ContinuousIntegrationDrivers = await LocalStorage.GetItemAsync<bool>("imageParam15");
+        imageBuild.ContinuousDeployment = await LocalStorage.GetItemAsync<bool>("imageParam17");
+        imageBuild.IntegrateSecurityPatches = await LocalStorage.GetItemAsync<bool>("imageParam16");
+        imageBuild.WindowsRelease = (await LocalStorage.GetItemAsStringAsync("imageParam1")).Replace("\"", "");
+        imageBuild.WindowsEdition = (await LocalStorage.GetItemAsStringAsync("imageParam2")).Replace("\"", "");
+        imageBuild.WindowsVersion = (await LocalStorage.GetItemAsStringAsync("imageParam3")).Replace("\"", "");
+        imageBuild.Arch = (await LocalStorage.GetItemAsStringAsync("imageParam4")).Replace("\"", "");
+        imageBuild.Language = (await LocalStorage.GetItemAsStringAsync("imageParam5")).Replace("\"", "");
+        imageBuild.Drivers = (await LocalStorage.GetItemAsStringAsync("imageParam8")).Replace("\"", "");
+        imageBuild.Applications = (await LocalStorage.GetItemAsStringAsync("imageParam7")).Replace("\"", "");
+        imageBuild.AppxProvisionedPackages = null;
+        imageBuild.WindowsCapabilities = (await LocalStorage.GetItemAsStringAsync("imageParam12")).Replace("\"", "");
+        imageBuild.WindowsOptionalFeatures = (await LocalStorage.GetItemAsStringAsync("imageParam13")).Replace("\"", "");
+        imageBuild.CustomRegistryStrings = (await LocalStorage.GetItemAsStringAsync("imageParam11")).Replace("\"", "");
+        imageBuild.NotifyBuildComplete = await LocalStorage.GetItemAsync<bool>("imageParam19");
+        imageBuild.NotifyCICDComplete = await LocalStorage.GetItemAsync<bool>("imageParam18");
+        imageBuild.NotifyEmailAddress = null;
+        imageBuild.DefaultAccount = await LocalStorage.GetItemAsStringAsync("imageParam9");
+        imageBuild.DefaultPassword = await LocalStorage.GetItemAsStringAsync("imageParam10");
+
+        return imageBuild;
+    }
+
+    private async Task GetAccountId()
+    {
+        accountId = await LocalStorage.GetItemAsync<string>("accountId");
+    }
+
+    private async Task SeeOrders()
+    {
+        NavigationManager.NavigateTo("/");
+        await Task.CompletedTask;
+    }
+
+    private async Task ReturnToMain()
+    {
+        NavigationManager.NavigateTo("/");
+        await Task.CompletedTask;
     }
 }
