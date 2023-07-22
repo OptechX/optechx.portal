@@ -1,9 +1,8 @@
 ﻿@using OptechX.Portal.Shared.Models.User
-@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IAuthService AuthService
 @inject IToastService ToastService
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
-@*@inject IJSRuntime JSRuntime*@
 
 <PageTitle>OptechX Portal</PageTitle>
 
@@ -51,9 +50,7 @@
     {
         showSubmitButton = false;
         ToastService.ShowInfo("Processing account verification");
-        //await JSRuntime.InvokeVoidAsync("console.log", verifyAccountRequest.VerifyToken);
         var result = await AuthService.VerifyAccount(verifyAccountRequest.VerifyToken);
-        //await JSRuntime.InvokeVoidAsync("console.log", result);
         if (result.Data)
         {
             ToastService.ShowSuccess(result.Message!);

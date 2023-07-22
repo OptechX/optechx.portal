@@ -1,12 +1,8 @@
-﻿@using OptechX.Portal.Client.Shared
-@using OptechX.Portal.Shared.Models.Forms
-@using OptechX.Portal.Shared.Models.Engine.ImageBuilds
+﻿@using OptechX.Portal.Shared.Models.Engine.ImageBuilds
 @inject ILocalStorageService LocalStorage
 @inject IToastService ToastService
 @inject IFormsService FormsService
 @inject NavigationManager NavigationManager
-
-@inject IJSRuntime JSRuntime
 
 <div class="mb-3">
     <h3>@pageTitle</h3>
@@ -351,8 +347,6 @@ else
         await LocalStorage.SetItemAsync<bool>("imageParam19", IsNotifyCICDCompletedChecked);
         enableSubmitOrderButton = true;
         StateHasChanged(); // Notify Blazor to re-render the component
-        await JSRuntime.InvokeVoidAsync("console.log", adminCredentials.DefaultAccount);
-        await JSRuntime.InvokeVoidAsync("console.log", adminCredentials.DefaultPassword);
     }
 
     private async Task SaveRegistryEdits()
@@ -427,7 +421,7 @@ else
             await LocalStorage.SetItemAsStringAsync("imageParam13", string.Empty);
         }
         ToastService.ShowWarning("Image order submitted");
-        NavigationManager.NavigateTo("buildimage4");
+        NavigationManager.NavigateTo("/buildimage4");
     }
 
     // refresh the page

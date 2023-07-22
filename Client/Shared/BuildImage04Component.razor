@@ -6,9 +6,6 @@
 @inject IPureHttpService PureHttpService
 @inject NavigationManager NavigationManager
 
-@inject IJSRuntime JSRuntime
-
-
 <div class="row ml-4">
     <h3>@pageTitle</h3>
 </div>
@@ -204,7 +201,6 @@
         isOrderBuilding = 2; //green
         StateHasChanged();
         await Task.Delay(500);
-        await JSRuntime.InvokeVoidAsync("console.log", imageBuildBasicPayload);
 
         // <!-- isOrderSubmitPrepared  -->
         isOrderSubmitPrepared = 1;
