@@ -21,6 +21,7 @@
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageReference Include="MailKit" Version="4.1.0" />
     <PackageReference Include="MimeKit" Version="4.1.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.31.0" />
   </ItemGroup>
 
@@ -39,6 +40,8 @@
     <None Remove="Helpers\" />
     <None Remove="Controllers\Auth\" />
     <None Remove="Controllers\User\" />
+    <None Remove="Controllers\Forms\" />
+    <None Remove="Controllers\Orders\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Controllers\Engine\" />
@@ -49,5 +52,7 @@
     <Folder Include="Helpers\" />
     <Folder Include="Controllers\Auth\" />
     <Folder Include="Controllers\User\" />
+    <Folder Include="Controllers\Forms\" />
+    <Folder Include="Controllers\Orders\" />
   </ItemGroup>
 </Project>

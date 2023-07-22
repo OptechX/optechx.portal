@@ -4,7 +4,6 @@
 @inject IToastService ToastService
 @inject ICountryListService CountryListService
 @inject NavigationManager NavigationManager
-@*@inject IJSRuntime JSRuntime*@
 
 <PageTitle>OptechX Portal</PageTitle>
 
@@ -84,9 +83,7 @@ else
     {
         showSubmitButton = false;
         ToastService.ShowInfo("Processing account registration");
-        //await JSRuntime.InvokeVoidAsync("console.log", user);
         var result = await AuthService.Register(user);
-        //await JSRuntime.InvokeVoidAsync("console.log", result);
         if (result.Success == true)
         {
             ToastService.ShowSuccess(result.Message!);
