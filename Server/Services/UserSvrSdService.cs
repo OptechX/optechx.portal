@@ -1,4 +1,5 @@
-﻿using OptechX.Portal.Server.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using OptechX.Portal.Server.Data;
 using OptechX.Portal.Shared.Models.Engine.Applications;
 using OptechX.Portal.Shared.Models.User;
 
@@ -13,13 +14,13 @@ namespace OptechX.Portal.Server.Services
             _context = context;
 		}
 
-        public Task<UserDashboardResponse>? GetUserDashboardResponse(Guid accountId)
+        public async Task<UserDashboardResponse>? GetUserDashboardResponse(Guid accountId)
         {
             // User account stuff
             var user = _context.UserAccounts!.FirstOrDefault(u => u.Id == accountId);
             if (user == null)
             {
-                return Task.FromResult(new UserDashboardResponse());
+                return await Task.FromResult(new UserDashboardResponse());
             }
             UserDashboardResponse data = new UserDashboardResponse()
             {
@@ -39,15 +40,14 @@ namespace OptechX.Portal.Server.Services
                 data.ImageBuildBasics = images;
 
             // ApplicationDashboardView (generic response)
-            var apps = _context.Applications!
-                .OrderByDescending(app => app.LastUpdate)
-                .Take(5)
-                .ToList();
+            var apps = await _context.Applications!
+                .ToListAsync();
+            var last5Apps = apps.Count >= 5 ? apps.Skip(apps.Count - 5) : apps;
             List<ApplicationDashboardView> returnedApps = new();
-            foreach (var app in apps)
+            foreach (var app in last5Apps)
             {
                 ApplicationDashboardView addApp = new ApplicationDashboardView() { Icon = app.Icon, Name = app.Name, Publisher = app.Publisher, Version = app.Version };
-                returnedApps.Append(addApp);
+                returnedApps.Add(addApp);
             }
             data.ApplicationDashboardViews = returnedApps;
 
@@ -58,7 +58,7 @@ namespace OptechX.Portal.Server.Services
                 .ToList();
             data.NewsUpdates = newsArticles;
 
-            return Task.FromResult(data);
+            return await Task.FromResult(data);
         }
     }
 }

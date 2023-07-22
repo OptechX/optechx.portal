@@ -1,5 +1,6 @@
 ﻿@using OptechX.Portal.Shared.Models.User
 @using OptechX.Portal.Shared.Models.Engine.ImageBuilds
+@using OptechX.Portal.Shared.Models.Engine.Applications
 @inject IUserDashboardService UserDashboardService
 @inject ILocalStorageService LocalStorageService
 
@@ -83,21 +84,40 @@
     </div>
 </div>
 
-@if (imageBuildList != null && imageBuildList.Count > 0)
+@if (imageBuildList != null && imageBuildList.Count > 0 && applicationDashboardViewList != null && applicationDashboardViewList.Count > 0)
 {
-    <DashboardImageBuildHistory ImageBuilds="@imageBuildList" />
+    <DashboardImageHistoryApplicationLast5 ImageBuilds="@imageBuildList" ApplicationViews="@applicationDashboardViewList" />
 }
 else
 {
+    <!-- DESKTOP -->
     <div class="row d-none d-md-flex justify-content-center">
         <div class="col-md-6 col-12 mb-4">
             <div style="height: 300px; overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="mb-3">
                 <p>Loading image build history...</p>
-                </div>
             </div>
         </div>
-    }
+        <div class="col-md-6 col-12 mb-4">
+            <div style="height: 300px; overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="mb-3">
+                <p>Loading application update history...</p>
+            </div>
+        </div>
+    </div>
 
+    <!-- MOBILE -->
+    <div class="row d-md-none">
+        <div class="col-12 mb-4">
+            <div style="height: 300px; overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="mb-3">
+                <p>Loading image build history...</p>
+            </div>
+        </div>
+        <div class="col-12 mb-4">
+            <div style="height: 300px; overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="mb-3">
+                <p>Loading application update history...</p>
+            </div>
+        </div>
+    </div>
+}
 
 @code {
     private string pageTitle = "Dashboard";
@@ -111,6 +131,7 @@ else
     private string? SubscriptionTierHtml;
 
     private List<ImageBuildBasic>? imageBuildList;
+    private List<ApplicationDashboardView>? applicationDashboardViewList;
 
     // init
     protected override async Task OnInitializedAsync()
@@ -227,6 +248,7 @@ else
         }
 
         imageBuildList = userDashboardResponse.ImageBuildBasics;
+        applicationDashboardViewList = userDashboardResponse.ApplicationDashboardViews;
 
         await Task.Delay(3000);
     }

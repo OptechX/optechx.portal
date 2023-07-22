@@ -1,0 +1,105 @@
+﻿@using OptechX.Portal.Shared.Models.Engine.Applications
+
+<!-- BUILD HISTORY AND LATEST APPLICATION UPDATES -->
+<div class="row d-none d-md-flex justify-content-center">
+    <div class="col-md-6 col-12 mb-4">
+        <div style="height: 300px; overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="mb-3">
+            <table class="table table-responsive custom-table" style="border-collapse: collapse;">
+                <thead>
+                    <tr>
+                        <th style="width: 20px;"></th>
+                        <th>
+                            <div class="d-flex align-items-center">
+                                <span style="white-space: nowrap;">Publisher</span>
+                            </div>
+                        </th>
+                        <th>
+                            <div class="d-flex align-items-center">
+                                <span style="white-space: nowrap;">Name</span>
+                            </div>
+                        </th>
+                        <th>
+                            <div class="d-flex align-items-center">
+                                <span style="white-space: nowrap;">Version</span>
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (ApplicationDashboardView app in ApplicationViews)
+                    {
+                        <tr>
+                            <td style="display: flex; align-items: center;">
+                                <img src="@app.Icon" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />
+                            </td>
+                            <td>
+                                @app.Publisher
+                            </td>
+                            <td>
+                                @app.Name
+                            </td>
+                            <td>
+                                @app.Version
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<!-- MOBILE VIEW -->
+<div class="row d-md-none">
+    <div class="col-12 mb-4">
+        <div style="height: 300px; overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="mb-3">
+            <table class="table table-responsive custom-table" style="border-collapse: collapse;">
+                <thead>
+                    <tr>
+                        <th style="width: 20px;"></th>
+                        <th>
+                            <div class="d-flex align-items-center">
+                                <span style="white-space: nowrap;">Publisher</span>
+                            </div>
+                        </th>
+                        <th>
+                            <div class="d-flex align-items-center">
+                                <span style="white-space: nowrap;">Name</span>
+                            </div>
+                        </th>
+                        <th>
+                            <div class="d-flex align-items-center">
+                                <span style="white-space: nowrap;">Version</span>
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (ApplicationDashboardView app in ApplicationViews)
+                    {
+                        <tr>
+                            <td style="display: flex; align-items: center;">
+                                <img src="@app.Icon" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />
+                            </td>
+                            <td>
+                                @app.Publisher
+                            </td>
+                            <td>
+                                @app.Name
+                            </td>
+                            <td>
+                                @app.Version
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public List<ApplicationDashboardView> ApplicationViews { get; set; } = null!;
+}
