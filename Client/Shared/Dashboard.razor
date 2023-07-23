@@ -153,7 +153,7 @@ else
     private string? BillingType;
     private string? BillingTypeHtml;
     private int ImagesRemaining;
-    private string? SubscriptionTier;
+    //private string? SubscriptionTier;  // issue #40
     private string? SubscriptionTierHtml;
 
     private List<ImageBuildBasic>? imageBuildList;
@@ -225,51 +225,51 @@ else
         switch (userDashboardResponse.AccountTier)
         {
             case OptechX.Portal.Shared.Models.User.Constants.AccountTier.BASIC:
-                SubscriptionTier = "Basic";
+                //SubscriptionTier = "Basic";  // issue #40
                 SubscriptionTierHtml = "/img/account_tiers/medal_1.svg";
                 break;
             case OptechX.Portal.Shared.Models.User.Constants.AccountTier.POWER_USER:
-                SubscriptionTier = "Power User";
+                //SubscriptionTier = "Power User";  // issue #40
                 SubscriptionTierHtml = "/img/account_tiers/medal_2.svg";
                 break;
             case OptechX.Portal.Shared.Models.User.Constants.AccountTier.PROFESSIONAL:
-                SubscriptionTier = "Professional";
+                //SubscriptionTier = "Professional";  // issue #40
                 SubscriptionTierHtml = "/img/account_tiers/medal_3.svg";
                 break;
             case OptechX.Portal.Shared.Models.User.Constants.AccountTier.SMB:
-                SubscriptionTier = "SMB";
+                //SubscriptionTier = "SMB";  // issue #40
                 SubscriptionTierHtml = "/img/account_tiers/medal_3.svg";
                 break;
             case OptechX.Portal.Shared.Models.User.Constants.AccountTier.ENTERPRISE:
-                SubscriptionTier = "Enterprise";
+                //SubscriptionTier = "Enterprise";  // issue #40
                 SubscriptionTierHtml = "/img/account_tiers/medal_4.svg";
                 break;
             case OptechX.Portal.Shared.Models.User.Constants.AccountTier.GOVERNMENT:
-                SubscriptionTier = "Government";
+                //SubscriptionTier = "Government";  // issue #40
                 SubscriptionTierHtml = "/img/account_tiers/medal_4.svg";
                 break;
             case OptechX.Portal.Shared.Models.User.Constants.AccountTier.VIP:
-                SubscriptionTier = "VIP";
+                //SubscriptionTier = "VIP";  // issue #40
                 SubscriptionTierHtml = "/img/account_tiers/medal_5.svg";
                 break;
             case OptechX.Portal.Shared.Models.User.Constants.AccountTier.FOUNDER:
-                SubscriptionTier = "Founder";
+                //SubscriptionTier = "Founder";  // issue #40
                 SubscriptionTierHtml = "/img/account_tiers/medal_5.svg";
                 break;
             case OptechX.Portal.Shared.Models.User.Constants.AccountTier.SHAREHOLDER:
-                SubscriptionTier = "Shareholder";
+                //SubscriptionTier = "Shareholder";  // issue #40
                 SubscriptionTierHtml = "/img/account_tiers/medal_1.svg";
                 break;
             case OptechX.Portal.Shared.Models.User.Constants.AccountTier.PAUSED:
-                SubscriptionTier = "PAUSED";
+                //SubscriptionTier = "PAUSED";  // issue #40
                 SubscriptionTierHtml = "/img/account_tiers/medal_1.svg";
                 break;
             case OptechX.Portal.Shared.Models.User.Constants.AccountTier.OTHER:
-                SubscriptionTier = "Other";
+                //SubscriptionTier = "Other";  // issue #40
                 SubscriptionTierHtml = "/img/account_tiers/medal_5.svg";
                 break;
             case OptechX.Portal.Shared.Models.User.Constants.AccountTier.CLOSED:
-                SubscriptionTier = "CLOSED";
+                //SubscriptionTier = "CLOSED";  // issue #40
                 SubscriptionTierHtml = "/img/account_tiers/medal_1.svg";
                 break;
         }
