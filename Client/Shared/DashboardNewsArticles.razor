@@ -1,46 +1,47 @@
-﻿@using OptechX.Portal.Shared.Models.Engine.Applications
+﻿@using OptechX.Portal.Shared.Models.Generic
 
-<!-- BUILD HISTORY AND LATEST APPLICATION UPDATES -->
+<!-- DESKTOP VIEW -->
 <div class="row d-none d-md-flex justify-content-center">
-    <div class="col-md-6 col-12 mb-4">
-        <h3>Recent App Updates</h3>
+    <!-- NEWS UPDATES -->
+    <div class="col-md-12 col-12 mb-4">
+        <h3>News Updates</h3>
         <div style="height: 300px; overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="mb-3">
             <table class="table table-responsive custom-table" style="border-collapse: collapse;">
                 <thead>
                     <tr>
-                        <th style="width: 20px;"></th>
+                        <th style="width: 60px;"></th> <!-- Image -->
                         <th>
                             <div class="d-flex align-items-center">
-                                <span style="white-space: nowrap;">Publisher</span>
+                                <span style="white-space: nowrap;"></span> <!-- Title -->
                             </div>
                         </th>
                         <th>
                             <div class="d-flex align-items-center">
-                                <span style="white-space: nowrap;">Name</span>
+                                <span style="white-space: nowrap;"></span> <!-- Preview -->
                             </div>
                         </th>
                         <th>
                             <div class="d-flex align-items-center">
-                                <span style="white-space: nowrap;">Version</span>
+                                <span style="white-space: nowrap;"></span> <!-- Link -->
                             </div>
                         </th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (ApplicationDashboardView app in ApplicationViews)
+                    @foreach (NewsUpdate article in NewsUpdates)
                     {
                         <tr>
                             <td style="display: flex; align-items: center;">
-                                <img src="@app.Icon" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />
+                                <img src="@article.Image" style="height: 5em; margin-left: 0.1em; margin-right: 0.1em;" />
                             </td>
                             <td>
-                                @app.Publisher
+                                @article.Heading
                             </td>
                             <td>
-                                @app.Name
+                                @article.Preview
                             </td>
                             <td>
-                                @app.Version
+                                <button class="btn btn-optechx" onclick="window.open('@article.Link', '_blank')">Link</button>
                             </td>
                         </tr>
                     }
@@ -52,46 +53,47 @@
 
 
 <!-- MOBILE VIEW -->
-<div class="row d-md-none">
-    <div class="col-12 mb-4">
-        <h3>Recent App Updates</h3>
+<div class="row">
+    <!-- LAST 5 APPLICATIONS -->
+    <div class="col-12 mb-4 d-block d-md-none">
+        <h4>News Updates</h4>
         <div style="height: 300px; overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="mb-3">
             <table class="table table-responsive custom-table" style="border-collapse: collapse;">
                 <thead>
                     <tr>
-                        <th style="width: 20px;"></th>
+                        <th style="width: 60px;"></th> <!-- Image -->
                         <th>
                             <div class="d-flex align-items-center">
-                                <span style="white-space: nowrap;">Publisher</span>
+                                <span style="white-space: nowrap;"></span>
                             </div>
                         </th>
                         <th>
                             <div class="d-flex align-items-center">
-                                <span style="white-space: nowrap;">Name</span>
+                                <span style="white-space: nowrap;"></span> <!-- Preview -->
                             </div>
                         </th>
                         <th>
                             <div class="d-flex align-items-center">
-                                <span style="white-space: nowrap;">Version</span>
+                                <span style="white-space: nowrap;"></span> <!-- Link -->
                             </div>
                         </th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (ApplicationDashboardView app in ApplicationViews)
+                    @foreach (NewsUpdate article in NewsUpdates)
                     {
                         <tr>
                             <td style="display: flex; align-items: center;">
-                                <img src="@app.Icon" style="height: 2em; margin-left: 0.1em; margin-right: 0.1em;" />
+                                <img src="@article.Image" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />
                             </td>
                             <td>
-                                @app.Publisher
+                                @article.Heading
                             </td>
                             <td>
-                                @app.Name
+                                @article.Preview
                             </td>
                             <td>
-                                @app.Version
+                                <button class="btn btn-optechx" onclick="window.open('@article.Link', '_blank')">Link</button>
                             </td>
                         </tr>
                     }
@@ -103,5 +105,5 @@
 
 @code {
     [Parameter]
-    public List<ApplicationDashboardView> ApplicationViews { get; set; } = null!;
+    public List<NewsUpdate> NewsUpdates { get; set; } = null!;
 }

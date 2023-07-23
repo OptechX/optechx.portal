@@ -1,11 +1,12 @@
 ﻿@using OptechX.Portal.Shared.Models.User
 @using OptechX.Portal.Shared.Models.Engine.ImageBuilds
 @using OptechX.Portal.Shared.Models.Engine.Applications
+@using OptechX.Portal.Shared.Models.Generic
 @inject IUserDashboardService UserDashboardService
 @inject ILocalStorageService LocalStorageService
 
-<div class="row ml-4">
-    <h3>@pageTitle</h3>
+<div class="row ml-4 mb-3">
+    <h2>@pageTitle</h2>
 </div>
 
 @*<div class="row d-none d-md-flex justify-content-center">*@ <!-- this code prevents it from being shown on mobile with the d-none -->
@@ -119,6 +120,31 @@ else
     </div>
 }
 
+@if (newsArticleList != null && newsArticleList.Count > 0)
+{
+    <DashboardNewsArticles NewsUpdates="@newsArticleList" />
+}
+else
+{
+    <!-- DESKTOP -->
+    <div class="row d-none d-md-flex justify-content-center">
+        <div class="col-12 mb-4">
+            <div style="height: 300px; overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="mb-3">
+                <p>Loading news articles...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MOBILE -->
+    <div class="row d-md-none">
+        <div class="col-12 mb-4">
+            <div style="height: 300px; overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="mb-3">
+                <p>Loading news articles...</p>
+            </div>
+        </div>
+    </div>
+}
+
 @code {
     private string pageTitle = "Dashboard";
 
@@ -127,11 +153,12 @@ else
     private string? BillingType;
     private string? BillingTypeHtml;
     private int ImagesRemaining;
-    //private string? SubscriptionTier;
+    private string? SubscriptionTier;
     private string? SubscriptionTierHtml;
 
     private List<ImageBuildBasic>? imageBuildList;
     private List<ApplicationDashboardView>? applicationDashboardViewList;
+    private List<NewsUpdate>? newsArticleList;
 
     // init
     protected override async Task OnInitializedAsync()
@@ -249,6 +276,7 @@ else
 
         imageBuildList = userDashboardResponse.ImageBuildBasics;
         applicationDashboardViewList = userDashboardResponse.ApplicationDashboardViews;
+        newsArticleList = userDashboardResponse.NewsUpdates;
 
         await Task.Delay(3000);
     }
