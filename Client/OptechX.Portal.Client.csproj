@@ -40,9 +40,11 @@
     <Folder Include="wwwroot\img\account_tiers\" />
     <Folder Include="wwwroot\icons\twttrbs\" />
     <Folder Include="wwwroot\icons\windows\" />
+    <Folder Include="Component\" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Services\" />
     <None Remove="Pages\Account\" />
+    <None Remove="Component\" />
   </ItemGroup>
 </Project>

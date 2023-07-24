@@ -31,6 +31,23 @@ namespace OptechX.Portal.Server.Controllers.Engine.Applications
             return await _context.Applications.ToListAsync();
         }
 
+        // GET: api/Application/Enabled
+        [HttpGet("Enabled")]
+        public async Task<ActionResult<IEnumerable<Application>>> GetEnabledApplications()
+        {
+            if (_context.Applications == null)
+            {
+                return NotFound();
+            }
+
+            var enabledApplications = await _context.Applications
+                .Where(app => app.Enabled)
+                .ToListAsync();
+
+            return enabledApplications;
+        }
+
+        // GET: api/Application/last5
         [HttpGet("last5")]
         public async Task<ActionResult<IEnumerable<ApplicationDashboardView>>> GetLast5Updates()
         {

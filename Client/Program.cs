@@ -28,6 +28,7 @@ public class Program
         builder.Services.AddScoped<IOrderManagementService, OrderManagementService>();
         builder.Services.AddScoped<IPureHttpService, PureHttpService>();
         builder.Services.AddScoped<IUserDashboardService, UserDashboardService>();
+        builder.Services.AddScoped<IModalService, ModalService>();
 
         builder.Services.AddOptions();
         builder.Services.AddAuthorizationCore();
