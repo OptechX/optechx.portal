@@ -6,6 +6,9 @@ namespace OptechX.Portal.Client.Services
 	{
 		IList<Application> Applications { get; }
 		Task LoadApplicationsAsync();
+
+		IList<Application> EnabledApplications { get; }
+		Task LoadEnabledApplicationsAsync();
 	}
 }
 

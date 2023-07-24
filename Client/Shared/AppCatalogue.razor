@@ -1,19 +1,111 @@
 ﻿@inject IApplicationService ApplicationService
+@inject IModalService ModalService
+@inject IJSRuntime JSRuntime
+
 
 <div class="row ml-4">
     <h3>@pageTitle</h3>
 </div>
 
-@foreach (var app in ApplicationService.Applications)
+
+<!-- Application Table View -->
+<div style="height: 100vh; overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="mb-3">
+    @if (ApplicationService.EnabledApplications.Count > 0)
+    {
+        <div class="row row-cols-1 row-cols-md-4">
+            @foreach (var app in ApplicationService.Applications)
+            {
+                <div class="col mb-4">
+                    <div class="card">
+                        <img class="card-img-top"
+                             src="@app.Icon"
+                             alt="Badge">
+                        <div class="card-body text-center">
+                            <h6 class="card-title overflow-hidden text-truncate">@app.Publisher</h6>
+                            <h6 class="card-text h7 overflow-hidden text-truncate">@app.Name</h6>
+                            <h6 class="card-text h7 overflow-hidden text-truncate">@app.Version</h6>
+                            <div align="center">
+                                <a class="btn btn-optechx text-white" style="padding: 5px 20px;" @onclick="(() => ShowMyModal(
+                                   app.Icon,
+                                   app.Publisher,
+                                   app.Name,
+                                   app.Version,
+                                   app.Summary,
+                                   app.CpuArchString,
+                                   app.LcidString,
+                                   app.Copyright,
+                                   app.Homepage,
+                                   app.Docs,
+                                   app.UID))">Show Info</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <span>Loading applications...</span>
+    }
+</div>
+
+
+
+<!-- ModalService -->
+@if (ModalService.IsModalVisible())
 {
-    <h3>@app.Name</h3>
+    <div class="modal fade show" id="myModal" style="display:block; background-color: rgba(10,10,10,.8);" aria-modal="true" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header text-left">
+                    <img src="@ModalService.AppIconURI" alt="Icon Image" style="width: 64px; height: 64px;" />
+                    <h5 class="modal-title">@ModalService.AppPublisher @ModalService.AppName</h5>
+                    <button type="button" class="close" @onclick="ModalService.CloseModal">
+                        &times;
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>@ModalService.AppDescription</p>
+                    <p>
+                        <strong>Version:</strong>&nbsp;@ModalService.AppVersion<br />
+                        <strong>CPU Arch:</strong>&nbsp;@ModalService.AppArch.Replace(",",", ")<br />
+                        <strong>Language:</strong>&nbsp;@ModalService.AppLanguage<br />
+                        <strong>UID:</strong>&nbsp;@ModalService.AppUID::@ModalService.AppVersion
+                    </p>
+                    <p>@ModalService.AppCopyright</p>
+                </div>
+                <div class="modal-footer d-flex">
+                    <div class="mr-auto">
+                        <button type="button" class="btn btn-optechx" @onclick="() => OpenDocsInNewTab(ModalService.AppDocs)">Docs</button>
+                        <button type="button" class="btn btn-warning" @onclick="() => OpenDocsInNewTab(ModalService.AppHomepage)">Homepage</button>
+                        <button type="button" class="btn btn-danger" @onclick="ModalService.CloseModal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 }
+
+
+
 
 @code {
     private string pageTitle = "Application Library";
 
     protected override async Task OnInitializedAsync()
     {
-        await ApplicationService.LoadApplicationsAsync();
+        await ApplicationService.LoadEnabledApplicationsAsync();
+    }
+
+    private void ShowMyModal(string icon, string publisher, string name, string version, string description, string arch, string language, string copyright, string homepage, string docs, string uid)
+    {
+        // Show the modal with the specified parameters
+        ModalService.ShowModal(icon, publisher, name, version, description, arch, language, copyright, homepage, docs, uid);
+    }
+
+    private async Task OpenDocsInNewTab(string url)
+    {
+        await JSRuntime.InvokeVoidAsync("window.open", url, "_blank");
     }
 }
