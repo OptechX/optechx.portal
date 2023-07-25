@@ -314,8 +314,7 @@ namespace OptechX.Portal.Server.Controllers.Engine.Drivers
                 .ToListAsync();
 
             var filteredDrivers = drivers
-                .Where(d => d.Make.Contains(term, StringComparison.OrdinalIgnoreCase) ||
-                            d.Model.Contains(term, StringComparison.OrdinalIgnoreCase))
+                .Where(d => d.Model!.IndexOf(term, StringComparison.OrdinalIgnoreCase) >= 0)
                 .ToList();
 
             if (filteredDrivers.Count > 0)

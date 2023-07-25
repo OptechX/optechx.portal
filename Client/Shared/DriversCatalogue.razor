@@ -1,9 +1,6 @@
 ﻿@using Portal.Shared.Models.Constants
 @using OptechX.Portal.Shared.Models.Engine.Drivers
 @inject IDriverLibService DriverLibService
-
-@inject IApplicationService ApplicationService
-@inject IModalService ModalService
 @inject IJSRuntime JSRuntime
 
 <div class="row ml-4">
@@ -15,9 +12,7 @@
     <div>
         <div class="input-group">
             <input type="text" class="form-control" @bind="searchText" placeholder="Search">
-            @*<input type="text" class="form-control" @bind="searchText" @onkeypress="HandleKeyPress" placeholder="Search">*@
-            @*<button class="btn btn-primary" @onclick="Search">Search</button>*@
-            <button class="btn btn-optechx">Search</button>
+            <button class="btn btn-primary" @onclick="SearchAsync">Search</button>
         </div>
     </div>
 
@@ -31,7 +26,12 @@
                 Select Category
             </button>
             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                @*<li><a class="dropdown-item" @onclick="LoadInternetApplications">Internet</a></li>*@
+                <li><a class="dropdown-item" @onclick="LoadDrivers">All Drivers</a></li>
+                <li><a class="dropdown-item" @onclick="LoadDellDrivers">Dell</a></li>
+                <li><a class="dropdown-item" @onclick="LoadLenovoDrivers">Lenovo</a></li>
+                <li><a class="dropdown-item" @onclick="LoadMicrosoftDrivers">Microsoft</a></li>
+                <li><a class="dropdown-item" @onclick="LoadAcerDrivers">Acer</a></li>
+                <li><a class="dropdown-item" @onclick="LoadAsusDrivers">ASUS</a></li>
             </ul>
         </div>
     </div>
@@ -113,7 +113,7 @@
 
 @code {
     private string pageTitle = "Drivers Library";
-    private string searchText { get; set; } = string.Empty;
+    private string? searchText { get; set; }
 
     private string sortColumnModel = "Model";
     private string sortColumnUpdated = "Updated";
@@ -122,6 +122,19 @@
     protected override async Task OnInitializedAsync()
     {
         await LoadDrivers();
+    }
+
+    private async Task SearchAsync()
+    {
+        await RunSearch();
+    }
+
+    private async Task RunSearch()
+    {
+        if (!string.IsNullOrEmpty(searchText))
+            await DriverLibService.SearchDriversAsync(searchString: searchText);
+
+        StateHasChanged();
     }
 
     private async Task LoadDrivers()
