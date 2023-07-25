@@ -4,7 +4,7 @@ namespace OptechX.Portal.Client.Services
 {
 	public interface IDriverLibService
 	{
-		IList<Driver> Drivers { get; }
+		List<DriverCore> Drivers { get; set; }
 
 		Task LoadDriversAsync();
         Task LoadDellDriversAsync();

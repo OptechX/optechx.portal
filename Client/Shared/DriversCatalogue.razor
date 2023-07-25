@@ -1,4 +1,8 @@
-﻿@inject IApplicationService ApplicationService
+﻿@using Portal.Shared.Models.Constants
+@using OptechX.Portal.Shared.Models.Engine.Drivers
+@inject IDriverLibService DriverLibService
+
+@inject IApplicationService ApplicationService
 @inject IModalService ModalService
 @inject IJSRuntime JSRuntime
 
@@ -12,7 +16,8 @@
         <div class="input-group">
             <input type="text" class="form-control" @bind="searchText" placeholder="Search">
             @*<input type="text" class="form-control" @bind="searchText" @onkeypress="HandleKeyPress" placeholder="Search">*@
-            <button class="btn btn-primary" @onclick="Search">Search</button>
+            @*<button class="btn btn-primary" @onclick="Search">Search</button>*@
+            <button class="btn btn-optechx">Search</button>
         </div>
     </div>
 
@@ -26,209 +31,238 @@
                 Select Category
             </button>
             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <li><a class="dropdown-item" @onclick="LoadInternetApplications">Internet</a></li>
-                <li><a class="dropdown-item" @onclick="LoadDeveloperToolsApplications">Developer Tools</a></li>
-                <li><a class="dropdown-item" @onclick="LoadEducationApplications">Education</a></li>
-                <li><a class="dropdown-item" @onclick="LoadEntertainmentApplications">Entertainment</a></li>
-                <li><a class="dropdown-item" @onclick="LoadGamesApplications">Games</a></li>
-                <li><a class="dropdown-item" @onclick="LoadLifestyleApplications">Lifestyle</a></li>
-                <li><a class="dropdown-item" @onclick="LoadMicrosoftApplications">Microsoft</a></li>
-                <li><a class="dropdown-item" @onclick="LoadPhotoDesignApplications">Photo &amp; Design</a></li>
-                <li><a class="dropdown-item" @onclick="LoadProductivityApplications">Productivity</a></li>
-                <li><a class="dropdown-item" @onclick="LoadSecurityApplications">Security</a></li>
-                <li><a class="dropdown-item" @onclick="LoadUtilityApplications">Utility</a></li>
+                @*<li><a class="dropdown-item" @onclick="LoadInternetApplications">Internet</a></li>*@
             </ul>
         </div>
     </div>
 </div>
 
 
-<!-- Application Table View -->
+<!-- Drivers Table View -->
 <div style="height: 100vh; overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="mb-3">
-    @if (ApplicationService.EnabledApplications.Count > 0)
+    @if (DriverLibService.Drivers.Count > 0)
     {
-        <div class="row row-cols-1 row-cols-md-4">
-            @foreach (var app in ApplicationService.EnabledApplications)
-            {
-                <div class="col mb-4">
-                    <div class="card">
-                        <img class="card-img-top"
-                             src="@app.Icon"
-                             alt="Badge">
-                        <div class="card-body text-center">
-                            <h6 class="card-title overflow-hidden text-truncate">@app.Publisher</h6>
-                            <h6 class="card-text h7 overflow-hidden text-truncate">@app.Name</h6>
-                            <h6 class="card-text h7 overflow-hidden text-truncate">@app.Version</h6>
-                            <div align="center">
-                                <a class="btn btn-optechx text-white" style="padding: 5px 20px;" @onclick="(() => ShowMyModal(
-                                   app.Icon,
-                                   app.Publisher,
-                                   app.Name,
-                                   app.Version,
-                                   app.Summary,
-                                   app.CpuArchString,
-                                   app.LcidString,
-                                   app.Copyright,
-                                   app.Homepage,
-                                   app.Docs,
-                                   app.UID))">Show Info</a>
-                            </div>
+        <table class="table table-responsive custom-table">
+            <thead>
+                <tr>
+                    <th style="width: 60px;"></th> <!-- LOGO -->
+                    <th>
+                        <div class="d-flex align-items-center">
+                            <!-- MAKE -->
+                            <span style="white-space: nowrap;">Make</span>&nbsp;
+                            <button @onclick="() => SortByColumn(sortColumnMake)" class="btn btn-primary btn-sm ml-2" style="cursor: pointer;">
+                                @((MarkupString)(SortColumn == "Make" ? (SortAscending ? "&#x25B2;" : "&#x25BC;") : "&#x2195;"))
+                            </button>
                         </div>
-                    </div>
-                </div>
-            }
-        </div>
+                    </th>
+                    <th>
+                        <div class="d-flex align-items-center">
+                            <!-- MODEL -->
+                            <span style="white-space: nowrap;">Model</span>&nbsp;
+                            <button @onclick="() => SortByColumn(sortColumnModel)" class="btn btn-primary btn-sm ml-2" style="cursor: pointer;">
+                                @((MarkupString)(SortColumn == "Model" ? (SortAscending ? "&#x25B2;" : "&#x25BC;") : "&#x2195;"))
+                            </button>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="d-flex align-items-center">
+                            <!-- LAST UPDATED -->
+                            <span style="white-space: nowrap;">Updated</span>&nbsp;
+                            <button @onclick="() => SortByColumn(sortColumnUpdated)" class="btn btn-primary btn-sm ml-2" style="cursor: pointer;">
+                                @((MarkupString)(SortColumn == "Updated" ? (SortAscending ? "&#x25B2;" : "&#x25BC;") : "&#x2195;"))
+                            </button>
+                        </div>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in DriverLibService.Drivers)
+                {
+                    <tr>
+                        <td style="display: flex; align-items: center;">
+                            @switch (item.Oem)
+                            {
+                                case OriginalEquipmentManufacturer.Dell:<img src="/img/oem-logos/Dell_Logo.png" alt="Dell logo" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" /> break;
+                                case OriginalEquipmentManufacturer.Lenovo: <img src="/img/oem-logos/Lenovo_Corporate_Logo.png" alt="Lenovo Logo" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />break;
+                                case OriginalEquipmentManufacturer.Microsoft: <img src="/img/oem-logos/microsoft-icon.png" alt="Microsoft Logo" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />break;
+                                case OriginalEquipmentManufacturer.Acer: <img src="/img/oem-logos/Acer_Logo.png" alt="Acer Logo" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />break;
+                                case OriginalEquipmentManufacturer.Asus: <img src="/img/oem-logos/ASUS_Logo.png" alt="ASUS Logo" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />break;
+                                case OriginalEquipmentManufacturer.HP: <img src="/img/oem-logos/HP_New_Logo_2D.png" alt="HP Logo" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />break;
+                            }
+                        </td>
+                        <td>
+                            @item.Make
+                        </td>
+                        <td>
+                            @item.Model
+                        </td>
+                        <td>
+                            @item.LastUpdated.ToString("yyyy-MM-dd")
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
     }
     else
     {
-        <span>Loading applications...</span>
+        <span>Loading drivers...</span>
     }
 </div>
 
-
-
-<!-- ModalService -->
-@if (ModalService.IsModalVisible())
-{
-    <div class="modal fade show" id="myModal" style="display:block; background-color: rgba(10,10,10,.8);" aria-modal="true" role="dialog">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header text-left">
-                    <img src="@ModalService.AppIconURI" alt="Icon Image" style="width: 64px; height: 64px;" />
-                    <h5 class="modal-title">@ModalService.AppPublisher @ModalService.AppName</h5>
-                    <button type="button" class="close" @onclick="ModalService.CloseModal">
-                        &times;
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <p>@ModalService.AppDescription</p>
-                    <p>
-                        <strong>Version:</strong>&nbsp;@ModalService.AppVersion<br />
-                        <strong>CPU Arch:</strong>&nbsp;@ModalService.AppArch.Replace(",", ", ")<br />
-                        <strong>Language:</strong>&nbsp;@ModalService.AppLanguage<br />
-                        <strong>UID:</strong>&nbsp;@ModalService.AppUID::@ModalService.AppVersion
-                    </p>
-                    <p>@ModalService.AppCopyright</p>
-                </div>
-                <div class="modal-footer d-flex">
-                    <div class="mr-auto">
-                        <button type="button" class="btn btn-optechx" @onclick="() => OpenDocsInNewTab(ModalService.AppDocs)">Docs</button>
-                        <button type="button" class="btn btn-warning" @onclick="() => OpenDocsInNewTab(ModalService.AppHomepage)">Homepage</button>
-                        <button type="button" class="btn btn-danger" @onclick="ModalService.CloseModal">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-}
-
-<!-- Button to Load Internet Applications -->
-<button type="button" class="btn btn-primary" @onclick="LoadInternetApplications">Load Internet Applications</button>
-<button type="button" class="btn btn-primary" @onclick="LoadDeveloperToolsApplications">Load DeveloperTools Applications</button>
 
 @code {
     private string pageTitle = "Drivers Library";
     private string searchText { get; set; } = string.Empty;
 
+    private string sortColumnModel = "Model";
+    private string sortColumnUpdated = "Updated";
+    private string sortColumnMake = "Make";
+
     protected override async Task OnInitializedAsync()
     {
-        await ApplicationService.LoadEnabledApplicationsAsync();
+        await LoadDrivers();
     }
 
-    private async Task Search()
+    private async Task LoadDrivers()
     {
-        await SearchApplications(searchText);
-        searchText = string.Empty;
-    }
-
-    private async Task SearchApplications(string searchTerm)
-    {
-        await ApplicationService.SearchApplicationTagsAsync(searchString: searchTerm);
+        await DriverLibService.LoadDriversAsync();
         StateHasChanged();
     }
 
-    private void ShowMyModal(string icon, string publisher, string name, string version, string description, string arch, string language, string copyright, string homepage, string docs, string uid)
+    private async Task LoadDellDrivers()
     {
-        // Show the modal with the specified parameters
-        ModalService.ShowModal(icon, publisher, name, version, description, arch, language, copyright, homepage, docs, uid);
-    }
-
-    private async Task OpenDocsInNewTab(string url)
-    {
-        await JSRuntime.InvokeVoidAsync("window.open", url, "_blank");
-    }
-
-    private async Task LoadInternetApplications()
-    {
-        await ApplicationService.LoadInternetApplicationsAsync();
+        await DriverLibService.LoadDellDriversAsync();
         StateHasChanged();
     }
 
-    private async Task LoadDeveloperToolsApplications()
+    private async Task LoadLenovoDrivers()
     {
-        await ApplicationService.LoadDeveloperToolsApplicationsAsync();
+        await DriverLibService.LoadLenovoDriversAsync();
         StateHasChanged();
     }
 
-    private async Task LoadEducationApplications()
+    private async Task LoadHPDrivers()
     {
-        await ApplicationService.LoadEducationApplicationsAsync();
+        await DriverLibService.LoadHPDriversAsync();
         StateHasChanged();
     }
 
-    private async Task LoadEntertainmentApplications()
+    private async Task LoadAppleDrivers()
     {
-        await ApplicationService.LoadEntertainmentApplicationsAsync();
+        await DriverLibService.LoadAppleDriversAsync();
         StateHasChanged();
     }
 
-    private async Task LoadGamesApplications()
+    private async Task LoadAcerDrivers()
     {
-        await ApplicationService.LoadGamesApplicationsAsync();
+        await DriverLibService.LoadAcerDriversAsync();
         StateHasChanged();
     }
 
-    private async Task LoadLifestyleApplications()
+    private async Task LoadAsusDrivers()
     {
-        await ApplicationService.LoadLifestyleApplicationsAsync();
+        await DriverLibService.LoadAsusDriversAsync();
         StateHasChanged();
     }
 
-    private async Task LoadMicrosoftApplications()
+    private async Task LoadMSIDrivers()
     {
-        await ApplicationService.LoadMicrosoftApplicationsAsync();
+        await DriverLibService.LoadMSIDriversAsync();
         StateHasChanged();
     }
 
-    private async Task LoadPhotoDesignApplications()
+    private async Task LoadToshibaDrivers()
     {
-        await ApplicationService.LoadPhotoDesignApplicationsAsync();
+        await DriverLibService.LoadToshibaDriversAsync();
         StateHasChanged();
     }
 
-    private async Task LoadProductivityApplications()
+    private async Task LoadNECDrivers()
     {
-        await ApplicationService.LoadProductivityApplicationsAsync();
+        await DriverLibService.LoadNECDriversAsync();
         StateHasChanged();
     }
 
-    private async Task LoadSecurityApplications()
+    private async Task LoadIBMDrivers()
     {
-        await ApplicationService.LoadSecurityApplicationsAsync();
+        await DriverLibService.LoadIBMDriversAsync();
         StateHasChanged();
     }
 
-    private async Task LoadUtilityApplications()
+    private async Task LoadCompaqDrivers()
     {
-        await ApplicationService.LoadUtilityApplicationsAsync();
+        await DriverLibService.LoadCompaqDriversAsync();
         StateHasChanged();
     }
 
-    private async Task HandleKeyPress(KeyboardEventArgs e)
+    private async Task LoadPackard_Bell_NECDrivers()
     {
-        if (e.Key == "Enter")
+        await DriverLibService.LoadPackard_Bell_NECDriversAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadFujitsuDrivers()
+    {
+        await DriverLibService.LoadFujitsuDriversAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadSharpDrivers()
+    {
+        await DriverLibService.LoadSharpDriversAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadMSXDrivers()
+    {
+        await DriverLibService.LoadMSXDriversAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadMicrosoftDrivers()
+    {
+        await DriverLibService.LoadMicrosoftDriversAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadOtherDrivers()
+    {
+        await DriverLibService.LoadOtherDriversAsync();
+        StateHasChanged();
+    }
+
+    // Sort Functions
+    private string? SortColumn { get; set; }
+    private bool SortAscending { get; set; } = true;
+
+    private List<DriverCore> SortData(List<DriverCore> data)
+    {
+        switch (SortColumn)
         {
-            await Search();
+            case "Make":
+                return SortAscending ? data.OrderBy(item => item.Make).ToList() : data.OrderByDescending(item => item.Make).ToList();
+            case "Model":
+                return SortAscending ? data.OrderBy(item => item.Model).ToList() : data.OrderByDescending(item => item.Model).ToList();
+            case "Updated":
+                return SortAscending ? data.OrderBy(item => item.LastUpdated).ToList() : data.OrderByDescending(item => item.LastUpdated).ToList();
+            default:
+                return data;
         }
+    }
+
+    private void SortByColumn(string column)
+    {
+        if (SortColumn == column)
+        {
+            SortAscending = !SortAscending;
+        }
+        else
+        {
+            SortColumn = column;
+            SortAscending = true;
+        }
+
+        DriverLibService.Drivers = SortData(DriverLibService.Drivers);
     }
 }

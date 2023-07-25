@@ -11,13 +11,13 @@ namespace OptechX.Portal.Client.Services
             _httpClient = httpClient;
 		}
 
-        public IList<Driver> Drivers { get; set; } = new List<Driver>();
+        public List<DriverCore> Drivers { get; set; } = new List<DriverCore>();
 
         public async Task LoadDriversAsync()
         {
             if (Drivers.Count == 0)
             {
-                var response = await _httpClient.GetFromJsonAsync<IList<Driver>>("api/DriverCore");
+                var response = await _httpClient.GetFromJsonAsync<List<DriverCore>>("api/DriverCore");
                 if (response != null)
                 {
                     Drivers = response;
@@ -29,7 +29,7 @@ namespace OptechX.Portal.Client.Services
         {
             if (Drivers.Count == 0)
             {
-                var response = await _httpClient.GetFromJsonAsync<IList<Driver>>("api/DriverCore/Dell");
+                var response = await _httpClient.GetFromJsonAsync<List<DriverCore>>("api/DriverCore/Dell");
                 if (response != null)
                 {
                     Drivers = response;
@@ -41,7 +41,7 @@ namespace OptechX.Portal.Client.Services
         {
             if (Drivers.Count == 0)
             {
-                var response = await _httpClient.GetFromJsonAsync<IList<Driver>>("api/DriverCore/Lenovo");
+                var response = await _httpClient.GetFromJsonAsync<List<DriverCore>>("api/DriverCore/Lenovo");
                 if (response != null)
                 {
                     Drivers = response;
@@ -53,7 +53,7 @@ namespace OptechX.Portal.Client.Services
         {
             if (Drivers.Count == 0)
             {
-                var response = await _httpClient.GetFromJsonAsync<IList<Driver>>("api/DriverCore/HP");
+                var response = await _httpClient.GetFromJsonAsync<List<DriverCore>>("api/DriverCore/HP");
                 if (response != null)
                 {
                     Drivers = response;
@@ -65,7 +65,7 @@ namespace OptechX.Portal.Client.Services
         {
             if (Drivers.Count == 0)
             {
-                var response = await _httpClient.GetFromJsonAsync<IList<Driver>>("api/DriverCore/Apple");
+                var response = await _httpClient.GetFromJsonAsync<List<DriverCore>>("api/DriverCore/Apple");
                 if (response != null)
                 {
                     Drivers = response;
@@ -77,7 +77,7 @@ namespace OptechX.Portal.Client.Services
         {
             if (Drivers.Count == 0)
             {
-                var response = await _httpClient.GetFromJsonAsync<IList<Driver>>("api/DriverCore/Acer");
+                var response = await _httpClient.GetFromJsonAsync<List<DriverCore>>("api/DriverCore/Acer");
                 if (response != null)
                 {
                     Drivers = response;
@@ -89,7 +89,7 @@ namespace OptechX.Portal.Client.Services
         {
             if (Drivers.Count == 0)
             {
-                var response = await _httpClient.GetFromJsonAsync<IList<Driver>>("api/DriverCore/Asus");
+                var response = await _httpClient.GetFromJsonAsync<List<DriverCore>>("api/DriverCore/Asus");
                 if (response != null)
                 {
                     Drivers = response;
@@ -101,7 +101,7 @@ namespace OptechX.Portal.Client.Services
         {
             if (Drivers.Count == 0)
             {
-                var response = await _httpClient.GetFromJsonAsync<IList<Driver>>("api/DriverCore/MSI");
+                var response = await _httpClient.GetFromJsonAsync<List<DriverCore>>("api/DriverCore/MSI");
                 if (response != null)
                 {
                     Drivers = response;
@@ -113,7 +113,7 @@ namespace OptechX.Portal.Client.Services
         {
             if (Drivers.Count == 0)
             {
-                var response = await _httpClient.GetFromJsonAsync<IList<Driver>>("api/DriverCore/Toshiba");
+                var response = await _httpClient.GetFromJsonAsync<List<DriverCore>>("api/DriverCore/Toshiba");
                 if (response != null)
                 {
                     Drivers = response;
@@ -125,7 +125,7 @@ namespace OptechX.Portal.Client.Services
         {
             if (Drivers.Count == 0)
             {
-                var response = await _httpClient.GetFromJsonAsync<IList<Driver>>("api/DriverCore/NEC");
+                var response = await _httpClient.GetFromJsonAsync<List<DriverCore>>("api/DriverCore/NEC");
                 if (response != null)
                 {
                     Drivers = response;
@@ -137,7 +137,7 @@ namespace OptechX.Portal.Client.Services
         {
             if (Drivers.Count == 0)
             {
-                var response = await _httpClient.GetFromJsonAsync<IList<Driver>>("api/DriverCore/IBM");
+                var response = await _httpClient.GetFromJsonAsync<List<DriverCore>>("api/DriverCore/IBM");
                 if (response != null)
                 {
                     Drivers = response;
@@ -149,7 +149,7 @@ namespace OptechX.Portal.Client.Services
         {
             if (Drivers.Count == 0)
             {
-                var response = await _httpClient.GetFromJsonAsync<IList<Driver>>("api/DriverCore/Compaq");
+                var response = await _httpClient.GetFromJsonAsync<List<DriverCore>>("api/DriverCore/Compaq");
                 if (response != null)
                 {
                     Drivers = response;
@@ -161,7 +161,7 @@ namespace OptechX.Portal.Client.Services
         {
             if (Drivers.Count == 0)
             {
-                var response = await _httpClient.GetFromJsonAsync<IList<Driver>>("api/DriverCore/Packard_Bell_NEC");
+                var response = await _httpClient.GetFromJsonAsync<List<DriverCore>>("api/DriverCore/Packard_Bell_NEC");
                 if (response != null)
                 {
                     Drivers = response;
@@ -173,7 +173,7 @@ namespace OptechX.Portal.Client.Services
         {
             if (Drivers.Count == 0)
             {
-                var response = await _httpClient.GetFromJsonAsync<IList<Driver>>("api/DriverCore/Fujitsu");
+                var response = await _httpClient.GetFromJsonAsync<List<DriverCore>>("api/DriverCore/Fujitsu");
                 if (response != null)
                 {
                     Drivers = response;
@@ -185,7 +185,7 @@ namespace OptechX.Portal.Client.Services
         {
             if (Drivers.Count == 0)
             {
-                var response = await _httpClient.GetFromJsonAsync<IList<Driver>>("api/DriverCore/Sharp");
+                var response = await _httpClient.GetFromJsonAsync<List<DriverCore>>("api/DriverCore/Sharp");
                 if (response != null)
                 {
                     Drivers = response;
@@ -197,7 +197,7 @@ namespace OptechX.Portal.Client.Services
         {
             if (Drivers.Count == 0)
             {
-                var response = await _httpClient.GetFromJsonAsync<IList<Driver>>("api/DriverCore/MSX");
+                var response = await _httpClient.GetFromJsonAsync<List<DriverCore>>("api/DriverCore/MSX");
                 if (response != null)
                 {
                     Drivers = response;
@@ -209,7 +209,7 @@ namespace OptechX.Portal.Client.Services
         {
             if (Drivers.Count == 0)
             {
-                var response = await _httpClient.GetFromJsonAsync<IList<Driver>>("api/DriverCore/Microsoft");
+                var response = await _httpClient.GetFromJsonAsync<List<DriverCore>>("api/DriverCore/Microsoft");
                 if (response != null)
                 {
                     Drivers = response;
@@ -221,7 +221,7 @@ namespace OptechX.Portal.Client.Services
         {
             if (Drivers.Count == 0)
             {
-                var response = await _httpClient.GetFromJsonAsync<IList<Driver>>("api/DriverCore/Other");
+                var response = await _httpClient.GetFromJsonAsync<List<DriverCore>>("api/DriverCore/Other");
                 if (response != null)
                 {
                     Drivers = response;
@@ -233,7 +233,7 @@ namespace OptechX.Portal.Client.Services
         {
             if (Drivers.Count == 0)
             {
-                var response = await _httpClient.GetFromJsonAsync<IList<Driver>>($"api/DriverCore/by-release/{windowsRelease}");
+                var response = await _httpClient.GetFromJsonAsync<List<DriverCore>>($"api/DriverCore/by-release/{windowsRelease}");
                 if (response != null)
                 {
                     Drivers = response;
@@ -245,7 +245,7 @@ namespace OptechX.Portal.Client.Services
         {
             if (Drivers.Count == 0)
             {
-                var response = await _httpClient.GetFromJsonAsync<IList<Driver>>($"api/DriverCore/search/{searchString}");
+                var response = await _httpClient.GetFromJsonAsync<List<DriverCore>>($"api/DriverCore/search/{searchString}");
                 if (response != null)
                 {
                     Drivers = response;
