@@ -1,0 +1,281 @@
+﻿@using Portal.Shared.Models.Constants
+@using OptechX.Portal.Shared.Models.Engine.Drivers
+@inject IDriverLibService DriverLibService
+@inject IJSRuntime JSRuntime
+
+<div class="row ml-4">
+    <h3>@pageTitle</h3>
+</div>
+
+<div class="d-flex justify-content-end mt-3 mb-3">
+    <!-- Search Input -->
+    <div>
+        <div class="input-group">
+            <input type="text" class="form-control" @bind="searchText" placeholder="Search">
+            <button class="btn btn-primary" @onclick="SearchAsync">Search</button>
+        </div>
+    </div>
+
+    <!-- Gap -->
+    <div style="width: 10px;"></div>
+
+    <!-- Dropdown -->
+    <div>
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Select Category
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <li><a class="dropdown-item" @onclick="LoadDrivers">All Drivers</a></li>
+                <li><a class="dropdown-item" @onclick="LoadDellDrivers">Dell</a></li>
+                <li><a class="dropdown-item" @onclick="LoadLenovoDrivers">Lenovo</a></li>
+                <li><a class="dropdown-item" @onclick="LoadMicrosoftDrivers">Microsoft</a></li>
+                <li><a class="dropdown-item" @onclick="LoadAcerDrivers">Acer</a></li>
+                <li><a class="dropdown-item" @onclick="LoadAsusDrivers">ASUS</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+
+<!-- Drivers Table View -->
+<div style="height: 100vh; overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="mb-3">
+    @if (DriverLibService.Drivers.Count > 0)
+    {
+        <table class="table table-responsive custom-table">
+            <thead>
+                <tr>
+                    <th style="width: 60px;"></th> <!-- LOGO -->
+                    <th>
+                        <div class="d-flex align-items-center">
+                            <!-- MAKE -->
+                            <span style="white-space: nowrap;">Make</span>&nbsp;
+                            <button @onclick="() => SortByColumn(sortColumnMake)" class="btn btn-primary btn-sm ml-2" style="cursor: pointer;">
+                                @((MarkupString)(SortColumn == "Make" ? (SortAscending ? "&#x25B2;" : "&#x25BC;") : "&#x2195;"))
+                            </button>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="d-flex align-items-center">
+                            <!-- MODEL -->
+                            <span style="white-space: nowrap;">Model</span>&nbsp;
+                            <button @onclick="() => SortByColumn(sortColumnModel)" class="btn btn-primary btn-sm ml-2" style="cursor: pointer;">
+                                @((MarkupString)(SortColumn == "Model" ? (SortAscending ? "&#x25B2;" : "&#x25BC;") : "&#x2195;"))
+                            </button>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="d-flex align-items-center">
+                            <!-- LAST UPDATED -->
+                            <span style="white-space: nowrap;">Updated</span>&nbsp;
+                            <button @onclick="() => SortByColumn(sortColumnUpdated)" class="btn btn-primary btn-sm ml-2" style="cursor: pointer;">
+                                @((MarkupString)(SortColumn == "Updated" ? (SortAscending ? "&#x25B2;" : "&#x25BC;") : "&#x2195;"))
+                            </button>
+                        </div>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in DriverLibService.Drivers)
+                {
+                    <tr>
+                        <td style="display: flex; align-items: center;">
+                            @switch (item.Oem)
+                            {
+                                case OriginalEquipmentManufacturer.Dell:<img src="/img/oem-logos/Dell_Logo.png" alt="Dell logo" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" /> break;
+                                case OriginalEquipmentManufacturer.Lenovo: <img src="/img/oem-logos/Lenovo_Corporate_Logo.png" alt="Lenovo Logo" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />break;
+                                case OriginalEquipmentManufacturer.Microsoft: <img src="/img/oem-logos/microsoft-icon.png" alt="Microsoft Logo" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />break;
+                                case OriginalEquipmentManufacturer.Acer: <img src="/img/oem-logos/Acer_Logo.png" alt="Acer Logo" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />break;
+                                case OriginalEquipmentManufacturer.Asus: <img src="/img/oem-logos/ASUS_Logo.png" alt="ASUS Logo" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />break;
+                                case OriginalEquipmentManufacturer.HP: <img src="/img/oem-logos/HP_New_Logo_2D.png" alt="HP Logo" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />break;
+                            }
+                        </td>
+                        <td>
+                            @item.Make
+                        </td>
+                        <td>
+                            @item.Model
+                        </td>
+                        <td>
+                            @item.LastUpdated.ToString("yyyy-MM-dd")
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <span>Loading drivers...</span>
+    }
+</div>
+
+
+@code {
+    private string pageTitle = "Drivers Library";
+    private string? searchText { get; set; }
+
+    private string sortColumnModel = "Model";
+    private string sortColumnUpdated = "Updated";
+    private string sortColumnMake = "Make";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDrivers();
+    }
+
+    private async Task SearchAsync()
+    {
+        await RunSearch();
+    }
+
+    private async Task RunSearch()
+    {
+        if (!string.IsNullOrEmpty(searchText))
+            await DriverLibService.SearchDriversAsync(searchString: searchText);
+
+        StateHasChanged();
+    }
+
+    private async Task LoadDrivers()
+    {
+        await DriverLibService.LoadDriversAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadDellDrivers()
+    {
+        await DriverLibService.LoadDellDriversAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadLenovoDrivers()
+    {
+        await DriverLibService.LoadLenovoDriversAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadHPDrivers()
+    {
+        await DriverLibService.LoadHPDriversAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadAppleDrivers()
+    {
+        await DriverLibService.LoadAppleDriversAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadAcerDrivers()
+    {
+        await DriverLibService.LoadAcerDriversAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadAsusDrivers()
+    {
+        await DriverLibService.LoadAsusDriversAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadMSIDrivers()
+    {
+        await DriverLibService.LoadMSIDriversAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadToshibaDrivers()
+    {
+        await DriverLibService.LoadToshibaDriversAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadNECDrivers()
+    {
+        await DriverLibService.LoadNECDriversAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadIBMDrivers()
+    {
+        await DriverLibService.LoadIBMDriversAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadCompaqDrivers()
+    {
+        await DriverLibService.LoadCompaqDriversAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadPackard_Bell_NECDrivers()
+    {
+        await DriverLibService.LoadPackard_Bell_NECDriversAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadFujitsuDrivers()
+    {
+        await DriverLibService.LoadFujitsuDriversAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadSharpDrivers()
+    {
+        await DriverLibService.LoadSharpDriversAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadMSXDrivers()
+    {
+        await DriverLibService.LoadMSXDriversAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadMicrosoftDrivers()
+    {
+        await DriverLibService.LoadMicrosoftDriversAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadOtherDrivers()
+    {
+        await DriverLibService.LoadOtherDriversAsync();
+        StateHasChanged();
+    }
+
+    // Sort Functions
+    private string? SortColumn { get; set; }
+    private bool SortAscending { get; set; } = true;
+
+    private List<DriverCore> SortData(List<DriverCore> data)
+    {
+        switch (SortColumn)
+        {
+            case "Make":
+                return SortAscending ? data.OrderBy(item => item.Make).ToList() : data.OrderByDescending(item => item.Make).ToList();
+            case "Model":
+                return SortAscending ? data.OrderBy(item => item.Model).ToList() : data.OrderByDescending(item => item.Model).ToList();
+            case "Updated":
+                return SortAscending ? data.OrderBy(item => item.LastUpdated).ToList() : data.OrderByDescending(item => item.LastUpdated).ToList();
+            default:
+                return data;
+        }
+    }
+
+    private void SortByColumn(string column)
+    {
+        if (SortColumn == column)
+        {
+            SortAscending = !SortAscending;
+        }
+        else
+        {
+            SortColumn = column;
+            SortAscending = true;
+        }
+
+        DriverLibService.Drivers = SortData(DriverLibService.Drivers);
+    }
+}

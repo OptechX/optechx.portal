@@ -7,3 +7,4 @@ updates:
     schedule:
       interval: "daily"
     open-pull-requests-limit: 25
+    target-branch: "dev"

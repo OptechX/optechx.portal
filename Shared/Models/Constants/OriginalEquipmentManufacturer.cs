@@ -36,6 +36,8 @@ namespace OptechX.Portal.Shared.Models.Constants
         Sharp,
         [EnumMember(Value = "MSX")]
         MSX,
+        [EnumMember(Value = "Microsoft")]
+        Microsoft,
         [EnumMember(Value = "Other")]
         Other
     }
