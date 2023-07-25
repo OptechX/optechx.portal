@@ -19,16 +19,19 @@ public class Program
         builder.Services.AddBlazoredLocalStorage();  // browser storage
 
         builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
-        builder.Services.AddScoped<ICountryListService, CountryListService>();
-        builder.Services.AddScoped<IApplicationService, ApplicationService>();
+        
         builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
+
+        builder.Services.AddScoped<IApplicationService, ApplicationService>();
         builder.Services.AddScoped<IAuthService, AuthService>();
-        builder.Services.AddScoped<IUserAccountService, UserAccountService>();
+        builder.Services.AddScoped<ICountryListService, CountryListService>();
+        builder.Services.AddScoped<IDriverLibService, DriverLibService>();
         builder.Services.AddScoped<IFormsService, FormsService>();
+        builder.Services.AddScoped<IModalService, ModalService>();
         builder.Services.AddScoped<IOrderManagementService, OrderManagementService>();
         builder.Services.AddScoped<IPureHttpService, PureHttpService>();
+        builder.Services.AddScoped<IUserAccountService, UserAccountService>();
         builder.Services.AddScoped<IUserDashboardService, UserDashboardService>();
-        builder.Services.AddScoped<IModalService, ModalService>();
 
         builder.Services.AddOptions();
         builder.Services.AddAuthorizationCore();
