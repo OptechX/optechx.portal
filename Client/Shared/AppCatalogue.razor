@@ -2,9 +2,44 @@
 @inject IModalService ModalService
 @inject IJSRuntime JSRuntime
 
-
 <div class="row ml-4">
     <h3>@pageTitle</h3>
+</div>
+
+<div class="d-flex justify-content-end mt-3 mb-3">
+    <!-- Search Input -->
+    <div>
+        <div class="input-group">
+            <input type="text" class="form-control" @bind="searchText" @onkeypress="HandleKeyPress" placeholder="Search">
+            @*<input type="text" class="form-control" @bind="searchText" @onkeypress="HandleKeyPress" placeholder="Search">*@
+            <button class="btn btn-primary" @onclick="Search">Search</button>
+        </div>
+    </div>
+
+    <!-- Gap -->
+    <div style="width: 10px;"></div>
+
+    <!-- Dropdown -->
+    <div>
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Select Category
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <li><a class="dropdown-item" @onclick="LoadInternetApplications">Internet</a></li>
+                <li><a class="dropdown-item" @onclick="LoadDeveloperToolsApplications">Developer Tools</a></li>
+                <li><a class="dropdown-item" @onclick="LoadEducationApplications">Education</a></li>
+                <li><a class="dropdown-item" @onclick="LoadEntertainmentApplications">Entertainment</a></li>
+                <li><a class="dropdown-item" @onclick="LoadGamesApplications">Games</a></li>
+                <li><a class="dropdown-item" @onclick="LoadLifestyleApplications">Lifestyle</a></li>
+                <li><a class="dropdown-item" @onclick="LoadMicrosoftApplications">Microsoft</a></li>
+                <li><a class="dropdown-item" @onclick="LoadPhotoDesignApplications">Photo &amp; Design</a></li>
+                <li><a class="dropdown-item" @onclick="LoadProductivityApplications">Productivity</a></li>
+                <li><a class="dropdown-item" @onclick="LoadSecurityApplications">Security</a></li>
+                <li><a class="dropdown-item" @onclick="LoadUtilityApplications">Utility</a></li>
+            </ul>
+        </div>
+    </div>
 </div>
 
 
@@ -13,7 +48,7 @@
     @if (ApplicationService.EnabledApplications.Count > 0)
     {
         <div class="row row-cols-1 row-cols-md-4">
-            @foreach (var app in ApplicationService.Applications)
+            @foreach (var app in ApplicationService.EnabledApplications)
             {
                 <div class="col mb-4">
                     <div class="card">
@@ -69,7 +104,7 @@
                     <p>@ModalService.AppDescription</p>
                     <p>
                         <strong>Version:</strong>&nbsp;@ModalService.AppVersion<br />
-                        <strong>CPU Arch:</strong>&nbsp;@ModalService.AppArch.Replace(",",", ")<br />
+                        <strong>CPU Arch:</strong>&nbsp;@ModalService.AppArch.Replace(",", ", ")<br />
                         <strong>Language:</strong>&nbsp;@ModalService.AppLanguage<br />
                         <strong>UID:</strong>&nbsp;@ModalService.AppUID::@ModalService.AppVersion
                     </p>
@@ -87,15 +122,29 @@
     </div>
 }
 
-
-
+<!-- Button to Load Internet Applications -->
+<button type="button" class="btn btn-primary" @onclick="LoadInternetApplications">Load Internet Applications</button>
+<button type="button" class="btn btn-primary" @onclick="LoadDeveloperToolsApplications">Load DeveloperTools Applications</button>
 
 @code {
     private string pageTitle = "Application Library";
+    private string searchText { get; set; } = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
         await ApplicationService.LoadEnabledApplicationsAsync();
+    }
+
+    private async Task Search()
+    {
+        await SearchApplications(searchText);
+        searchText = string.Empty;
+    }
+
+    private async Task SearchApplications(string searchTerm)
+    {
+        await ApplicationService.SearchApplicationTagsAsync(searchString: searchTerm);
+        StateHasChanged();
     }
 
     private void ShowMyModal(string icon, string publisher, string name, string version, string description, string arch, string language, string copyright, string homepage, string docs, string uid)
@@ -107,5 +156,79 @@
     private async Task OpenDocsInNewTab(string url)
     {
         await JSRuntime.InvokeVoidAsync("window.open", url, "_blank");
+    }
+
+    private async Task LoadInternetApplications()
+    {
+        await ApplicationService.LoadInternetApplicationsAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadDeveloperToolsApplications()
+    {
+        await ApplicationService.LoadDeveloperToolsApplicationsAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadEducationApplications()
+    {
+        await ApplicationService.LoadEducationApplicationsAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadEntertainmentApplications()
+    {
+        await ApplicationService.LoadEntertainmentApplicationsAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadGamesApplications()
+    {
+        await ApplicationService.LoadGamesApplicationsAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadLifestyleApplications()
+    {
+        await ApplicationService.LoadLifestyleApplicationsAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadMicrosoftApplications()
+    {
+        await ApplicationService.LoadMicrosoftApplicationsAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadPhotoDesignApplications()
+    {
+        await ApplicationService.LoadPhotoDesignApplicationsAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadProductivityApplications()
+    {
+        await ApplicationService.LoadProductivityApplicationsAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadSecurityApplications()
+    {
+        await ApplicationService.LoadSecurityApplicationsAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadUtilityApplications()
+    {
+        await ApplicationService.LoadUtilityApplicationsAsync();
+        StateHasChanged();
+    }
+
+    private async Task HandleKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await Search();
+        }
     }
 }

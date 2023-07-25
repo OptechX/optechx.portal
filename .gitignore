@@ -12,6 +12,7 @@ autom4te.cache/
 tarballs/
 test-results/
 temp_values.ps1
+create.ps1
 
 # Mac bundle stuff
 *.dmg
