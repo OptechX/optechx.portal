@@ -61,6 +61,35 @@ namespace OptechX.Portal.Server.Controllers.User
             }
         }
 
+        // GET: /api/user/ValidateToken
+        [HttpGet("ValidateToken")]
+        public IActionResult CheckTokenExpired()
+        {
+            var authHeader = Request.Headers["Authorization"].FirstOrDefault();
+            if (authHeader != null && authHeader.StartsWith("Bearer "))
+            {
+                string token = authHeader["Bearer ".Length..].Trim().Replace("\"", "");
+                var jwtSecurityToken = new JwtSecurityToken(token);
+                ReturnedJwtPayload returnedJwtPayload = new()
+                {
+                    EmailAddress = jwtSecurityToken.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Email)?.Value,
+                    AccountId = jwtSecurityToken.Claims.FirstOrDefault(claim => claim.Type == "AccountId")?.Value,
+                    Expiration = jwtSecurityToken.Claims.FirstOrDefault(claim => claim.Type == "exp")?.Value,
+                    Issuer = jwtSecurityToken.Claims.FirstOrDefault(claim => claim.Type == "iss")?.Value
+                };
+                if (DateTime.UtcNow > DateTimeOffset.FromUnixTimeSeconds(long.Parse(returnedJwtPayload.Expiration!)))
+                {
+                    return Ok(1); //token expired
+                }
+
+                return Ok(0); //token valid and not expired
+            }
+            else
+            {
+                return Ok(1); //token invalid or not provided
+            }
+        }
+
         // GET: /api/user
         [HttpGet]
         public async Task<IActionResult> GetUserBasics()
