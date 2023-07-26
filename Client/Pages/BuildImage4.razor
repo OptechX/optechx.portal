@@ -1,8 +1,9 @@
 ﻿@page "/buildimage4"
 @inject IToastService ToastService
 @inject IFormsService FormsService
-@inject ILocalStorageService LocalStorage
-@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ILocalStorageService LocalStorageService
+@inject IAuthService AuthService
+@inject AuthenticationStateProvider AuthStateProvider
 @inject NavigationManager NavigationManager
 
 <PageTitle>OptechX Portal</PageTitle>
@@ -40,9 +41,12 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var isAuthd = await LocalStorage.GetItemAsync<string>("authToken");
-        if (!string.IsNullOrEmpty(isAuthd))
+        var userIsAuthorized = await LocalStorageService.GetItemAsync<string>("authToken");
+        if (!string.IsNullOrEmpty(userIsAuthorized))
         {
+            int result = await AuthService.VerifyTokenValidity();
+            if (result != 0)
+                Logout();
             accountId = await GetAccountId();
         }
         else
@@ -53,30 +57,30 @@
 
     private async Task<string> GetAccountId()
     {
-        return await LocalStorage.GetItemAsync<string>("accountId");
+        return await LocalStorageService.GetItemAsync<string>("accountId");
     }
 
     private async Task GetRequiredParams()
     {
-        param1 = await LocalStorage.GetItemAsStringAsync("imageParam1");
-        param2 = await LocalStorage.GetItemAsStringAsync("imageParam2");
-        param3 = await LocalStorage.GetItemAsStringAsync("imageParam3");
-        param4 = await LocalStorage.GetItemAsStringAsync("imageParam4");
-        param5 = await LocalStorage.GetItemAsStringAsync("imageParam5");
-        param6 = await LocalStorage.GetItemAsStringAsync("imageParam6");
-        param7 = await LocalStorage.GetItemAsStringAsync("imageParam7");
-        param8 = await LocalStorage.GetItemAsStringAsync("imageParam8");
-        param9 = await LocalStorage.GetItemAsStringAsync("imageParam9");
-        param10 = await LocalStorage.GetItemAsStringAsync("imageParam10");
-        param11 = await LocalStorage.GetItemAsStringAsync("imageParam11");
-        param12 = await LocalStorage.GetItemAsStringAsync("imageParam12");
-        param13 = await LocalStorage.GetItemAsStringAsync("imageParam13");
-        param14 = await LocalStorage.GetItemAsync<bool>("imageParam14");
-        param15 = await LocalStorage.GetItemAsync<bool>("imageParam15");
-        param16 = await LocalStorage.GetItemAsync<bool>("imageParam16");
-        param17 = await LocalStorage.GetItemAsync<bool>("imageParam17");
-        param18 = await LocalStorage.GetItemAsync<bool>("imageParam18");
-        param19 = await LocalStorage.GetItemAsync<bool>("imageParam19");
+        param1 = await LocalStorageService.GetItemAsStringAsync("imageParam1");
+        param2 = await LocalStorageService.GetItemAsStringAsync("imageParam2");
+        param3 = await LocalStorageService.GetItemAsStringAsync("imageParam3");
+        param4 = await LocalStorageService.GetItemAsStringAsync("imageParam4");
+        param5 = await LocalStorageService.GetItemAsStringAsync("imageParam5");
+        param6 = await LocalStorageService.GetItemAsStringAsync("imageParam6");
+        param7 = await LocalStorageService.GetItemAsStringAsync("imageParam7");
+        param8 = await LocalStorageService.GetItemAsStringAsync("imageParam8");
+        param9 = await LocalStorageService.GetItemAsStringAsync("imageParam9");
+        param10 = await LocalStorageService.GetItemAsStringAsync("imageParam10");
+        param11 = await LocalStorageService.GetItemAsStringAsync("imageParam11");
+        param12 = await LocalStorageService.GetItemAsStringAsync("imageParam12");
+        param13 = await LocalStorageService.GetItemAsStringAsync("imageParam13");
+        param14 = await LocalStorageService.GetItemAsync<bool>("imageParam14");
+        param15 = await LocalStorageService.GetItemAsync<bool>("imageParam15");
+        param16 = await LocalStorageService.GetItemAsync<bool>("imageParam16");
+        param17 = await LocalStorageService.GetItemAsync<bool>("imageParam17");
+        param18 = await LocalStorageService.GetItemAsync<bool>("imageParam18");
+        param19 = await LocalStorageService.GetItemAsync<bool>("imageParam19");
 
         bool allParamsNotEmpty = new[] { param1, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11, param12, param13, }.All(p => string.IsNullOrWhiteSpace(p));
 
@@ -85,6 +89,13 @@
             ToastService.ShowError("Image build process not started, redirecting...");
             NavigationManager.NavigateTo("/buildimage");
         }
+    }
+
+    private async void Logout()
+    {
+        await LocalStorageService.RemoveItemAsync("authToken");
+        await AuthStateProvider.GetAuthenticationStateAsync();
+        NavigationManager.NavigateTo("/");
     }
 }
 

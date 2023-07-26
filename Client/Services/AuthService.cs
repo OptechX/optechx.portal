@@ -137,6 +137,24 @@ namespace OptechX.Portal.Client.Services
                 return new ServiceResponse<bool> { Data = false, Message = "Request for account verification failed", ResponseCode = 400, Success = false };
             }
         }
+
+        /// <summary>
+        /// Send the user's token to the API to validate if it has expired, 0=not expired, 1=anything else
+        /// </summary>
+        /// <returns>int</returns>
+        public async Task<int> VerifyTokenValidity()
+        {
+            try
+            {
+                var result = await _httpClient.GetAsync("api/user/ValidateToken");
+                var content = await result.Content.ReadFromJsonAsync<int>();
+                return content;
+            }
+            catch
+            {
+                return 1;
+            }
+        }
     }
 }
 

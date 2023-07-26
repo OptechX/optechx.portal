@@ -11,6 +11,8 @@ namespace OptechX.Portal.Client.Services
         Task<ServiceResponse<bool>> ResetPassword(ResetPasswordRequest userEmail);
         Task<ServiceResponse<bool>> GetNewVerificationToken(string emailAddress);
         Task<ServiceResponse<bool>> SetNewPassword(SetPasswordRequest request);
+
+        Task<int> VerifyTokenValidity();
     }
 }
 

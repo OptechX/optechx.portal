@@ -1,8 +1,9 @@
 ﻿@page "/buildimage3"
 @inject IToastService ToastService
 @inject IFormsService FormsService
-@inject ILocalStorageService LocalStorage
-@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ILocalStorageService LocalStorageService
+@inject IAuthService AuthService
+@inject AuthenticationStateProvider AuthStateProvider
 @inject NavigationManager NavigationManager
 
 <PageTitle>OptechX Portal</PageTitle>
@@ -21,9 +22,12 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var isAuthd = await LocalStorage.GetItemAsync<string>("authToken");
-        if (!string.IsNullOrEmpty(isAuthd))
+        var userIsAuthorized = await LocalStorageService.GetItemAsync<string>("authToken");
+        if (!string.IsNullOrEmpty(userIsAuthorized))
         {
+            int result = await AuthService.VerifyTokenValidity();
+            if (result != 0)
+                Logout();
             accountId = await GetAccountId();
         }
         else
@@ -35,7 +39,7 @@
 
     private async Task<string> GetAccountId()
     {
-        var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var authenticationState = await AuthStateProvider.GetAuthenticationStateAsync();
         var accountIdClaim = authenticationState.User.Claims.FirstOrDefault(claim => claim.Type == "AccountId"); //"http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress");
         if (!string.IsNullOrEmpty(accountIdClaim?.Value))
         {
@@ -49,14 +53,14 @@
 
     private async Task GetRequiredParams()
     {
-        var param1 = await LocalStorage.GetItemAsStringAsync("imageParam1");
-        var param2 = await LocalStorage.GetItemAsStringAsync("imageParam2");
-        var param3 = await LocalStorage.GetItemAsStringAsync("imageParam3");
-        var param4 = await LocalStorage.GetItemAsStringAsync("imageParam4");
-        var param5 = await LocalStorage.GetItemAsStringAsync("imageParam5");
-        var param6 = await LocalStorage.GetItemAsStringAsync("imageParam6");
-        var param7 = await LocalStorage.GetItemAsStringAsync("imageParam7");
-        var param8 = await LocalStorage.GetItemAsStringAsync("imageParam8");
+        var param1 = await LocalStorageService.GetItemAsStringAsync("imageParam1");
+        var param2 = await LocalStorageService.GetItemAsStringAsync("imageParam2");
+        var param3 = await LocalStorageService.GetItemAsStringAsync("imageParam3");
+        var param4 = await LocalStorageService.GetItemAsStringAsync("imageParam4");
+        var param5 = await LocalStorageService.GetItemAsStringAsync("imageParam5");
+        var param6 = await LocalStorageService.GetItemAsStringAsync("imageParam6");
+        var param7 = await LocalStorageService.GetItemAsStringAsync("imageParam7");
+        var param8 = await LocalStorageService.GetItemAsStringAsync("imageParam8");
 
         bool allParamsNotEmpty = new[]
         {
@@ -68,5 +72,12 @@
             ToastService.ShowError("Image build process not started, redirecting...");
             NavigationManager.NavigateTo("/buildimage");
         }
+    }
+
+    private async void Logout()
+    {
+        await LocalStorageService.RemoveItemAsync("authToken");
+        await AuthStateProvider.GetAuthenticationStateAsync();
+        NavigationManager.NavigateTo("/");
     }
 }
