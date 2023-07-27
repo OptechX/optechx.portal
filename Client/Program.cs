@@ -33,6 +33,7 @@ public class Program
         builder.Services.AddScoped<IUserAccountService, UserAccountService>();
         builder.Services.AddScoped<IUserDashboardService, UserDashboardService>();
         builder.Services.AddScoped<IImageBuildService, ImageBuildService>();
+        builder.Services.AddScoped<IBuildModalService, BuildModalService>();
 
         builder.Services.AddOptions();
         builder.Services.AddAuthorizationCore();
