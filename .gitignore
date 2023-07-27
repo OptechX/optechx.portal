@@ -13,6 +13,7 @@ tarballs/
 test-results/
 temp_values.ps1
 create.ps1
+build.ps1
 
 # Mac bundle stuff
 *.dmg

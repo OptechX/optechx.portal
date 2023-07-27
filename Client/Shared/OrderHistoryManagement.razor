@@ -1,0 +1,233 @@
+﻿@using OptechX.Portal.Shared.Models.Engine.ImageBuilds
+@inject IImageBuildService ImageBuildService
+@inject ILocalStorageService LocalStorageService
+@inject IJSRuntime JSRuntime
+
+<div class="row ml-4">
+    <h3>@pageTitle</h3>
+</div>
+
+<!-- Dropdown -->
+<div class="d-flex justify-content-end mt-3 mb-3">
+    <div>
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Select Category
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <li><a class="dropdown-item" @onclick="LoadOrders">All Status</a></li>
+                <li><a class="dropdown-item" @onclick="LoadSubmittedOrders">Submitted</a></li>
+                <li><a class="dropdown-item" @onclick="LoadQueuedOrders">Queued</a></li>
+                <li><a class="dropdown-item" @onclick="LoadPreworkOrders">Prework</a></li>
+                <li><a class="dropdown-item" @onclick="LoadProcessingOrders">Processing</a></li>
+                <li><a class="dropdown-item" @onclick="LoadCompilingOrders">Compiling</a></li>
+                <li><a class="dropdown-item" @onclick="LoadCompleteOrders">Complete</a></li>
+                <li><a class="dropdown-item" @onclick="LoadDeletedOrders">Deleted</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Drivers Table View -->
+<div style="height: calc(100vh - 100px); overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="mb-3">
+    @if (ImageBuildBasicList?.Count > 0)
+    {
+        <table class="table table-responsive custom-table" style="border-collapse: collapse;">
+            <thead>
+                <tr>
+                    <th>
+                        <div class="d-flex align-items-center">
+                            <span style="white-space: nowrap;">Order Date</span>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="d-flex align-items-center">
+                            <span style="white-space: nowrap;">Status</span>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="d-flex align-items-center">
+                            <span style="white-space: nowrap;">Release</span>
+                        </div>
+                    </th>
+
+                    <th>
+                        <div class="d-flex align-items-center">
+                            <span style="white-space: nowrap;"></span>
+                        </div>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (ImageBuildBasic build in ImageBuildBasicList)
+                {
+                    <tr>
+                        <td>
+                            @build.OrderDate.ToString("yyyy-MM-dd")
+                        </td>
+                        <td style="display: flex; align-items: center;">
+                            <div class="svg-container">
+                                <svg class="svg-image" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                                    <g>
+                                        @switch (build.OrderLifecycle)
+                                        {
+                                            case "SUBMITTED":
+                                                <circle cx="20" cy="20" r="18" fill="#FFD699" />
+                                                <image href="/icons/twttrbs/inbox.svg" width="24" height="24" x="8" y="8" />
+                                                break;
+                                            case "QUEUED":
+                                                <circle cx="20" cy="20" r="18" fill="#C9D0FF" />
+                                                <image href="/icons/twttrbs/ticket-perforated.svg" width="24" height="24" x="8" y="8" />
+                                                break;
+                                            case "PREWORK":
+                                                <circle cx="20" cy="20" r="18" fill="#FFD1D1" />
+                                                <image href="/icons/twttrbs/clipboard2-data.svg" width="24" height="24" x="8" y="8" />
+                                                break;
+                                            case "PROCESSING":
+                                                <circle cx="20" cy="20" r="18" fill="#E0FFCC" />
+                                                <image href="/icons/twttrbs/cpu.svg" width="24" height="24" x="8" y="8" />
+                                                break;
+                                            case "COMPILING":
+                                                <circle cx="20" cy="20" r="18" fill="#E6CCFF" />
+                                                <image href="/icons/twttrbs/box-seam.svg" width="24" height="24" x="8" y="8" />
+                                                break;
+                                            case "COMPLETE":
+                                                <circle cx="20" cy="20" r="18" fill="#CCFFE0" />
+                                                <image href="/icons/twttrbs/shield-check.svg" width="24" height="24" x="8" y="8" />
+                                                break;
+                                            case "DELETED":
+                                                <circle cx="20" cy="20" r="18" fill="#FFCCCC" />
+                                                <image href="/icons/twttrbs/file-earmark-x.svg" width="24" height="24" x="8" y="8" />
+                                                break;
+                                        }
+                                    </g>
+                                </svg>
+                            </div>
+                        </td>
+                        <td>
+                            @switch (build.WindowsRelease)
+                            {
+                                case "Windows 10":
+                                    <img src="/icons/windows/win10.png" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />
+                                    break;
+                                case "Windows 11":
+                                    <img src="icons/windows/win11.png" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />
+                                    break;
+                            }
+                        </td>
+                        <td>
+                            <div class="svg-container">
+                                <svg class="svg-image" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" @onclick="DownloadOrder">
+                                    <g>
+                                        <circle cx="20" cy="20" r="18" fill="#B0E57C" />
+                                        <image href="/icons/twttrbs/download.svg" alt="Download" width="24" height="24" x="8" y="8" />
+                                    </g>
+                                </svg>
+                                <svg class="svg-image" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" @onclick="ShowOrderInfo">
+                                    <g>
+                                        <circle cx="20" cy="20" r="18" fill="#E6D9B9" />
+                                        <image href="/icons/twttrbs/key-fill.svg" alt="Get Info" width="24" height="24" x="8" y="8" />
+                                    </g>
+                                </svg>
+                                <svg class="svg-image" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" @onclick="DeleteOrder">
+                                    <g>
+                                        <circle cx="20" cy="20" r="18" fill="#FFC8D6" />
+                                        <image href="/icons/twttrbs/trash.svg" alt="Delete" width="24" height="24" x="8" y="8" />
+                                    </g>
+                                </svg>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <span>Loading image build history...</span>
+    }
+</div>
+
+@code {
+    private string pageTitle = "Order Managment";
+
+    private List<ImageBuildBasic>? ImageBuildBasicList { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ImageBuildService.GetUserImageBuildHistory(accountId: await LocalStorageService.GetItemAsync<string>("accountId"));
+        ImageBuildBasicList = ImageBuildService.ImageBuildBasicsList;
+    }
+
+    private async Task LoadOrders()
+    {
+        await ImageBuildService.GetUserImageBuildHistory(accountId: await LocalStorageService.GetItemAsync<string>("accountId"));
+        ImageBuildBasicList = ImageBuildService.ImageBuildBasicsList;
+        StateHasChanged();
+    }
+
+    private async Task LoadSubmittedOrders()
+    {
+        await ImageBuildService.GetUserImageSubmittedOrders(accountId: await LocalStorageService.GetItemAsync<string>("accountId"));
+        ImageBuildBasicList = ImageBuildService.ImageBuildBasicsList;
+        StateHasChanged();
+    }
+
+    private async Task LoadQueuedOrders()
+    {
+        await ImageBuildService.GetUserImageQueuedOrders(accountId: await LocalStorageService.GetItemAsync<string>("accountId"));
+        ImageBuildBasicList = ImageBuildService.ImageBuildBasicsList;
+        StateHasChanged();
+    }
+
+    private async Task LoadPreworkOrders()
+    {
+        await ImageBuildService.GetUserImagePreworkOrders(accountId: await LocalStorageService.GetItemAsync<string>("accountId"));
+        ImageBuildBasicList = ImageBuildService.ImageBuildBasicsList;
+        StateHasChanged();
+    }
+
+    private async Task LoadProcessingOrders()
+    {
+        await ImageBuildService.GetUserImageProcessingOrders(accountId: await LocalStorageService.GetItemAsync<string>("accountId"));
+        ImageBuildBasicList = ImageBuildService.ImageBuildBasicsList;
+        StateHasChanged();
+    }
+
+    private async Task LoadCompilingOrders()
+    {
+        await ImageBuildService.GetUserImageCompilingOrders(accountId: await LocalStorageService.GetItemAsync<string>("accountId"));
+        ImageBuildBasicList = ImageBuildService.ImageBuildBasicsList;
+        StateHasChanged();
+    }
+
+    private async Task LoadCompleteOrders()
+    {
+        await ImageBuildService.GetUserImageCompleteOrders(accountId: await LocalStorageService.GetItemAsync<string>("accountId"));
+        ImageBuildBasicList = ImageBuildService.ImageBuildBasicsList;
+        StateHasChanged();
+    }
+
+    private async Task LoadDeletedOrders()
+    {
+        await ImageBuildService.GetUserImageDeletedOrders(accountId: await LocalStorageService.GetItemAsync<string>("accountId"));
+        ImageBuildBasicList = ImageBuildService.ImageBuildBasicsList;
+        StateHasChanged();
+    }
+
+    private async Task DownloadOrder()
+    {
+        await JSRuntime.InvokeVoidAsync("console.log", "Download pressed");
+    }
+
+    private async Task ShowOrderInfo()
+    {
+        await JSRuntime.InvokeVoidAsync("console.log", "Show info pressed");
+    }
+
+    private async Task DeleteOrder()
+    {
+        await JSRuntime.InvokeVoidAsync("console.log", "Delete pressed");
+    }
+}
+

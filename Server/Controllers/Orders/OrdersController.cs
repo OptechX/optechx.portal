@@ -66,5 +66,83 @@ namespace OptechX.Portal.Server.Controllers.Orders
             await _context.SaveChangesAsync();
             return NoContent();
         }
+
+        [HttpGet("orderslistbyaccountid/{accountId}/submitted")]
+        public async Task<ActionResult<IEnumerable<ImageBuildBasic>>> GetImageBuildBasicSubmittedByAccountId(string accountId)
+        {
+            var result = await _context.ImageBuildBasics!.Where(r => r.AccountId == accountId && r.OrderLifecycle == "SUBMITTED").ToListAsync();
+            if (result != null)
+            {
+                return Ok(result);
+            }
+            return NotFound();
+        }
+
+        [HttpGet("orderslistbyaccountid/{accountId}/queued")]
+        public async Task<ActionResult<IEnumerable<ImageBuildBasic>>> GetImageBuildBasicQueuedByAccountId(string accountId)
+        {
+            var result = await _context.ImageBuildBasics!.Where(r => r.AccountId == accountId && r.OrderLifecycle == "QUEUED").ToListAsync();
+            if (result != null)
+            {
+                return Ok(result);
+            }
+            return NotFound();
+        }
+
+        [HttpGet("orderslistbyaccountid/{accountId}/prework")]
+        public async Task<ActionResult<IEnumerable<ImageBuildBasic>>> GetImageBuildBasicPreworkByAccountId(string accountId)
+        {
+            var result = await _context.ImageBuildBasics!.Where(r => r.AccountId == accountId && r.OrderLifecycle == "PREWORK").ToListAsync();
+            if (result != null)
+            {
+                return Ok(result);
+            }
+            return NotFound();
+        }
+
+        [HttpGet("orderslistbyaccountid/{accountId}/processing")]
+        public async Task<ActionResult<IEnumerable<ImageBuildBasic>>> GetImageBuildBasicProcessingByAccountId(string accountId)
+        {
+            var result = await _context.ImageBuildBasics!.Where(r => r.AccountId == accountId && r.OrderLifecycle == "PROCESSING").ToListAsync();
+            if (result != null)
+            {
+                return Ok(result);
+            }
+            return NotFound();
+        }
+
+        [HttpGet("orderslistbyaccountid/{accountId}/compiling")]
+        public async Task<ActionResult<IEnumerable<ImageBuildBasic>>> GetImageBuildBasicCompilingByAccountId(string accountId)
+        {
+            var result = await _context.ImageBuildBasics!.Where(r => r.AccountId == accountId && r.OrderLifecycle == "COMPILING").ToListAsync();
+            if (result != null)
+            {
+                return Ok(result);
+            }
+            return NotFound();
+        }
+
+        [HttpGet("orderslistbyaccountid/{accountId}/complete")]
+        public async Task<ActionResult<IEnumerable<ImageBuildBasic>>> GetImageBuildBasicCompleteByAccountId(string accountId)
+        {
+            var result = await _context.ImageBuildBasics!.Where(r => r.AccountId == accountId && r.OrderLifecycle == "COMPLETE").ToListAsync();
+            if (result != null)
+            {
+                return Ok(result);
+            }
+            return NotFound();
+        }
+
+        [HttpGet("orderslistbyaccountid/{accountId}/deleted")]
+        public async Task<ActionResult<IEnumerable<ImageBuildBasic>>> GetImageBuildBasicDeletedByAccountId(string accountId)
+        {
+            var result = await _context.ImageBuildBasics!.Where(r => r.AccountId == accountId && r.OrderLifecycle == "DELETED").ToListAsync();
+            if (result != null)
+            {
+                return Ok(result);
+            }
+            return NotFound();
+        }
     }
 }
+
