@@ -4,9 +4,12 @@ namespace OptechX.Portal.Client.Services
 {
 	public interface IBuildModalService
 	{
-        void ShowModal(DateTime OrderDate, string? ImageFormat, bool CIApps, bool CIDrivers, bool CICD,
-            string? Release, string? Edition, string? Version, string? Arch, string? Language,
-            string? Apps, string? AppxPackages, string? OptionalFeatures, string? Regedits,
+        void ShowModal(DateTime OrderDate, string? ImageFormat,
+            bool CIApps, bool CIDrivers, bool CICD,
+            string? Release, string? Edition, string? Version,
+            string? Arch, string? Language,
+            string? Apps, string? Drivers, string? Regedits,
+            string? AppxPackages, string? OptionalFeatures,
             bool NotifyComplete, bool NotifyCICD,
             string UserAccount, string UserPassword);
 
@@ -25,6 +28,7 @@ namespace OptechX.Portal.Client.Services
         string ImgArch { get; }
         string ImgLanguage { get; }
         List<string> ImgApps { get; }
+        List<string> ImgDrivers { get; }
         List<string> ImgAppxPackages { get; }
         List<string> ImgOptionalFeatures { get; }
         List<string> ImgRegedits { get; }

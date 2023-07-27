@@ -10,8 +10,8 @@ namespace OptechX.Portal.Client.Services
             bool CIApps, bool CIDrivers, bool CICD,
             string? Release, string? Edition, string? Version,
             string? Arch, string? Language,
-            string? Apps, string? AppxPackages,
-            string? OptionalFeatures, string? Regedits,
+            string? Apps, string? Drivers, string? Regedits,
+            string? AppxPackages, string? OptionalFeatures, 
             bool NotifyComplete, bool NotifyCICD,
             string UserAccount, string UserPassword)
         {
@@ -25,15 +25,28 @@ namespace OptechX.Portal.Client.Services
             ImgVersion = Version!;
             ImgArch = Arch!;
             ImgLanguage = Language!;
-            ImgApps = new List<string>(Apps!.Split(','));
-            ImgAppxPackages = new List<string>(AppxPackages!.Split(','));
-            ImgOptionalFeatures = new List<string>(OptionalFeatures!.Split(','));
-            ImgRegedits = new List<string>(Regedits!.Split(','));
+            ImgApps = new List<string>((Apps ?? "").Split(','));
+            ImgDrivers = new List<string>((Drivers ?? "").Split(','));
+            ImgAppxPackages = new List<string>((AppxPackages ?? "").Split(','));
+            ImgOptionalFeatures = new List<string>((OptionalFeatures ?? "").Split(','));
+            ImgRegedits = new List<string>((Regedits ?? "").Split(','));
             ImgNotifyComplete = NotifyComplete;
             ImgNotifyCICD = NotifyCICD;
             ImgUserAccount = UserAccount;
             ImgUserPassword = UserPassword;
         }
+
+        public void CloseModal()
+        {
+            showModal = false;
+        }
+
+        public bool IsModalVisible()
+        {
+            return showModal;
+        }
+
+        public EventCallback<bool> OnClose => EventCallback.Factory.Create<bool>(this, CloseModal);
 
         public DateTime ImgOrderDate { get; private set; }
         public string ImgImageFormat { get; private set; } = null!;
@@ -46,6 +59,7 @@ namespace OptechX.Portal.Client.Services
         public string ImgArch { get; private set; } = null!;
         public string ImgLanguage { get; private set; } = null!;
         public List<string> ImgApps { get; private set; } = null!;
+        public List<string> ImgDrivers { get; private set; } = null!;
         public List<string> ImgAppxPackages { get; private set; } = null!;
         public List<string> ImgOptionalFeatures { get; private set; } = null!;
         public List<string> ImgRegedits { get; private set; } = null!;
@@ -53,18 +67,6 @@ namespace OptechX.Portal.Client.Services
         public bool ImgNotifyCICD { get; private set; }
         public string ImgUserAccount { get; private set; } = null!;
         public string ImgUserPassword { get; private set; } = null!;
-
-        public void CloseModal()
-        {
-            showModal = false;
-        }
-
-        public bool IsModalVisible()
-        {
-            return showModal;
-        }
-
-        EventCallback<bool> IBuildModalService.OnClose => throw new NotImplementedException();
     }
 }
 

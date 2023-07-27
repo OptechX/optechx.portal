@@ -1,11 +1,39 @@
 ﻿@using OptechX.Portal.Shared.Models.Engine.ImageBuilds
 @inject IImageBuildService ImageBuildService
 @inject ILocalStorageService LocalStorageService
+@inject IBuildModalService BuildModalService
 @inject IJSRuntime JSRuntime
 
 <div class="row ml-4">
     <h3>@pageTitle</h3>
 </div>
+
+<!-- Button to trigger the modal -->
+<button type="button" class="btn btn-primary" @onclick='() => ShowModal("Header text, bitch", "This is a custom modal content.")'>
+    Launch Custom Modal
+</button>
+
+<!-- Modal -->
+
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">@ModalTitle</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                @ModalContent
+                <p><a href="#" data-bs-toggle="tooltip" title="Tooltip">This link</a> and <a href="#" data-bs-toggle="tooltip" title="Tooltip">that link</a> have tooltips on hover.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Understood</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <!-- Dropdown -->
 <div class="d-flex justify-content-end mt-3 mb-3">
@@ -123,7 +151,27 @@
                                         <image href="/icons/twttrbs/download.svg" alt="Download" width="24" height="24" x="8" y="8" />
                                     </g>
                                 </svg>
-                                <svg class="svg-image" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" @onclick="ShowOrderInfo">
+                                <svg class="svg-image" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" @onclick="(() => ShowOrderInfo(
+                                     build.OrderDate,
+                                     build.ImageFormat,
+                                     build.ContinuousIntegrationApplications,
+                                     build.ContinuousIntegrationDrivers,
+                                     build.ContinuousDeployment,
+                                     build.WindowsRelease,
+                                     build.WindowsEdition,
+                                     build.WindowsVersion,
+                                     build.Arch,
+                                     build.Language,
+                                     build.Applications,
+                                     build.Drivers,
+                                     build.CustomRegistryStrings,
+                                     build.AppxProvisionedPackages,
+                                     build.WindowsOptionalFeatures,
+                                     build.NotifyBuildComplete,
+                                     build.NotifyCICDComplete,
+                                     build.DefaultAccount,
+                                     build.DefaultPassword
+                                     ))">
                                     <g>
                                         <circle cx="20" cy="20" r="18" fill="#E6D9B9" />
                                         <image href="/icons/twttrbs/key-fill.svg" alt="Get Info" width="24" height="24" x="8" y="8" />
@@ -148,7 +196,151 @@
     }
 </div>
 
+<!-- Build Modal Service -->
+@if (BuildModalService.IsModalVisible())
+{
+    <div class="modal fade show" id="myModal" style="display:block; background-color: rgba(10,10,10,.8);" aria-modal="true" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header text-left">
+                    @switch (BuildModalService.ImgRelease)
+                    {
+                        case "Windows 10":
+                            <img src="/icons/windows/win10.png" alt="Icon Image" style="width: 64px; height: 64px;" />
+                            break;
+                        case "Windows 11":
+                            <img src="/icons/windows/win11.png" alt="Icon Image" style="width: 64px; height: 64px;" />
+                            break;
+                    }
+                    <h4 class="modal-title">Image Build Details</h4>
+                    <button type="button" class="close" @onclick="BuildModalService.CloseModal">
+                        &times;
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Overview -->
+                    <h5>Overview</h5>
+                    <p>
+                        <strong>Release:</strong>&nbsp;@BuildModalService.ImgRelease<br />
+                        <strong>Edition:</strong>&nbsp;@BuildModalService.ImgEdition<br />
+                        <strong>Version:</strong>&nbsp;@BuildModalService.ImgVersion<br />
+                        <strong>Arch:</strong>&nbsp;@BuildModalService.ImgArch<br />
+                        <strong>Language:</strong>&nbsp;@BuildModalService.ImgLanguage<br />
+                        <strong>Format:</strong>&nbsp;@BuildModalService.ImgImageFormat<br />
+
+                    </p>
+                    <!-- Automation -->
+                    <h5>Automation</h5>
+                    <p>
+                        <strong>CI Apps:</strong>&nbsp;@BuildModalService.ImgCIApps<br />
+                        <strong>CI Drivers:</strong>&nbsp;@BuildModalService.ImgCIDrivers<br />
+                        <strong>CICD Image Builds:</strong>&nbsp;@BuildModalService.ImgCICD<br />
+                    </p>
+                    <!-- Applications -->
+                    @if (BuildModalService.ImgApps.Count > 0)
+                    {
+                        <h5>Applications</h5>
+                        <p>
+                            <ul>
+                                @foreach (string app in BuildModalService.ImgApps)
+                                {
+                                    <li>@app</li>
+                                }
+                            </ul>
+                        </p>
+                    }
+                    <!-- Drivers -->
+                    @if (BuildModalService.ImgDrivers.Count > 0)
+                    {
+                        <h5>Drivers</h5>
+                        <p>
+                            <ul>
+                                @foreach (string driver in BuildModalService.ImgDrivers)
+                                {
+                                    <li>@driver</li>
+                                }
+                            </ul>
+                        </p>
+                    }
+                    <!-- AppxPackages -->
+                    @if (BuildModalService.ImgAppxPackages.Count > 0)
+                    {
+                        <h5>Appx Packages</h5>
+                        <p>
+                            <ul>
+                                @foreach (string pkg in BuildModalService.ImgAppxPackages)
+                                {
+                                    <li>@pkg</li>
+                                }
+                            </ul>
+                        </p>
+                    }
+                    <!-- Optional Features -->
+                    @if (BuildModalService.ImgOptionalFeatures.Count > 0)
+                    {
+                        <h5>Appx Packages</h5>
+                        <p>
+                            <ul>
+                                @foreach (string feat in BuildModalService.ImgOptionalFeatures)
+                                {
+                                    <li>@feat</li>
+                                }
+                            </ul>
+                        </p>
+                    }
+                    <!-- Reg Edits -->
+                    @if (BuildModalService.ImgRegedits.Count > 0)
+                    {
+                        <h5>Appx Packages</h5>
+                        <p>
+                            <ul>
+                                @foreach (string reg in BuildModalService.ImgRegedits)
+                                {
+                                    <li>@reg</li>
+                                }
+                            </ul>
+                        </p>
+                    }
+                    <!-- Notifications -->
+                    <h5>Notifications</h5>
+                    <p>
+                        <strong>Build Completed:</strong>&nbsp;@BuildModalService.ImgNotifyComplete<br />
+                        <strong>CICD Pipelines:</strong>&nbsp;@BuildModalService.ImgNotifyCICD<br />
+                    </p>
+                    <!-- Credentials -->
+                    <h5>Credentials</h5>
+                    <p>
+                        <strong>Admin User:</strong>&nbsp;@BuildModalService.ImgUserAccount<br />
+                        <strong>Admin Password:</strong>&nbsp;@BuildModalService.ImgUserPassword<br />
+                    </p>
+                </div>
+                <div class="modal-footer d-flex">
+                    @*<div class="mr-auto">
+                            <button type="button" class="btn btn-optechx" @onclick="() => OpenDocsInNewTab(ModalService.AppDocs)">Docs</button>
+                            <button type="button" class="btn btn-warning" @onclick="() => OpenDocsInNewTab(ModalService.AppHomepage)">Homepage</button>
+                            <button type="button" class="btn btn-danger" @onclick="ModalService.CloseModal">Close</button>
+                        </div>*@
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+
 @code {
+    private string? ModalTitle { get; set; }
+    private string? ModalContent { get; set; }
+    private void ShowModal(string modalTitle, string modalContent)
+    {
+        // Set the modal title and content here
+        ModalTitle = modalTitle;
+        ModalContent = modalContent;
+
+        // Show the Bootstrap modal using JavaScript function
+        JSRuntime.InvokeVoidAsync("showModal");
+    }
+
     private string pageTitle = "Order Managment";
 
     private List<ImageBuildBasic>? ImageBuildBasicList { get; set; }
@@ -215,14 +407,36 @@
         StateHasChanged();
     }
 
+    private async Task ShowOrderInfo(DateTime dateTime, string? imgFormat, bool ciApps, bool ciDrivers, bool cicd, string? release,
+        string? edition, string? version, string? arch, string? lcid, string? apps, string? drivers, string? regedits, string? appx,
+        string? features, bool notifyComplete, bool notifycicd, string userAccount, string userPassword)
+    {
+        await JSRuntime.InvokeVoidAsync("console.log", "Show info pressed");
+        BuildModalService.ShowModal(
+            OrderDate: dateTime,
+            ImageFormat: imgFormat,
+            CIApps: ciApps,
+            CIDrivers: ciDrivers,
+            CICD: cicd,
+            Release: release,
+            Edition: edition,
+            Version: version,
+            Arch: arch,
+            Language: lcid,
+            Apps: apps,
+            Drivers: drivers,
+            Regedits: regedits,
+            AppxPackages: appx,
+            OptionalFeatures: features,
+            NotifyComplete: notifyComplete,
+            NotifyCICD: notifycicd,
+            UserAccount: userAccount,
+            UserPassword: userPassword);
+    }
+
     private async Task DownloadOrder()
     {
         await JSRuntime.InvokeVoidAsync("console.log", "Download pressed");
-    }
-
-    private async Task ShowOrderInfo()
-    {
-        await JSRuntime.InvokeVoidAsync("console.log", "Show info pressed");
     }
 
     private async Task DeleteOrder()
