@@ -8,31 +8,261 @@
     <h3>@pageTitle</h3>
 </div>
 
+<!--
+    private void ShowModal(string? imgFormat, bool ciApps, bool ciDrivers, bool cicd,
+        string? release, string? edition, string? version, string? arch, string? lcid,
+        string? apps, string? drivers, string? regedits, string? appx, string? features,
+        bool notifyComplete, bool notifycicd,
+        string userAccount, string userPassword)
+-->
 <!-- Button to trigger the modal -->
-<button type="button" class="btn btn-primary" @onclick='() => ShowModal("Header text, bitch", "This is a custom modal content.")'>
+<button type="button" class="btn btn-primary" @onclick="(() => ShowModal(a1,b1,b2,b3,c1,c2,c3,c4,c5,d1,d2,d3,d4,d5,e1,e2,f1,f2))">
     Launch Custom Modal
 </button>
 
 <!-- Modal -->
-
 <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-md modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="staticBackdropLabel">@ModalTitle</h1>
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">@Release @Edition @Version</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                @ModalContent
-                <p><a href="#" data-bs-toggle="tooltip" title="Tooltip">This link</a> and <a href="#" data-bs-toggle="tooltip" title="Tooltip">that link</a> have tooltips on hover.</p>
+                <div style="overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="container mb-2">
+                    <!-- Overview -->
+                    <table class="table table-responsive custom-table" style="border-collapse: collapse;">
+                        <thead>
+                            <tr>
+                                <th colspan="2">Overview</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    Arch:
+                                </td>
+                                <td style="display: flex; justify-content: flex-start;">
+                                    @Arch
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Language:
+                                </td>
+                                <td style="display: flex; justify-content: flex-start;">
+                                    @Language
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Image Format:
+                                </td>
+                                <td style="display: flex; justify-content: flex-start;">
+                                    @ImageFormat
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div style="overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="container mb-2">
+                    <!-- Automation -->
+                    <table class="table table-responsive custom-table" style="border-collapse: collapse;">
+                        <thead>
+                            <tr>
+                                <th colspan="2">Automation &amp; Notifications</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    CI Applications:
+                                </td>
+                                <td>
+                                    @if (CIApps == true)
+                                    {@YesResult }
+                                else
+                                { @NoResult}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    CD Drivers:
+                                </td>
+                                <td>
+                                    @if (CIDrivers == true)
+                                    {@YesResult }
+                                else
+                                { @NoResult}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    CI Build Image:
+                                </td>
+                                <td>
+                                    @if (CICD == true)
+                                    {@YesResult }
+                                else
+                                { @NoResult}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Build Complete:
+                                </td>
+                                <td>
+                                    @if (NotifyComplete == true)
+                                    {@YesResult }
+                                else
+                                { @NoResult}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    CICD Pipeline Run:
+                                </td>
+                                <td>
+                                    @if (NotifyCICD == true)
+                                    {@YesResult }
+                                else
+                                { @NoResult}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div style="overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="container mb-2">
+                    <!-- Credentials -->
+                    <table class="table table-responsive custom-table" style="border-collapse: collapse;">
+                        <thead>
+                            <tr>
+                                <th colspan="2">Credentials</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    Administrator:
+                                </td>
+                                <td>
+                                    @UserAccount
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Password:
+                                </td>
+                                <td>
+                                    <span data-bs-toggle="tooltip" title="@UserPassword" class="ml-2"><i>Hover mouse here to reveal</i></span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Applications -->
+                @if (Apps?.Count > 0 && Apps[0] != string.Empty)
+                {
+                    <h5>Drivers</h5>
+                    <p>
+                        <ul>
+                            @foreach (string driver in Apps)
+                            {
+                                <li>@driver</li>
+                            }
+                        </ul>
+                    </p>
+                }
+
+                <!-- Applications -->
+                @if (Apps?.Count > 0 && Apps[0] != string.Empty)
+                {
+                    <div style="overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="container mb-2">
+                        <h6>Applications</h6>
+                        <p>
+                            <ul>
+                                @foreach (string app in Apps)
+                                {
+                                    <li>@app</li>
+                                }
+                            </ul>
+                        </p>
+                    </div>
+                }
+
+                <!-- Drivers -->
+                @if (Drivers?.Count > 0 && Drivers[0] != string.Empty)
+                {
+                    <div style="overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="container mb-2">
+                        <h6>Drivers</h6>
+                        <p>
+                            <ul>
+                                @foreach (string driver in Drivers)
+                                {
+                                    <li>@driver</li>
+                                }
+                            </ul>
+                        </p>
+                    </div>
+                }
+
+                <!-- AppxPackages -->
+                @if (AppxPackages?.Count > 0 && AppxPackages[0] != string.Empty)
+                {
+                    <div style="overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="container mb-2">
+                        <h6>Appx Packages</h6>
+                        <p>
+                            <ul>
+                                @foreach (string pkg in AppxPackages)
+                                {
+                                    <li>@pkg</li>
+                                }
+                            </ul>
+                        </p>
+                    </div>
+                }
+
+                <!-- Optional Features -->
+                @if (OptionalFeatures?.Count > 0 && OptionalFeatures[0] != string.Empty)
+                {
+                    <div style="overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="container mb-2">
+                        <h6>Optional Features</h6>
+                        <p>
+                            <ul>
+                                @foreach (string feat in OptionalFeatures)
+                                {
+                                    <li>@feat</li>
+                                }
+                            </ul>
+                        </p>
+                    </div>
+                }
+
+                <!-- Reg Edits -->
+                @if (RegEdits?.Count > 0 && RegEdits[0] != string.Empty)
+                {
+                    <div style="overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="container mb-2">
+                        <h6>Registry Edits</h6>
+                        <p>
+                            <ul>
+                                @foreach (string reg in RegEdits)
+                                {
+                                    <li>@reg</li>
+                                }
+                            </ul>
+                        </p>
+                    </div>
+                }
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Understood</button>
             </div>
         </div>
     </div>
 </div>
+
 
 
 <!-- Dropdown -->
@@ -196,146 +426,76 @@
     }
 </div>
 
-<!-- Build Modal Service -->
-@if (BuildModalService.IsModalVisible())
-{
-    <div class="modal fade show" id="myModal" style="display:block; background-color: rgba(10,10,10,.8);" aria-modal="true" role="dialog">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header text-left">
-                    @switch (BuildModalService.ImgRelease)
-                    {
-                        case "Windows 10":
-                            <img src="/icons/windows/win10.png" alt="Icon Image" style="width: 64px; height: 64px;" />
-                            break;
-                        case "Windows 11":
-                            <img src="/icons/windows/win11.png" alt="Icon Image" style="width: 64px; height: 64px;" />
-                            break;
-                    }
-                    <h4 class="modal-title">Image Build Details</h4>
-                    <button type="button" class="close" @onclick="BuildModalService.CloseModal">
-                        &times;
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <!-- Overview -->
-                    <h5>Overview</h5>
-                    <p>
-                        <strong>Release:</strong>&nbsp;@BuildModalService.ImgRelease<br />
-                        <strong>Edition:</strong>&nbsp;@BuildModalService.ImgEdition<br />
-                        <strong>Version:</strong>&nbsp;@BuildModalService.ImgVersion<br />
-                        <strong>Arch:</strong>&nbsp;@BuildModalService.ImgArch<br />
-                        <strong>Language:</strong>&nbsp;@BuildModalService.ImgLanguage<br />
-                        <strong>Format:</strong>&nbsp;@BuildModalService.ImgImageFormat<br />
-
-                    </p>
-                    <!-- Automation -->
-                    <h5>Automation</h5>
-                    <p>
-                        <strong>CI Apps:</strong>&nbsp;@BuildModalService.ImgCIApps<br />
-                        <strong>CI Drivers:</strong>&nbsp;@BuildModalService.ImgCIDrivers<br />
-                        <strong>CICD Image Builds:</strong>&nbsp;@BuildModalService.ImgCICD<br />
-                    </p>
-                    <!-- Applications -->
-                    @if (BuildModalService.ImgApps.Count > 0)
-                    {
-                        <h5>Applications</h5>
-                        <p>
-                            <ul>
-                                @foreach (string app in BuildModalService.ImgApps)
-                                {
-                                    <li>@app</li>
-                                }
-                            </ul>
-                        </p>
-                    }
-                    <!-- Drivers -->
-                    @if (BuildModalService.ImgDrivers.Count > 0)
-                    {
-                        <h5>Drivers</h5>
-                        <p>
-                            <ul>
-                                @foreach (string driver in BuildModalService.ImgDrivers)
-                                {
-                                    <li>@driver</li>
-                                }
-                            </ul>
-                        </p>
-                    }
-                    <!-- AppxPackages -->
-                    @if (BuildModalService.ImgAppxPackages.Count > 0)
-                    {
-                        <h5>Appx Packages</h5>
-                        <p>
-                            <ul>
-                                @foreach (string pkg in BuildModalService.ImgAppxPackages)
-                                {
-                                    <li>@pkg</li>
-                                }
-                            </ul>
-                        </p>
-                    }
-                    <!-- Optional Features -->
-                    @if (BuildModalService.ImgOptionalFeatures.Count > 0)
-                    {
-                        <h5>Appx Packages</h5>
-                        <p>
-                            <ul>
-                                @foreach (string feat in BuildModalService.ImgOptionalFeatures)
-                                {
-                                    <li>@feat</li>
-                                }
-                            </ul>
-                        </p>
-                    }
-                    <!-- Reg Edits -->
-                    @if (BuildModalService.ImgRegedits.Count > 0)
-                    {
-                        <h5>Appx Packages</h5>
-                        <p>
-                            <ul>
-                                @foreach (string reg in BuildModalService.ImgRegedits)
-                                {
-                                    <li>@reg</li>
-                                }
-                            </ul>
-                        </p>
-                    }
-                    <!-- Notifications -->
-                    <h5>Notifications</h5>
-                    <p>
-                        <strong>Build Completed:</strong>&nbsp;@BuildModalService.ImgNotifyComplete<br />
-                        <strong>CICD Pipelines:</strong>&nbsp;@BuildModalService.ImgNotifyCICD<br />
-                    </p>
-                    <!-- Credentials -->
-                    <h5>Credentials</h5>
-                    <p>
-                        <strong>Admin User:</strong>&nbsp;@BuildModalService.ImgUserAccount<br />
-                        <strong>Admin Password:</strong>&nbsp;@BuildModalService.ImgUserPassword<br />
-                    </p>
-                </div>
-                <div class="modal-footer d-flex">
-                    @*<div class="mr-auto">
-                            <button type="button" class="btn btn-optechx" @onclick="() => OpenDocsInNewTab(ModalService.AppDocs)">Docs</button>
-                            <button type="button" class="btn btn-warning" @onclick="() => OpenDocsInNewTab(ModalService.AppHomepage)">Homepage</button>
-                            <button type="button" class="btn btn-danger" @onclick="ModalService.CloseModal">Close</button>
-                        </div>*@
-                </div>
-            </div>
-        </div>
-    </div>
-}
-
-
-
 @code {
-    private string? ModalTitle { get; set; }
-    private string? ModalContent { get; set; }
-    private void ShowModal(string modalTitle, string modalContent)
+    private string? ImageFormat { get; set; }
+    private bool CIApps { get; set; }
+    private bool CIDrivers { get; set; }
+    private bool CICD { get; set; }
+    private string? Release { get; set; }
+    private string? Edition { get; set; }
+    private string? Version { get; set; }
+    private string? Arch { get; set; }
+    private string? Language { get; set; }
+    private List<string>? Apps { get; set; }
+    private List<string>? Drivers { get; set; }
+    private List<string>? RegEdits { get; set; }
+    private List<string>? AppxPackages { get; set; }
+    private List<string>? OptionalFeatures { get; set; }
+    private bool NotifyComplete { get; set; }
+    private bool NotifyCICD { get; set; }
+    private string? UserAccount { get; set; }
+    private string? UserPassword { get; set; }
+    private string ModalTitle { get; } = "Image Build Details";
+
+    private string YesResult { get; } = "Yes";
+    private string NoResult { get; } = "No";
+
+    private string a1 = "image format";
+    private bool b1 = false;
+    private bool b2 = true;
+    private bool b3 = false;
+    private string c1 = "release text";
+    private string c2 = "edition text";
+    private string c3 = "version text";
+    private string c4 = "arch text";
+    private string c5 = "language text";
+    private string? d1 = null;
+    private string d2 = "driver1,driver2,driver3";
+    private string d3 = "reg1,reg2,reg3";
+    private string d4 = "appx1,appx2,appx3";
+    private string d5 = "opt1,opt2,opt3";
+    private bool e1 = true;
+    private bool e2 = false;
+    private string f1 = "usernamegoeshere";
+    private string f2 = "password is secret";
+
+    //ShowModal(a1,b1,b2,b3,c1,c2,c3,c4,c5,d1,d2,d3,d4,d5,e1,e2,f1,f2)
+
+    private void ShowModal(string? imgFormat, bool ciApps, bool ciDrivers, bool cicd,
+        string? release, string? edition, string? version, string? arch, string? lcid,
+        string? apps, string? drivers, string? regedits, string? appx, string? features,
+        bool notifyComplete, bool notifycicd,
+        string userAccount, string userPassword)
     {
         // Set the modal title and content here
-        ModalTitle = modalTitle;
-        ModalContent = modalContent;
+        ImageFormat = imgFormat;
+        CIApps = ciApps;
+        CIDrivers = ciDrivers;
+        CICD = cicd;
+        Release = release;
+        Edition = edition;
+        Version = version;
+        Arch = arch;
+        Language = lcid;
+        Apps = new List<string>((apps ?? "").Split(','));
+        Drivers = new List<string>((drivers ?? "").Split(','));
+        RegEdits = new List<string>((regedits ?? "").Split(','));
+        AppxPackages = new List<string>((appx ?? "").Split(','));
+        OptionalFeatures = new List<string>((features ?? "").Split(','));
+        NotifyComplete = notifyComplete;
+        NotifyCICD = notifycicd;
+        UserAccount = userAccount;
+        UserPassword = userPassword;
 
         // Show the Bootstrap modal using JavaScript function
         JSRuntime.InvokeVoidAsync("showModal");
