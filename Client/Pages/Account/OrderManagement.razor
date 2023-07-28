@@ -17,11 +17,11 @@
         {
             int result = await AuthService.VerifyTokenValidity();
             if (result != 0)
-                Logout();
+                await LogoutAsync();
         }
     }
 
-    private async void Logout()
+    private async Task LogoutAsync()
     {
         await LocalStorageService.RemoveItemAsync("authToken");
         await AuthStateProvider.GetAuthenticationStateAsync();
