@@ -30,6 +30,7 @@
     <Content Remove="wwwroot\img\account_tiers\" />
     <Content Remove="wwwroot\icons\twttrbs\" />
     <Content Remove="wwwroot\icons\windows\" />
+    <Content Remove="wwwroot\js\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="wwwroot\icons\" />
@@ -40,6 +41,7 @@
     <Folder Include="wwwroot\img\account_tiers\" />
     <Folder Include="wwwroot\icons\twttrbs\" />
     <Folder Include="wwwroot\icons\windows\" />
+    <Folder Include="wwwroot\js\" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Services\" />

@@ -1,19 +1,13 @@
-﻿@page "/account/verify-account"
+﻿@page "/account/order-management"
 @inject ILocalStorageService LocalStorageService
 @inject IAuthService AuthService
 @inject AuthenticationStateProvider AuthStateProvider
 @inject NavigationManager NavigationManager
+@*@attribute [Authorize]*@
 
 <PageTitle>OptechX Portal</PageTitle>
 
-<AuthorizeView>
-    <Authorized>
-        <p>User is authorized. Redirecting...</p>
-    </Authorized>
-    <NotAuthorized>
-        <AccountVerify />
-    </NotAuthorized>
-</AuthorizeView>
+<OrderHistoryManagement />
 
 @code {
     protected override async Task OnInitializedAsync()
@@ -23,15 +17,14 @@
         {
             int result = await AuthService.VerifyTokenValidity();
             if (result != 0)
-                Logout();
+                await LogoutAsync();
         }
     }
 
-    private async void Logout()
+    private async Task LogoutAsync()
     {
         await LocalStorageService.RemoveItemAsync("authToken");
         await AuthStateProvider.GetAuthenticationStateAsync();
         NavigationManager.NavigateTo("/");
     }
 }
-

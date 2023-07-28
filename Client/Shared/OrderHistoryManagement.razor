@@ -1,0 +1,568 @@
+﻿@using OptechX.Portal.Shared.Models.Engine.ImageBuilds
+@inject IImageBuildService ImageBuildService
+@inject ILocalStorageService LocalStorageService
+@inject IBuildModalService BuildModalService
+@inject IJSRuntime JSRuntime
+
+<div class="row ml-4">
+    <h3>@pageTitle</h3>
+</div>
+
+<!-- Dropdown -->
+<div class="d-flex justify-content-end mt-3 mb-3">
+    <div>
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Status Select
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <li><a class="dropdown-item" @onclick="LoadOrders">All Status</a></li>
+                <li><a class="dropdown-item" @onclick="LoadSubmittedOrders">Submitted</a></li>
+                <li><a class="dropdown-item" @onclick="LoadQueuedOrders">Queued</a></li>
+                <li><a class="dropdown-item" @onclick="LoadPreworkOrders">Prework</a></li>
+                <li><a class="dropdown-item" @onclick="LoadProcessingOrders">Processing</a></li>
+                <li><a class="dropdown-item" @onclick="LoadCompilingOrders">Compiling</a></li>
+                <li><a class="dropdown-item" @onclick="LoadCompleteOrders">Complete</a></li>
+                <li><a class="dropdown-item" @onclick="LoadDeletedOrders">Deleted</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Drivers Table View -->
+<div style="overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="mb-3">
+    @if (ImageBuildBasicList?.Count > 0)
+    {
+        <table class="table table-responsive custom-table" style="border-collapse: collapse;">
+            <thead>
+                <tr>
+                    <th>
+                        <div class="d-flex align-items-center">
+                            <span style="white-space: nowrap;">Order Date</span>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="d-flex align-items-center">
+                            <span style="white-space: nowrap;">Status</span>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="d-flex align-items-center">
+                            <span style="white-space: nowrap;">Release</span>
+                        </div>
+                    </th>
+
+                    <th>
+                        <div class="d-flex align-items-center">
+                            <span style="white-space: nowrap;">Actions</span>
+                        </div>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (ImageBuildBasic build in ImageBuildBasicList)
+                {
+                    <tr>
+                        <td>
+                            @build.OrderDate.ToString("yyyy-MM-dd")
+                        </td>
+                        <td style="display: flex; align-items: center;">
+                            <div class="svg-container">
+                                <svg class="svg-image" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                                    <g>
+                                        @switch (build.OrderLifecycle)
+                                        {
+                                            case "SUBMITTED":
+                                                <circle cx="20" cy="20" r="18" fill="#FFD699" />
+                                                <image href="/icons/twttrbs/inbox.svg" width="24" height="24" x="8" y="8" />
+                                                break;
+                                            case "QUEUED":
+                                                <circle cx="20" cy="20" r="18" fill="#C9D0FF" />
+                                                <image href="/icons/twttrbs/ticket-perforated.svg" width="24" height="24" x="8" y="8" />
+                                                break;
+                                            case "PREWORK":
+                                                <circle cx="20" cy="20" r="18" fill="#FFD1D1" />
+                                                <image href="/icons/twttrbs/clipboard2-data.svg" width="24" height="24" x="8" y="8" />
+                                                break;
+                                            case "PROCESSING":
+                                                <circle cx="20" cy="20" r="18" fill="#E0FFCC" />
+                                                <image href="/icons/twttrbs/cpu.svg" width="24" height="24" x="8" y="8" />
+                                                break;
+                                            case "COMPILING":
+                                                <circle cx="20" cy="20" r="18" fill="#E6CCFF" />
+                                                <image href="/icons/twttrbs/box-seam.svg" width="24" height="24" x="8" y="8" />
+                                                break;
+                                            case "COMPLETE":
+                                                <circle cx="20" cy="20" r="18" fill="#CCFFE0" />
+                                                <image href="/icons/twttrbs/shield-check.svg" width="24" height="24" x="8" y="8" />
+                                                break;
+                                            case "DELETED":
+                                                <circle cx="20" cy="20" r="18" fill="#FFCCCC" />
+                                                <image href="/icons/twttrbs/file-earmark-x.svg" width="24" height="24" x="8" y="8" />
+                                                break;
+                                        }
+                                    </g>
+                                </svg>
+                            </div>
+                        </td>
+                        <td>
+                            @switch (build.WindowsRelease)
+                            {
+                                case "Windows 10":
+                                    <img src="/icons/windows/win10.png" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />
+                                    break;
+                                case "Windows 11":
+                                    <img src="icons/windows/win11.png" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />
+                                    break;
+                            }
+                        </td>
+                        <td>
+                            <div class="svg-container">
+                                @if (!string.IsNullOrEmpty(build.DownloadLink))
+                                {
+                                    <svg class="svg-image" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" @onclick="DownloadOrder">
+                                        <g>
+                                            <circle cx="20" cy="20" r="18" fill="#B0E57C" />
+                                            <image href="/icons/twttrbs/download.svg" alt="Download" width="24" height="24" x="8" y="8" />
+                                        </g>
+                                    </svg>
+                                }
+                                <svg class="svg-image" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" @onclick="(() => ShowModal(
+                                     build.ImageFormat,
+                                     build.ContinuousIntegrationApplications,
+                                     build.ContinuousIntegrationDrivers,
+                                     build.ContinuousDeployment,
+                                     build.WindowsRelease,
+                                     build.WindowsEdition,
+                                     build.WindowsVersion,
+                                     build.Arch,
+                                     build.Language,
+                                     build.Applications,
+                                     build.Drivers,
+                                     build.CustomRegistryStrings,
+                                     build.AppxProvisionedPackages,
+                                     build.WindowsOptionalFeatures,
+                                     build.NotifyBuildComplete,
+                                     build.NotifyCICDComplete,
+                                     build.DefaultAccount,
+                                     build.DefaultPassword))">
+                                    <g>
+                                        <circle cx="20" cy="20" r="18" fill="#E6D9B9" />
+                                        <image href="/icons/twttrbs/key-fill.svg" alt="Get Info" width="24" height="24" x="8" y="8" />
+                                    </g>
+                                </svg>
+                                <svg class="svg-image" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" @onclick="DeleteOrder">
+                                    <g>
+                                        <circle cx="20" cy="20" r="18" fill="#FFC8D6" />
+                                        <image href="/icons/twttrbs/trash.svg" alt="Delete" width="24" height="24" x="8" y="8" />
+                                    </g>
+                                </svg>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <span>Loading image build history...</span>
+    }
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-md modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                @switch (Release)
+                {
+                    case "Windows 10":
+                        <img src="/icons/windows/win10.png" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />
+                        break;
+                    case "Windows 11":
+                        <img src="icons/windows/win11.png" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />
+                        break;
+                }
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">@Release @Edition @Version</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div style="overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="container mb-2">
+                    <!-- Overview -->
+                    <table class="table table-responsive custom-table" style="border-collapse: collapse;">
+                        <thead>
+                            <tr>
+                                <th colspan="2">Overview</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    Arch:
+                                </td>
+                                <td style="display: flex; justify-content: flex-start;">
+                                    @Arch
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Language:
+                                </td>
+                                <td style="display: flex; justify-content: flex-start;">
+                                    @Language
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Image Format:
+                                </td>
+                                <td style="display: flex; justify-content: flex-start;">
+                                    @ImageFormat
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div style="overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="container mb-2">
+                    <!-- Automation -->
+                    <table class="table table-responsive custom-table" style="border-collapse: collapse;">
+                        <thead>
+                            <tr>
+                                <th colspan="2">Automation &amp; Notifications</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    CI Applications:
+                                </td>
+                                <td>
+                                    @if (CIApps == true)
+                                    {@YesResult }
+                                else
+                                { @NoResult}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    CI Drivers:
+                                </td>
+                                <td>
+                                    @if (CIDrivers == true)
+                                    {@YesResult }
+                                else
+                                { @NoResult}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    CI Build Image:
+                                </td>
+                                <td>
+                                    @if (CICD == true)
+                                    {@YesResult }
+                                else
+                                { @NoResult}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Build Complete:
+                                </td>
+                                <td>
+                                    @if (NotifyComplete == true)
+                                    {@YesResult }
+                                else
+                                { @NoResult}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    CI/CD Pipeline Run:
+                                </td>
+                                <td>
+                                    @if (NotifyCICD == true)
+                                    {@YesResult }
+                                else
+                                { @NoResult}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div style="overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="container mb-2">
+                    <!-- Credentials -->
+                    <table class="table table-responsive custom-table" style="border-collapse: collapse;">
+                        <thead>
+                            <tr>
+                                <th colspan="2">Credentials</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    Administrator:
+                                </td>
+                                <td>
+                                    @UserAccount
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Password:
+                                </td>
+                                <td>
+                                    <span data-bs-toggle="tooltip" title="@UserPassword" class="ml-2"><i>Hover mouse here to reveal</i></span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Applications -->
+                @if (Apps?.Count > 0 && Apps[0] != string.Empty)
+                {
+                    <div style="overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="container mb-2">
+                        <h6>Applications</h6>
+                        <p>
+                            <ul>
+                                @foreach (string app in Apps)
+                                {
+                                    <li>@app.Replace("::", " ")</li>
+                                }
+                            </ul>
+                        </p>
+                    </div>
+                }
+
+                <!-- Drivers -->
+                @if (Drivers?.Count > 0 && Drivers[0] != string.Empty)
+                {
+                    <div style="overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="container mb-2">
+                        <h6>Drivers</h6>
+                        <p>
+                            <ul>
+                                @foreach (string driver in Drivers)
+                                {
+                                    <li>@driver.Replace("::", " ")</li>
+                                }
+                            </ul>
+                        </p>
+                    </div>
+                }
+
+                <!-- AppxPackages -->
+                @if (AppxPackages?.Count > 0 && AppxPackages[0] != string.Empty)
+                {
+                    <div style="overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="container mb-2">
+                        <h6>Appx Packages</h6>
+                        <p>
+                            <ul>
+                                @foreach (string pkg in AppxPackages)
+                                {
+                                    <li>@pkg</li>
+                                }
+                            </ul>
+                        </p>
+                    </div>
+                }
+
+                <!-- Optional Features -->
+                @if (OptionalFeatures?.Count > 0 && OptionalFeatures[0] != string.Empty)
+                {
+                    <div style="overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="container mb-2">
+                        <h6>Optional Features</h6>
+                        <p>
+                            <ul>
+                                @foreach (string feat in OptionalFeatures)
+                                {
+                                    <li>@feat</li>
+                                }
+                            </ul>
+                        </p>
+                    </div>
+                }
+
+                <!-- Reg Edits -->
+                @if (RegEdits?.Count > 0 && RegEdits[0] != string.Empty)
+                {
+                    <div style="overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="container mb-2">
+                        <h6>Registry Edits</h6>
+                        <p>
+                            <ul>
+                                @foreach (string reg in RegEdits)
+                                {
+                                    <li>@reg</li>
+                                }
+                            </ul>
+                        </p>
+                    </div>
+                }
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string? ImageFormat { get; set; }
+    private bool CIApps { get; set; }
+    private bool CIDrivers { get; set; }
+    private bool CICD { get; set; }
+    private string? Release { get; set; }
+    private string? Edition { get; set; }
+    private string? Version { get; set; }
+    private string? Arch { get; set; }
+    private string? Language { get; set; }
+    private List<string>? Apps { get; set; }
+    private List<string>? Drivers { get; set; }
+    private List<string>? RegEdits { get; set; }
+    private List<string>? AppxPackages { get; set; }
+    private List<string>? OptionalFeatures { get; set; }
+    private bool NotifyComplete { get; set; }
+    private bool NotifyCICD { get; set; }
+    private string? UserAccount { get; set; }
+    private string? UserPassword { get; set; }
+    private string ModalTitle { get; } = "Image Build Details";
+
+    private string YesResult { get; } = "Yes";
+    private string NoResult { get; } = "No";
+
+    private void ShowModal(string? imgFormat, bool ciApps, bool ciDrivers, bool cicd,
+        string? release, string? edition, string? version, string? arch, string? lcid,
+        string? apps, string? drivers, string? regedits, string? appx, string? features,
+        bool notifyComplete, bool notifycicd,
+        string userAccount, string userPassword)
+    {
+        // Set the modal title and content here
+        ImageFormat = imgFormat;
+        CIApps = ciApps;
+        CIDrivers = ciDrivers;
+        CICD = cicd;
+        Release = release;
+        Edition = edition;
+        Version = version;
+        Arch = arch;
+        Language = lcid;
+        Apps = new List<string>((apps ?? "").Split(','));
+        Drivers = new List<string>((drivers ?? "").Split(','));
+        RegEdits = new List<string>((regedits ?? "").Split(','));
+        AppxPackages = new List<string>((appx ?? "").Split(','));
+        OptionalFeatures = new List<string>((features ?? "").Split(','));
+        NotifyComplete = notifyComplete;
+        NotifyCICD = notifycicd;
+        UserAccount = userAccount;
+        UserPassword = userPassword;
+
+        // Show the Bootstrap modal using JavaScript function
+        JSRuntime.InvokeVoidAsync("showModal");
+    }
+
+    private string pageTitle = "Order Managment";
+
+    private List<ImageBuildBasic>? ImageBuildBasicList { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ImageBuildService.GetUserImageBuildHistory(accountId: await LocalStorageService.GetItemAsync<string>("accountId"));
+        ImageBuildBasicList = ImageBuildService.ImageBuildBasicsList;
+    }
+
+    private async Task LoadOrders()
+    {
+        await ImageBuildService.GetUserImageBuildHistory(accountId: await LocalStorageService.GetItemAsync<string>("accountId"));
+        ImageBuildBasicList = ImageBuildService.ImageBuildBasicsList;
+        StateHasChanged();
+    }
+
+    private async Task LoadSubmittedOrders()
+    {
+        await ImageBuildService.GetUserImageSubmittedOrders(accountId: await LocalStorageService.GetItemAsync<string>("accountId"));
+        ImageBuildBasicList = ImageBuildService.ImageBuildBasicsList;
+        StateHasChanged();
+    }
+
+    private async Task LoadQueuedOrders()
+    {
+        await ImageBuildService.GetUserImageQueuedOrders(accountId: await LocalStorageService.GetItemAsync<string>("accountId"));
+        ImageBuildBasicList = ImageBuildService.ImageBuildBasicsList;
+        StateHasChanged();
+    }
+
+    private async Task LoadPreworkOrders()
+    {
+        await ImageBuildService.GetUserImagePreworkOrders(accountId: await LocalStorageService.GetItemAsync<string>("accountId"));
+        ImageBuildBasicList = ImageBuildService.ImageBuildBasicsList;
+        StateHasChanged();
+    }
+
+    private async Task LoadProcessingOrders()
+    {
+        await ImageBuildService.GetUserImageProcessingOrders(accountId: await LocalStorageService.GetItemAsync<string>("accountId"));
+        ImageBuildBasicList = ImageBuildService.ImageBuildBasicsList;
+        StateHasChanged();
+    }
+
+    private async Task LoadCompilingOrders()
+    {
+        await ImageBuildService.GetUserImageCompilingOrders(accountId: await LocalStorageService.GetItemAsync<string>("accountId"));
+        ImageBuildBasicList = ImageBuildService.ImageBuildBasicsList;
+        StateHasChanged();
+    }
+
+    private async Task LoadCompleteOrders()
+    {
+        await ImageBuildService.GetUserImageCompleteOrders(accountId: await LocalStorageService.GetItemAsync<string>("accountId"));
+        ImageBuildBasicList = ImageBuildService.ImageBuildBasicsList;
+        StateHasChanged();
+    }
+
+    private async Task LoadDeletedOrders()
+    {
+        await ImageBuildService.GetUserImageDeletedOrders(accountId: await LocalStorageService.GetItemAsync<string>("accountId"));
+        ImageBuildBasicList = ImageBuildService.ImageBuildBasicsList;
+        StateHasChanged();
+    }
+
+    private async Task ShowOrderInfo(DateTime dateTime, string? imgFormat, bool ciApps, bool ciDrivers, bool cicd, string? release,
+        string? edition, string? version, string? arch, string? lcid, string? apps, string? drivers, string? regedits, string? appx,
+        string? features, bool notifyComplete, bool notifycicd, string userAccount, string userPassword)
+    {
+        await JSRuntime.InvokeVoidAsync("console.log", "Show info pressed");
+        BuildModalService.ShowModal(
+            OrderDate: dateTime,
+            ImageFormat: imgFormat,
+            CIApps: ciApps,
+            CIDrivers: ciDrivers,
+            CICD: cicd,
+            Release: release,
+            Edition: edition,
+            Version: version,
+            Arch: arch,
+            Language: lcid,
+            Apps: apps,
+            Drivers: drivers,
+            Regedits: regedits,
+            AppxPackages: appx,
+            OptionalFeatures: features,
+            NotifyComplete: notifyComplete,
+            NotifyCICD: notifycicd,
+            UserAccount: userAccount,
+            UserPassword: userPassword);
+    }
+
+    private async Task DownloadOrder()
+    {
+        await JSRuntime.InvokeVoidAsync("console.log", "Download pressed");
+    }
+
+    private async Task DeleteOrder()
+    {
+        await JSRuntime.InvokeVoidAsync("console.log", "Delete pressed");
+    }
+}
+
