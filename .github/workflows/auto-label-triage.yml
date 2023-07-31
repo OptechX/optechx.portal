@@ -1,0 +1,22 @@
+name: Auto Label Triage
+on:
+  issues:
+    types: [ "opened" ]
+
+jobs:
+  triage_label:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add "triage" label
+        uses: actions/github-script@v5
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const issueNumber = context.payload.issue.number;
+            const labels = ["triage"];
+            github.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              labels: labels
+            });
