@@ -51,6 +51,9 @@ namespace OptechX.Portal.Shared.Models.User
 
         public StripeSubscriptionDetail? StripeSubscriptionDetail { get; set; }
 
+        public DateTime? SubscriptionStartDate { get; set; }
+        public DateTime? SubscriptionExpireDate { get; set; }
+
         public UserAccount()
         {
             IsAcceptTerms = true;
