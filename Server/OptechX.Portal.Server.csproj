@@ -43,6 +43,7 @@
     <None Remove="Controllers\Forms\" />
     <None Remove="Controllers\Orders\" />
     <None Remove="Controllers\Engine\Drivers\" />
+    <None Remove="Controllers\Stripe\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Controllers\Engine\" />
@@ -56,5 +57,6 @@
     <Folder Include="Controllers\Forms\" />
     <Folder Include="Controllers\Orders\" />
     <Folder Include="Controllers\Engine\Drivers\" />
+    <Folder Include="Controllers\Stripe\" />
   </ItemGroup>
 </Project>
