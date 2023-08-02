@@ -45,7 +45,7 @@ jobs:
       - name: Create pull request
         run: gh pr create -B main -H dev --title 'Auto PR dev into main' --body 'Automatically created by gh-actions.'
         env:
-          GITHUB_TOKEN: ${{ secrets.PAT }}
+          GH_TOKEN: ${{ github.token }}
 
   auto-merge:
     needs: [ "auto-pr" ]
@@ -55,4 +55,4 @@ jobs:
       - name: merge pull request
         run: gh pr merge --merge
         env:
-          GITHUB_TOKEN: ${{ secrets.PAT }}
+          GH_TOKEN: ${{ github.token }}
