@@ -15,14 +15,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: ${{ matrix.dotnet-version }}
-    - name: Restore dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build --no-restore
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
+      - name: 🛒 Checkout
+        uses: actions/checkout@v3
+      - name: 🚀 Set up .NET Core
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: ${{ matrix.dotnet-version }}
+      - name: 🔐 Decrypt Repo
+        run: ./decrypt_repo.sh
+        env:
+          LARGE_SECRET_PASSPHRASE: ${{ secrets.PORTAL_LARGE_SECRET_PHRASE }}
+        shell: bash
+      - name: 🧶 Restore dependencies
+        run: dotnet restore
+      - name: 🏗️ Build
+        run: dotnet build --no-restore
+      - name: 🧪 Test
+        run: dotnet test --no-build --verbosity normal
