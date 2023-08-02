@@ -409,3 +409,6 @@ ASALocalRun/
 .localhistory/
 letter.md
 table.html
+decrypt.sh
+.gitignore
+encrypt.sh
