@@ -15,7 +15,8 @@ namespace OptechX.Portal.Shared.Models.User
         public string SubscriptionId { get; set; } = null!;
         public string? StripeCustomerId { get; set; }
         public string? StripeProductId { get; set; }
-        public DateTime Created { get; set; }
+        public DateTime? Created { get; set; }
+        public DateTime? Expires { get; set; }
         public int ServiceLevelResponseMinutes { get; set; }
         public AccountTier AccountTier { get; set; }
         public int ImagesRemaining { get; set; }

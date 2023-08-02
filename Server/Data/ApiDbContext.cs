@@ -32,6 +32,10 @@ namespace OptechX.Portal.Server.Data
         // Generic
         public DbSet<NewsUpdate>? NewsUpdates { get; set; }
 
+        // Stripe
+        public DbSet<StripeSubscriptionDetail>? StripeSubscriptionDetails { get; set; }
+        public DbSet<StripeBgTaskQueue>? StripeBgTaskQueues { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
