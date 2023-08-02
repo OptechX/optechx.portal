@@ -21,6 +21,7 @@ public class Program
         builder.Services.AddScoped<IAuthRepository, AuthRepository>();
         builder.Services.AddScoped<IEncryptionHelperService, EncryptionHelperService>();
         builder.Services.AddScoped<IUserSvrSdService, UserSvrSdService>();
+        builder.Services.AddScoped<IBGTaskService, BgTaskService>();
 
         // Add authorization configuration
         builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

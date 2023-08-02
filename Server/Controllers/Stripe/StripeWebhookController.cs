@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Stripe;
 using OptechX.Portal.Server.Data;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using System.Text.Json;
+using OptechX.Portal.Shared.Models.Stripe;
+using OptechX.Portal.Shared.Models.User;
 
 namespace OptechX.Portal.Server.Controllers.Stripe
 {
@@ -21,36 +19,90 @@ namespace OptechX.Portal.Server.Controllers.Stripe
             _endpointSecret = configuration["Stripe:Webhook"]!;
         }
 
-        // GET: api/values
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
-        }
-
-        // GET api/values/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-
-        // POST api/values
+        // POST api/StripeWebhook
         [HttpPost]
-        public void Post([FromBody]string value)
+        public async Task<IActionResult> Index()
         {
-        }
+            var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
 
-        // PUT api/values/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
-        {
-        }
+            var stripeEvent = EventUtility.ConstructEvent(json,
+                Request.Headers["Stripe-Signature"], _endpointSecret);
 
-        // DELETE api/values/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
+            // Handle the event
+            switch (stripeEvent.Type)
+            {
+                case Events.CustomerSubscriptionCreated:
+                    break;
+                case Events.InvoicePaymentSucceeded:
+
+                    //FileWriter.AppendToJsonLog(json: json);
+
+                    // convert to custom StripeInvoice object
+                    StripeInvoice stripeInvoice = JsonSerializer.Deserialize<StripeInvoice>(json)!;
+
+                    // datum
+                    List<Datum> lineDatas = stripeInvoice?.Data?.ObjectData?.Lines?.Data!;
+
+                    StripeBgTaskQueue bgTask = new StripeBgTaskQueue()
+                    {
+                        Id = 0,
+                        EmailAddress = stripeInvoice?.Data?.ObjectData?.CustomerEmail ?? null,
+                        PhoneNumber = stripeInvoice?.Data?.ObjectData?.CustomerPhone ?? null,
+                        Address1 = stripeInvoice?.Data?.ObjectData?.CustomerAddress?.Line1 ?? null,
+                        Address2 = stripeInvoice?.Data?.ObjectData?.CustomerAddress?.Line2 ?? null,
+                        City = stripeInvoice?.Data?.ObjectData?.CustomerAddress?.City ?? null,
+                        State = stripeInvoice?.Data?.ObjectData?.CustomerAddress?.State ?? null,
+                        PostalCode = stripeInvoice?.Data?.ObjectData?.CustomerAddress?.PostalCode ?? null,
+                        Country = stripeInvoice?.Data?.ObjectData?.CustomerAddress?.Country ?? null,
+                        Created = DateTime.UtcNow,
+                        SubscriptionStartDate = DateTimeOffset.FromUnixTimeSeconds((long)stripeInvoice?.Data?.ObjectData?.PeriodStart!).DateTime,
+                        SubscriptionExpireDate = DateTimeOffset.FromUnixTimeSeconds((long)stripeInvoice?.Data?.ObjectData?.PeriodEnd!).DateTime,
+                        EventId = stripeInvoice?.Id ?? null,
+                        ProductId = lineDatas[0].Plan?.Product ?? null,
+                        CustomerId = stripeInvoice?.Data?.ObjectData?.Customer ?? null,
+                        BillingReason = stripeInvoice?.Data?.ObjectData?.BillingReason ?? null,
+                        Status = Shared.Models.User.Constants.StripeBgTaskStatus.QUEUED,
+                    };
+                    try
+                    {
+                        await _context.StripeBgTaskQueues!.AddAsync(bgTask);
+                        await _context.SaveChangesAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                        FileWriter.AppendToJsonLog(ex.Message);
+                        if (ex.InnerException != null)
+                        {
+                            FileWriter.AppendToJsonLog($"Inner Exception: {ex.InnerException.Message}");
+                        }
+                    }
+                    break;
+                default:
+                    break;
+            }
+            return Ok();
+        }
+    }
+
+    public class FileWriter
+    {
+        public static void AppendToJsonLog(string json)
         {
+            string projectDirectory = AppDomain.CurrentDomain.BaseDirectory;
+
+            string logFilePath = Path.Combine(projectDirectory, "json.log");
+
+            try
+            {
+                using (StreamWriter writer = System.IO.File.AppendText(logFilePath))
+                {
+                    writer.WriteLine(json);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
     }
 }

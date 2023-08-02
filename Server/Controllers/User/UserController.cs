@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OptechX.Portal.Server.Data;
 using OptechX.Portal.Server.Services;
+using OptechX.Portal.Shared.Models.Secrets;
 using OptechX.Portal.Shared.Models.User;
 
 namespace OptechX.Portal.Server.Controllers.User
@@ -14,11 +15,13 @@ namespace OptechX.Portal.Server.Controllers.User
     {
         private readonly ApiDbContext _dbContext;
         private readonly IUserSvrSdService _userSvrSdService;
+        private readonly IBGTaskService _bgTaskService;
 
-        public UserController(ApiDbContext dbContext, IUserSvrSdService userSvrSdService)
+        public UserController(ApiDbContext dbContext, IUserSvrSdService userSvrSdService, IBGTaskService bgTaskService)
         {
             _dbContext = dbContext;
             _userSvrSdService = userSvrSdService;
+            _bgTaskService = bgTaskService;
         }
 
         private ReturnedJwtPayload? GetAccountIdFromToken()
@@ -196,6 +199,18 @@ namespace OptechX.Portal.Server.Controllers.User
         public async Task<ActionResult<UserDashboardResponse>> GetUserDashboardAsync(string id)
         {
             return await _userSvrSdService.GetUserDashboardResponse(accountId: Guid.Parse(id))!;
+        }
+
+        [HttpPost("crontab")]
+        public async Task<IActionResult> RunCrontab([FromBody] BgToken token)
+        {
+            var response = await _bgTaskService.ExecuteBgTaskServiceAsync(verificationToken: token.Token);
+            if (response.Success)
+            {
+                return Ok();
+            }
+
+            return NoContent();
         }
     }
 }
