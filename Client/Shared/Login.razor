@@ -1,0 +1,68 @@
+﻿@using OptechX.Portal.Shared.Models.User
+@using OptechX.Portal.Client.Services
+@inject ILocalStorageService LocalStorage
+@inject IAuthService AuthService
+@inject IToastService ToastService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<PageTitle>OptechX Portal</PageTitle>
+
+<h3>Login</h3>
+
+<p>Please log in below or <a href="register">register</a> for an account.</p>
+
+<EditForm Model="userLogin" OnValidSubmit="HandleLogin">
+    <DataAnnotationsValidator></DataAnnotationsValidator>
+    <div class="form-group mb-3">
+        <label for="email">Email Address</label>
+        <InputText id="email" @bind-Value="userLogin.Email" class="form-control"></InputText>
+    </div>
+    <div class="form-group mb-3">
+        <label for="password">Password</label>
+        <InputText id="password" @bind-Value="userLogin.Password" class="form-control" type="password"></InputText>
+    </div>
+
+    <!-- Submit button -->
+    @if (showSubmitButton)
+    {
+        <button type="submit" class="btn btn-primary">Login</button>
+    }
+    else
+    {
+        <button type="submit" class="btn btn-secondary" style="cursor: not-allowed; font-style: italic;" disabled>Requesting...</button>
+    }
+    <ValidationSummary />
+</EditForm>
+
+@code {
+    private UserLogin userLogin = new UserLogin();
+    private bool showSubmitButton;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        showSubmitButton = true;
+    }
+
+    private async Task HandleLogin()
+    {
+        showSubmitButton = false;
+        var result = await AuthService.Login(userLogin);
+        if (result.Success)
+        {
+            ToastService.ShowSuccess("Login successful");
+            if (!string.IsNullOrEmpty(result?.Data?.JWT))
+            {
+                await LocalStorage.SetItemAsync<string>("authToken", result!.Data!.JWT);
+                await LocalStorage.SetItemAsync<string>("accountId", result!.Data!.Id);
+                await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            }
+        }
+        else
+        {
+            ToastService.ShowError("Incorrect email or password");
+            showSubmitButton = true;
+        }
+    }
+}
+

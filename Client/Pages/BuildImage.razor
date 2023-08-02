@@ -1,0 +1,59 @@
+﻿@page "/buildimage"
+@inject ILocalStorageService LocalStorageService
+@inject IAuthService AuthService
+@inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager NavigationManager
+
+<PageTitle>OptechX Portal</PageTitle>
+
+<AuthorizeView>
+    <Authorized>
+        <BuildImage01Component />
+
+        <BuildImage01Instructions />
+    </Authorized>
+    <NotAuthorized>
+        <p>User is not authorized. Redirecting...</p>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private string accountId = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var userIsAuthorized = await LocalStorageService.GetItemAsync<string>("authToken");
+        if (!string.IsNullOrEmpty(userIsAuthorized))
+        {
+            int result = await AuthService.VerifyTokenValidity();
+            if (result != 0)
+                Logout();
+            accountId = await GetAccountId();
+        }
+        else
+        {
+            NavigationManager.NavigateTo("/");
+        }
+    }
+
+    private async Task<string> GetAccountId()
+    {
+        var authenticationState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var accountIdClaim = authenticationState.User.Claims.FirstOrDefault(claim => claim.Type == "AccountId"); //"http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress");
+        if (!string.IsNullOrEmpty(accountIdClaim?.Value))
+        {
+            return accountIdClaim!.Value;
+        }
+        else
+        {
+            return Guid.Empty.ToString();
+        }
+    }
+
+    private async void Logout()
+    {
+        await LocalStorageService.RemoveItemAsync("authToken");
+        await AuthStateProvider.GetAuthenticationStateAsync();
+        NavigationManager.NavigateTo("/");
+    }
+}

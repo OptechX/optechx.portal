@@ -1,0 +1,77 @@
+﻿/* Custom Styles */
+.custom-icon {
+    margin-left: 4px;
+}
+
+.custom-table {
+    border-collapse: collapse;
+}
+
+    .custom-table td,
+    .custom-table th {
+        border: none;
+    }
+
+    .custom-table thead th {
+        border-bottom: none;
+    }
+
+    .custom-table tbody tr {
+        border-bottom: none;
+    }
+
+/* custom colour for buttons */
+.btn-optechx {
+    background-color: #1c9cbc;
+    color: white;
+}
+
+.row {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+}
+
+.row-item {
+    display: flex;
+    align-items: center;
+    border: 2px solid black; /* Black border color */
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.circle-green {
+    width: 20px;
+    height: 20px;
+    background-color: #00b300; /* Green color */
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.circle-red {
+    width: 20px;
+    height: 20px;
+    background-color: #ff0000; /* Red color */
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.circle-yellow {
+    width: 20px;
+    height: 20px;
+    background-color: #ffff00; /* Yellow color */
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.circle-blue {
+    width: 20px;
+    height: 20px;
+    background-color: #1c9cbc;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.text {
+    font-size: 16px;
+}

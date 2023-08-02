@@ -1,0 +1,47 @@
+﻿@page "/account/settings"
+@using System.Security.Claims
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ILocalStorageService LocalStorageService
+@inject NavigationManager NavigationManager
+
+<PageTitle>OptechX Portal</PageTitle>
+
+<AuthorizeView>
+    <Authorized>
+        <UserDetail />
+    </Authorized>
+    <NotAuthorized>
+        <p>User is not authorized. Redirecting...</p>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private string accountId = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var isAuthd = await LocalStorageService.GetItemAsync<string>("authToken");
+        if (!string.IsNullOrEmpty(isAuthd))
+        {
+            accountId = await GetAccountId();
+        }
+        else
+        {
+            NavigationManager.NavigateTo("/");
+        }
+    }
+
+    private async Task<string> GetAccountId()
+    {
+        var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var accountIdClaim = authenticationState.User.Claims.FirstOrDefault(claim => claim.Type == "AccountId"); //"http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress");
+        if (!string.IsNullOrEmpty(accountIdClaim?.Value))
+        {
+            return accountIdClaim!.Value;
+        }
+        else
+        {
+            return Guid.Empty.ToString();
+        }
+    }
+}

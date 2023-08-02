@@ -1,0 +1,31 @@
+﻿@page "/applicationlibrary"
+@inject ILocalStorageService LocalStorageService
+@inject IAuthService AuthService
+@inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager NavigationManager
+@attribute [Authorize]
+
+<PageTitle>OptechX Portal</PageTitle>
+
+<AppCatalogue />
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        var userIsAuthorized = await LocalStorageService.GetItemAsync<string>("authToken");
+        if (!string.IsNullOrEmpty(userIsAuthorized))
+        {
+            int result = await AuthService.VerifyTokenValidity();
+            if (result != 0)
+                Logout();
+        }
+    }
+
+    private async void Logout()
+    {
+        await LocalStorageService.RemoveItemAsync("authToken");
+        await AuthStateProvider.GetAuthenticationStateAsync();
+        NavigationManager.NavigateTo("/");
+    }
+}
+

@@ -1,0 +1,70 @@
+﻿.card-1 {
+    background: #F1F3FF;
+    height: 120px;
+}
+
+.card-2 {
+    background: #FFF1F2;
+    height: 120px;
+}
+
+.card-3 {
+    background: #F1FCFF;
+    height: 120px;
+}
+
+.card-4 {
+    background: #F7F1FF;
+    height: 120px;
+}
+
+.card-body {
+    height: 60px;
+}
+
+.card-footer {
+    height: 80px; /* adjust to your desired height */
+    width: 100%; /* assumes full width of card */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+    .card-footer img {
+        max-height: 50px;
+        max-width: 100%;
+    }
+
+.card-footer-table {
+    height: 400px; /* adjust to your desired height */
+    width: 100%; /* assumes full width of card */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.red-text {
+    text-align: center;
+    font-size: 24px;
+    color: #E0115F;
+    font-weight: bold;
+}
+
+.orange-text {
+    text-align: center;
+    font-size: 24px;
+    color: orange;
+    font-weight: bold;
+}
+
+.green-text {
+    text-align: center;
+    font-size: 24px;
+    color: green;
+    font-weight: bold;
+}
+
+.td-center {
+    text-align: center;
+    vertical-align: middle;
+}

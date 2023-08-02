@@ -1,0 +1,100 @@
+﻿@page "/register"
+@using OptechX.Portal.Shared.Models.User
+@inject IAuthService AuthService
+@inject IToastService ToastService
+@inject ICountryListService CountryListService
+@inject NavigationManager NavigationManager
+
+<PageTitle>OptechX Portal</PageTitle>
+
+<h3>Register</h3>
+
+@if (CountryListService.Countries.Count > 0)
+{
+    <EditForm Model="user" OnValidSubmit="HandleRegistration">
+        <DataAnnotationsValidator></DataAnnotationsValidator>
+        <!-- Email -->
+        <div class="form-group mb-3">
+            <label for="email" class="required">Email</label>
+            <InputText id="email" @bind-Value="user.Email" class="form-control"></InputText>
+            <ValidationMessage For="@(() => user.Email)" />
+        </div>
+
+        <!-- Password -->
+        <div class="form-group mb-3">
+            <label for="password" class="required">Password</label>
+            <InputText id="password" @bind-Value="user.Password" class="form-control" type="password"></InputText>
+            <ValidationMessage For="@(() => user.Password)" />
+        </div>
+
+        <!-- Confirm Password -->
+        <div class="form-group mb-3">
+            <label for="confirmPassword">Confirm Password</label>
+            <InputText id="password" @bind-Value="user.ConfirmPassword" class="form-control" type="password"></InputText>
+            <ValidationMessage For="@(() => user.ConfirmPassword)" />
+        </div>
+
+        <!-- Country -->
+        <div class="form-group mb-3">
+            <label for="country">Country</label>
+            <InputSelect id="country" @bind-Value="user.Country" class="form-control">
+                @foreach (var country in CountryListService.Countries)
+                {
+                    <option value="@country">@country</option>
+                }
+            </InputSelect>
+            <ValidationMessage For="@(() => user.Country)" />
+        </div>
+
+        <!-- Accept Terms & Conditions -->
+        <div class="form-check mb-3">
+            <InputCheckbox id="confirmed" @bind-Value="user.IsConfirmed" class="form-control-input"></InputCheckbox>
+            <label for="confirmed" class="form-check-label">I accept Terms &amp; Conditions for OptechX</label>
+            <ValidationMessage For="@(() => user.IsConfirmed)" />
+        </div>
+
+        <!-- Submit button -->
+        @if (showSubmitButton)
+        {
+            <button type="submit" class="btn btn-primary">Register</button>
+        }
+        else
+        {
+            <button type="submit" class="btn btn-primary btn-secondary" style="cursor: not-allowed; color: grey; font-style: italic;" disabled>Submitting...</button>
+        }
+    </EditForm>
+}
+else
+{
+    <p class="centered-text">Loading form...</p>
+}
+
+@code {
+    private bool showSubmitButton;
+    private UserRegister user = new UserRegister();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CountryListService.LoadCountryListAsync();
+        showSubmitButton = true;
+    }
+
+    private async Task HandleRegistration()
+    {
+        showSubmitButton = false;
+        ToastService.ShowInfo("Processing account registration");
+        var result = await AuthService.Register(user);
+        if (result.Success == true)
+        {
+            ToastService.ShowSuccess(result.Message!);
+            await Task.Delay(3000);
+            NavigationManager.NavigateTo("/account/verify-account");
+        }
+        else
+        {
+            ToastService.ShowError(result.Message!);
+            showSubmitButton = true;
+        }
+    }
+}
+

@@ -1,0 +1,101 @@
+﻿@page "/buildimage4"
+@inject IToastService ToastService
+@inject IFormsService FormsService
+@inject ILocalStorageService LocalStorageService
+@inject IAuthService AuthService
+@inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager NavigationManager
+
+<PageTitle>OptechX Portal</PageTitle>
+
+<AuthorizeView>
+    <Authorized>
+        <BuildImage04Component />
+    </Authorized>
+    <NotAuthorized>
+        <p>User is not authorized. Redirecting...</p>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    public string? accountId;
+    private string? param1 { get; set; }
+    private string? param2 { get; set; }
+    private string? param3 { get; set; }
+    private string? param4 { get; set; }
+    private string? param5 { get; set; }
+    private string? param6 { get; set; }
+    private string? param7 { get; set; }
+    private string? param8 { get; set; }
+    private string? param9 { get; set; }
+    private string? param10 { get; set; }
+    private string? param11 { get; set; }
+    private string? param12 { get; set; }
+    private string? param13 { get; set; }
+    private bool param14 { get; set; }
+    private bool param15 { get; set; }
+    private bool param16 { get; set; }
+    private bool param17 { get; set; }
+    private bool param18 { get; set; }
+    private bool param19 { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var userIsAuthorized = await LocalStorageService.GetItemAsync<string>("authToken");
+        if (!string.IsNullOrEmpty(userIsAuthorized))
+        {
+            int result = await AuthService.VerifyTokenValidity();
+            if (result != 0)
+                Logout();
+            accountId = await GetAccountId();
+        }
+        else
+        {
+            NavigationManager.NavigateTo("/");
+        }
+    }
+
+    private async Task<string> GetAccountId()
+    {
+        return await LocalStorageService.GetItemAsync<string>("accountId");
+    }
+
+    private async Task GetRequiredParams()
+    {
+        param1 = await LocalStorageService.GetItemAsStringAsync("imageParam1");
+        param2 = await LocalStorageService.GetItemAsStringAsync("imageParam2");
+        param3 = await LocalStorageService.GetItemAsStringAsync("imageParam3");
+        param4 = await LocalStorageService.GetItemAsStringAsync("imageParam4");
+        param5 = await LocalStorageService.GetItemAsStringAsync("imageParam5");
+        param6 = await LocalStorageService.GetItemAsStringAsync("imageParam6");
+        param7 = await LocalStorageService.GetItemAsStringAsync("imageParam7");
+        param8 = await LocalStorageService.GetItemAsStringAsync("imageParam8");
+        param9 = await LocalStorageService.GetItemAsStringAsync("imageParam9");
+        param10 = await LocalStorageService.GetItemAsStringAsync("imageParam10");
+        param11 = await LocalStorageService.GetItemAsStringAsync("imageParam11");
+        param12 = await LocalStorageService.GetItemAsStringAsync("imageParam12");
+        param13 = await LocalStorageService.GetItemAsStringAsync("imageParam13");
+        param14 = await LocalStorageService.GetItemAsync<bool>("imageParam14");
+        param15 = await LocalStorageService.GetItemAsync<bool>("imageParam15");
+        param16 = await LocalStorageService.GetItemAsync<bool>("imageParam16");
+        param17 = await LocalStorageService.GetItemAsync<bool>("imageParam17");
+        param18 = await LocalStorageService.GetItemAsync<bool>("imageParam18");
+        param19 = await LocalStorageService.GetItemAsync<bool>("imageParam19");
+
+        bool allParamsNotEmpty = new[] { param1, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11, param12, param13, }.All(p => string.IsNullOrWhiteSpace(p));
+
+        if (allParamsNotEmpty)
+        {
+            ToastService.ShowError("Image build process not started, redirecting...");
+            NavigationManager.NavigateTo("/buildimage");
+        }
+    }
+
+    private async void Logout()
+    {
+        await LocalStorageService.RemoveItemAsync("authToken");
+        await AuthStateProvider.GetAuthenticationStateAsync();
+        NavigationManager.NavigateTo("/");
+    }
+}
+

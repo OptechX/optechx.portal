@@ -1,0 +1,23 @@
+name: Dockerize
+
+on:
+    push:
+      branches-ignore:
+        - main
+    pull_request:
+      branches: [ "dev" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🛒 Checkout
+        uses: actions/checkout@v3
+      - name: 🔐 Decrypt Repo
+          run: ./decrypt_repo.sh
+          env:
+            LARGE_SECRET_PASSPHRASE: ${{ secrets.PORTAL_LARGE_SECRET_PHRASE }}
+          shell: bash
+      - name: 🐳🏗️ Build Docker image
+        run: docker build -t optechx.portal:latest .
