@@ -42,9 +42,11 @@
     <Folder Include="wwwroot\icons\twttrbs\" />
     <Folder Include="wwwroot\icons\windows\" />
     <Folder Include="wwwroot\js\" />
+    <Folder Include="Pages\Public\" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Services\" />
     <None Remove="Pages\Account\" />
+    <None Remove="Pages\Public\" />
   </ItemGroup>
 </Project>
