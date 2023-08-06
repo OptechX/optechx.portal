@@ -39,7 +39,7 @@ start_container
 docker run --rm --detach \
 --name ngrok \
 --network ngrok \
--v $(pwd)/portal.yaml:/etc/ngrok.yaml \
+-v $(pwd)/ngrok.yaml:/etc/ngrok.yaml \
 -e NGROK_CONFIG=/etc/ngrok.yaml \
 ngrok/ngrok:alpine \
 start --all
