@@ -1,0 +1,109 @@
+﻿@using OptechX.Portal.Shared.Models.Generic
+
+<!-- DESKTOP VIEW -->
+<div class="row d-none d-md-flex justify-content-center">
+    <!-- NEWS UPDATES -->
+    <div class="col-md-12 col-12 mb-4">
+        <h3>News Updates</h3>
+        <div style="height: 300px; overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="mb-3">
+            <table class="table table-responsive custom-table" style="border-collapse: collapse;">
+                <thead>
+                    <tr>
+                        <th style="width: 60px;"></th> <!-- Image -->
+                        <th>
+                            <div class="d-flex align-items-center">
+                                <span style="white-space: nowrap;"></span> <!-- Title -->
+                            </div>
+                        </th>
+                        <th>
+                            <div class="d-flex align-items-center">
+                                <span style="white-space: nowrap;"></span> <!-- Preview -->
+                            </div>
+                        </th>
+                        <th>
+                            <div class="d-flex align-items-center">
+                                <span style="white-space: nowrap;"></span> <!-- Link -->
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (NewsUpdate article in NewsUpdates)
+                    {
+                        <tr>
+                            <td style="display: flex; align-items: center;">
+                                <img src="@article.Image" style="height: 5em; margin-left: 0.1em; margin-right: 0.1em;" />
+                            </td>
+                            <td>
+                                @article.Heading
+                            </td>
+                            <td>
+                                @article.Preview
+                            </td>
+                            <td>
+                                <button class="btn btn-optechx" onclick="window.open('@article.Link', '_blank')">Link</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<!-- MOBILE VIEW -->
+<div class="row">
+    <!-- LAST 5 APPLICATIONS -->
+    <div class="col-12 mb-4 d-block d-md-none">
+        <h4>News Updates</h4>
+        <div style="height: 300px; overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="mb-3">
+            <table class="table table-responsive custom-table" style="border-collapse: collapse;">
+                <thead>
+                    <tr>
+                        <th style="width: 60px;"></th> <!-- Image -->
+                        <th>
+                            <div class="d-flex align-items-center">
+                                <span style="white-space: nowrap;"></span>
+                            </div>
+                        </th>
+                        <th>
+                            <div class="d-flex align-items-center">
+                                <span style="white-space: nowrap;"></span> <!-- Preview -->
+                            </div>
+                        </th>
+                        <th>
+                            <div class="d-flex align-items-center">
+                                <span style="white-space: nowrap;"></span> <!-- Link -->
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (NewsUpdate article in NewsUpdates)
+                    {
+                        <tr>
+                            <td style="display: flex; align-items: center;">
+                                <img src="@article.Image" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />
+                            </td>
+                            <td>
+                                @article.Heading
+                            </td>
+                            <td>
+                                @article.Preview
+                            </td>
+                            <td>
+                                <button class="btn btn-optechx" onclick="window.open('@article.Link', '_blank')">Link</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public List<NewsUpdate> NewsUpdates { get; set; } = null!;
+}

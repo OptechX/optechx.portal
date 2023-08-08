@@ -1,0 +1,120 @@
+﻿@inject ILocalStorageService LocalStorage
+@inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager NavigationManager
+
+<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href=""><img src="/img/logo.svg" /></a>
+        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+</div>
+
+<div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
+    <nav class="flex-column">
+        <AuthorizeView>
+            <!-- Authorized -->
+            <Authorized>
+                <!-- Home -->
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                        &nbsp;<span class="oi bi-house-door" aria-hidden="true"></span> Home
+                    </NavLink>
+                </div>
+
+                <!-- Application Library -->
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="applicationlibrary">
+                        &nbsp;<span class="oi bi-window-stack" aria-hidden="true"></span> Application Library
+                    </NavLink>
+                </div>
+
+                <!-- Drivers Library -->
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="driverslibrary">
+                        &nbsp;<span class="oi bi-plugin" aria-hidden="true"></span> Drivers Library
+                    </NavLink>
+                </div>
+
+                <!-- Image Builder -->
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="buildimage">
+                        &nbsp;<span class="oi bi-hammer" aria-hidden="true"></span> Image Builder
+                    </NavLink>
+                </div>
+
+                <!-- Order Management -->
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="account/order-management">
+                        &nbsp;<span class="oi bi-window-stack" aria-hidden="true"></span> Order Management
+                    </NavLink>
+                </div>
+
+                <!-- Account Settings -->
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="account/settings">
+                        &nbsp;<span class="oi bi-gear" aria-hidden="true"></span> Account Settings
+                    </NavLink>
+                </div>
+
+                <!-- Logout User -->
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" @onclick="@(() => Logout())">
+                        &nbsp;<span class="oi bi-box-arrow-left" aria-hidden="true"></span> Logout
+                    </NavLink>
+                </div>
+            </Authorized>
+
+            <!-- Not Authorized -->
+            <NotAuthorized>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                        &nbsp;<span class="oi bi-person-circle" aria-hidden="true"></span> Login
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="register">
+                        &nbsp;<span class="oi bi-pencil-fill" aria-hidden="true"></span> Register
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="account/verify-account">
+                        @*&nbsp;<span class="oi bi-patch-check-fill" aria-hidden="true" style="color: #1DA1F2;"></span> Verify Account*@
+                        &nbsp;<span class="oi bi-patch-check-fill" aria-hidden="true"></span> Verify Account
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="account/password-reset">
+                        &nbsp;<span class="oi bi-person-badge" aria-hidden="true"></span> Reset Password
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="account/set-password">
+                        &nbsp;<span class="oi bi-key" aria-hidden="true"></span> Set New Password
+                    </NavLink>
+                </div>
+            </NotAuthorized>
+        </AuthorizeView>
+        
+    </nav>
+</div>
+
+@code {
+    private bool collapseNavMenu = true;
+
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+
+    private async void Logout()
+    {
+        await LocalStorage.RemoveItemAsync("authToken");
+        await AuthStateProvider.GetAuthenticationStateAsync();
+        NavigationManager.NavigateTo("/");
+    }
+}
+

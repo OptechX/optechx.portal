@@ -1,0 +1,35 @@
+﻿<div class="row d-none d-md-flex justify-content-center">
+    <div class="col-md-12 mb-4">
+        <div class="card rounded">
+            <div class="card-body news-update-section">
+
+                <h4 class="font-weight-bold news-update-title">News &amp; Updates</h4>
+
+                <div class="row">
+                    @for (int i = 0; i < newsArticles.Count; i++)
+                    {
+                        <div class="col-sm-12">
+                            <img src="@newsArticles[i][2]" height="80px" />
+                            <div class="news-content">
+                                <h4 class="header">@newsArticles[i][0]</h4>
+                                <p class="body">@newsArticles[i][1]</p>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@code {
+    List<List<string>> newsArticles = new List<List<string>>
+{
+        new List<string> { "Dell sells crap laptops", "Computer software company Dell introduces a new laptop model and workstation-the Latitude and Precision-to meet the demands of hybrid work and help employees perform their best.", "/images/medal_5.svg" },
+        new List<string> { "Dell sells crap laptops", "Computer software company Dell introduces a new laptop model and workstation-the Latitude and Precision-to meet the demands of hybrid work and help employees perform their best.", "/images/medal_4.svg" },
+        new List<string> { "Dell sells crap laptops", "Computer software company Dell introduces a new laptop model and workstation-the Latitude and Precision-to meet the demands of hybrid work and help employees perform their best.", "/images/medal_3.svg" },
+        new List<string> { "Dell sells crap laptops", "Computer software company Dell introduces a new laptop model and workstation-the Latitude and Precision-to meet the demands of hybrid work and help employees perform their best.", "/images/medal_2.svg" },
+        new List<string> { "Dell sells crap laptops", "Computer software company Dell introduces a new laptop model and workstation-the Latitude and Precision-to meet the demands of hybrid work and help employees perform their best.", "/images/medal_1.svg" },
+    };
+}

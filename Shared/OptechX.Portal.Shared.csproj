@@ -1,0 +1,45 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <SupportedPlatform Include="browser" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Models\" />
+    <None Remove="Models\Engine\" />
+    <None Remove="Models\Engine\Applications\" />
+    <None Remove="Models\Constants\" />
+    <None Remove="Models\Engine\Constants\" />
+    <None Remove="Models\User\" />
+    <None Remove="Models\User\Constants\" />
+    <None Remove="Models\Generic\" />
+    <None Remove="Models\Engine\ImageBuilds\" />
+    <None Remove="Models\Forms\" />
+    <None Remove="Models\Engine\Drivers\" />
+    <None Remove="Models\Stripe\" />
+    <None Remove="Models\Secrets\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Models\" />
+    <Folder Include="Models\Engine\" />
+    <Folder Include="Models\Engine\Applications\" />
+    <Folder Include="Models\Constants\" />
+    <Folder Include="Models\Engine\Constants\" />
+    <Folder Include="Models\User\" />
+    <Folder Include="Models\User\Constants\" />
+    <Folder Include="Models\Generic\" />
+    <Folder Include="Models\Engine\ImageBuilds\" />
+    <Folder Include="Models\Forms\" />
+    <Folder Include="Models\Engine\Drivers\" />
+    <Folder Include="Models\Stripe\" />
+    <Folder Include="Models\Secrets\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.9" />
+  </ItemGroup>
+</Project>

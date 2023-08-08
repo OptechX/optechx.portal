@@ -1,0 +1,31 @@
+﻿body {
+    padding: 20px;
+}
+
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.success-message {
+    margin-top: 50px;
+    padding: 20px;
+    background-color: #f0f8ff;
+    border: 1px solid #b0e0e6;
+    border-radius: 5px;
+}
+
+    .success-message h2 {
+        color: #007bff;
+    }
+
+    .success-message p {
+        margin-bottom: 10px;
+    }
+
+.note {
+    margin-top: 20px;
+    font-size: 14px;
+    color: #6c757d;
+}

@@ -1,0 +1,67 @@
+﻿@using OptechX.Portal.Shared.Models.User
+@inject IAuthService AuthService
+@inject IToastService ToastService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+
+<PageTitle>OptechX Portal</PageTitle>
+
+<h3>Verify Account</h3>
+
+<p>Please enter the account verification token you received via email after registering, or <a href="/account/resend-verification-token">click here</a> to request a new token.</p>
+
+<EditForm Model="verifyAccountRequest" OnValidSubmit="HandleResetRequest">
+    <DataAnnotationsValidator></DataAnnotationsValidator>
+    <div class="form-group mb-3">
+        <label for="token">Verify Token</label>
+        <InputText id="token" @bind-Value="verifyAccountRequest.VerifyToken" class="form-control"></InputText>
+        <ValidationMessage For="@(() => verifyAccountRequest.VerifyToken)" />
+    </div>
+
+    <!-- Submit button -->
+    @if (showSubmitButton)
+    {
+        <button type="submit" class="btn btn-primary">Verify Account</button>
+    }
+    else
+    {
+        <button type="submit" class="btn btn-primary btn-secondary" style="cursor: not-allowed; color: grey; font-style: italic;" disabled>Verifying...</button>
+    }
+
+</EditForm>
+
+@code {
+    private bool showSubmitButton;
+    private VerifyAccountRequest verifyAccountRequest = new();
+
+    protected override void OnInitialized()
+    {
+        var uri = new Uri(NavigationManager.Uri);
+        var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
+        var token = query["token"];
+        if (!string.IsNullOrEmpty(token))
+        {
+            verifyAccountRequest.VerifyToken = token;
+        }
+        showSubmitButton = true;
+    }
+
+    private async Task HandleResetRequest()
+    {
+        showSubmitButton = false;
+        ToastService.ShowInfo("Processing account verification");
+        var result = await AuthService.VerifyAccount(verifyAccountRequest.VerifyToken);
+        if (result.Data)
+        {
+            ToastService.ShowSuccess(result.Message!);
+            await Task.Delay(3000);
+            NavigationManager.NavigateTo("/");
+        }
+        else
+        {
+            ToastService.ShowError(result.Message!);
+            showSubmitButton = true;
+        }
+    }
+}
+

@@ -1,0 +1,18 @@
+﻿.news-update-section .col-sm-12 {
+    display: flex;
+}
+
+    .news-update-section .col-sm-12 h4 {
+        font-size: 20px;
+    }
+
+    .news-update-section .col-sm-12 img {
+        display: inline-block;
+        vertical-align: middle;
+    }
+
+    .news-update-section .col-sm-12 .news-content {
+        display: inline-block;
+        vertical-align: middle;
+        padding-left: 15px;
+    }

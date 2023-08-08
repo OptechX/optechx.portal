@@ -1,0 +1,239 @@
+﻿@inject IApplicationService ApplicationService
+@inject IModalService ModalService
+@inject IJSRuntime JSRuntime
+
+<div class="row ml-4">
+    <h3>@pageTitle</h3>
+</div>
+
+<div class="d-flex justify-content-end mt-3 mb-3">
+    <!-- Search Input -->
+    <div>
+        <div class="input-group">
+            <input type="text" class="form-control" @bind="searchText" placeholder="Search">
+            @*<input type="text" class="form-control" @bind="searchText" @onkeypress="HandleKeyPress" placeholder="Search">*@
+            <button class="btn btn-primary" @onclick="Search">Search</button>
+        </div>
+    </div>
+
+    <!-- Gap -->
+    <div style="width: 10px;"></div>
+
+    <!-- Dropdown -->
+    <div>
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Select Category
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <li><a class="dropdown-item" @onclick="LoadInternetApplications">Internet</a></li>
+                <li><a class="dropdown-item" @onclick="LoadDeveloperToolsApplications">Developer Tools</a></li>
+                <li><a class="dropdown-item" @onclick="LoadEducationApplications">Education</a></li>
+                <li><a class="dropdown-item" @onclick="LoadEntertainmentApplications">Entertainment</a></li>
+                <li><a class="dropdown-item" @onclick="LoadGamesApplications">Games</a></li>
+                <li><a class="dropdown-item" @onclick="LoadLifestyleApplications">Lifestyle</a></li>
+                <li><a class="dropdown-item" @onclick="LoadMicrosoftApplications">Microsoft</a></li>
+                <li><a class="dropdown-item" @onclick="LoadPhotoDesignApplications">Photo &amp; Design</a></li>
+                <li><a class="dropdown-item" @onclick="LoadProductivityApplications">Productivity</a></li>
+                <li><a class="dropdown-item" @onclick="LoadSecurityApplications">Security</a></li>
+                <li><a class="dropdown-item" @onclick="LoadUtilityApplications">Utility</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+
+<!-- Application Table View -->
+<div style="height: 100vh; overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="mb-3">
+    @if (ApplicationService.EnabledApplications.Count > 0)
+    {
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-6">
+            <!-- Adjust column classes -->
+            @foreach (var app in ApplicationService.EnabledApplications)
+            {
+                <div class="col mb-4 col-md-4 col-lg-3 col-xl-2">
+                    <!-- Adjust column classes -->
+                    <div class="card">
+                        <img class="card-img-top"
+                             src="@app.Icon"
+                             alt="Badge">
+                        <div class="card-body text-center">
+                            <h6 class="card-title overflow-hidden text-truncate">@app.Publisher</h6>
+                            <h6 class="card-text h7 overflow-hidden text-truncate">@app.Name</h6>
+                            <h6 class="card-text h7 overflow-hidden text-truncate">@app.Version</h6>
+                            <div align="center">
+                                <a class="btn btn-optechx text-white" style="padding: 5px 20px;" @onclick="(() => ShowMyModal(
+                                   app.Icon,
+                                   app.Publisher,
+                                   app.Name,
+                                   app.Version,
+                                   app.Summary,
+                                   app.CpuArchString,
+                                   app.LcidString,
+                                   app.Copyright,
+                                   app.Homepage,
+                                   app.Docs,
+                                   app.UID))">Show Info</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <span>Loading applications...</span>
+    }
+</div>
+
+
+
+
+
+
+<!-- ModalService -->
+@if (ModalService.IsModalVisible())
+{
+    <div class="modal fade show" id="myModal" style="display:block; background-color: rgba(10,10,10,.8);" aria-modal="true" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header text-left">
+                    <img src="@ModalService.AppIconURI" alt="Icon Image" style="width: 64px; height: 64px;" />
+                    <h5 class="modal-title">@ModalService.AppPublisher @ModalService.AppName</h5>
+                    <button type="button" class="close" @onclick="ModalService.CloseModal">
+                        &times;
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>@ModalService.AppDescription</p>
+                    <p>
+                        <strong>Version:</strong>&nbsp;@ModalService.AppVersion<br />
+                        <strong>CPU Arch:</strong>&nbsp;@ModalService.AppArch.Replace(",", ", ")<br />
+                        <strong>Language:</strong>&nbsp;@ModalService.AppLanguage<br />
+                        <strong>UID:</strong>&nbsp;@ModalService.AppUID::@ModalService.AppVersion
+                    </p>
+                    <p>@ModalService.AppCopyright</p>
+                </div>
+                <div class="modal-footer d-flex">
+                    <div class="mr-auto">
+                        <button type="button" class="btn btn-optechx" @onclick="() => OpenDocsInNewTab(ModalService.AppDocs)">Docs</button>
+                        <button type="button" class="btn btn-warning" @onclick="() => OpenDocsInNewTab(ModalService.AppHomepage)">Homepage</button>
+                        <button type="button" class="btn btn-danger" @onclick="ModalService.CloseModal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- Button to Load Internet Applications -->
+<button type="button" class="btn btn-primary" @onclick="LoadInternetApplications">Load Internet Applications</button>
+<button type="button" class="btn btn-primary" @onclick="LoadDeveloperToolsApplications">Load DeveloperTools Applications</button>
+
+@code {
+    private string pageTitle = "Application Library";
+    private string searchText { get; set; } = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ApplicationService.LoadEnabledApplicationsAsync();
+    }
+
+    private async Task Search()
+    {
+        await SearchApplications(searchText);
+        searchText = string.Empty;
+    }
+
+    private async Task SearchApplications(string searchTerm)
+    {
+        await ApplicationService.SearchApplicationTagsAsync(searchString: searchTerm);
+        StateHasChanged();
+    }
+
+    private void ShowMyModal(string icon, string publisher, string name, string version, string description, string arch, string language, string copyright, string homepage, string docs, string uid)
+    {
+        // Show the modal with the specified parameters
+        ModalService.ShowModal(icon, publisher, name, version, description, arch, language, copyright, homepage, docs, uid);
+    }
+
+    private async Task OpenDocsInNewTab(string url)
+    {
+        await JSRuntime.InvokeVoidAsync("window.open", url, "_blank");
+    }
+
+    private async Task LoadInternetApplications()
+    {
+        await ApplicationService.LoadInternetApplicationsAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadDeveloperToolsApplications()
+    {
+        await ApplicationService.LoadDeveloperToolsApplicationsAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadEducationApplications()
+    {
+        await ApplicationService.LoadEducationApplicationsAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadEntertainmentApplications()
+    {
+        await ApplicationService.LoadEntertainmentApplicationsAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadGamesApplications()
+    {
+        await ApplicationService.LoadGamesApplicationsAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadLifestyleApplications()
+    {
+        await ApplicationService.LoadLifestyleApplicationsAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadMicrosoftApplications()
+    {
+        await ApplicationService.LoadMicrosoftApplicationsAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadPhotoDesignApplications()
+    {
+        await ApplicationService.LoadPhotoDesignApplicationsAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadProductivityApplications()
+    {
+        await ApplicationService.LoadProductivityApplicationsAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadSecurityApplications()
+    {
+        await ApplicationService.LoadSecurityApplicationsAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadUtilityApplications()
+    {
+        await ApplicationService.LoadUtilityApplicationsAsync();
+        StateHasChanged();
+    }
+
+    private async Task HandleKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await Search();
+        }
+    }
+}
