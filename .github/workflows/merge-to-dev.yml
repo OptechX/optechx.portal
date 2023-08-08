@@ -10,9 +10,7 @@ jobs:
     strategy:
       matrix:
         dotnet-version: [6.0.x, 7.0.x, 8.0.x]
-
     runs-on: ubuntu-latest
-
     steps:
       - name: 🛒 Checkout
         uses: actions/checkout@v3
@@ -31,3 +29,30 @@ jobs:
         run: dotnet build --no-restore
       - name: 🧪 Test
         run: dotnet test --no-build --verbosity normal
+
+  auto-pr:
+    needs:
+      - build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Get current branch name
+        id: branch
+        run: echo "::set-output name=branch::$(echo $GITHUB_REF | sed 's/refs\/heads\///')"
+      - name: Create pull request
+        run: |
+          branchName="${{ steps.branch.outputs.branch }}"
+          gh pr create -B dev -H $branchName --title "Auto PR $branchName into dev" --body "Automatically created by gh-actions."
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+  auto-merge:
+    needs: [ "auto-pr" ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: merge pull request
+        run: gh pr merge --merge
+        env:
+          GH_TOKEN: ${{ github.token }}
+      
