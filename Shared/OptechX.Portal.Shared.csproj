@@ -23,6 +23,8 @@
     <None Remove="Models\Engine\Drivers\" />
     <None Remove="Models\Stripe\" />
     <None Remove="Models\Secrets\" />
+    <None Remove="Models\SupportTickets\" />
+    <None Remove="Helper\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Models\" />
@@ -38,6 +40,8 @@
     <Folder Include="Models\Engine\Drivers\" />
     <Folder Include="Models\Stripe\" />
     <Folder Include="Models\Secrets\" />
+    <Folder Include="Models\SupportTickets\" />
+    <Folder Include="Helper\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.9" />
