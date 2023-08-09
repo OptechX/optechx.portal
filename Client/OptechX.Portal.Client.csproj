@@ -43,10 +43,12 @@
     <Folder Include="wwwroot\icons\windows\" />
     <Folder Include="wwwroot\js\" />
     <Folder Include="Pages\Public\" />
+    <Folder Include="Pages\Support\" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Services\" />
     <None Remove="Pages\Account\" />
     <None Remove="Pages\Public\" />
+    <None Remove="Pages\Support\" />
   </ItemGroup>
 </Project>
