@@ -43,10 +43,10 @@
             <InputTextArea id="message" class="form-control" @bind-Value="ticket.Message"></InputTextArea>
         </div>
 
-        <div class="form-group col-md-12 col-lg-8 mb-2">
+        @*<div class="form-group col-md-12 col-lg-8 mb-2">
             <label for="attachment">Attachment:</label>
             <InputFile id="attachment" OnChange="HandleFileChange" />
-        </div>
+        </div>*@
     </div>
 
     <button type="submit" class="btn btn-primary">Submit</button>
@@ -58,7 +58,7 @@
     private SupportTicket ticket = new SupportTicket();
     private bool isSubmitted = false;
 
-    private EditContext editContext;
+    private EditContext? editContext;
 
     protected override async Task OnInitializedAsync()
     {
@@ -118,11 +118,11 @@
             using var stream = new MemoryStream();
             await file.OpenReadStream().CopyToAsync(stream);
 
-            ticket.Attachment = new AttachmentFile
-            {
-                FileName = file.Name,
-                Data = stream.ToArray()
-            };
+            //ticket.Attachment = new AttachmentFile
+            //{
+            //    FileName = file.Name,
+            //    Data = stream.ToArray()
+            //};
 
             await InvokeAsync(StateHasChanged);
         }
