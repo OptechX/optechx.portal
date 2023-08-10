@@ -1,8 +1,17 @@
 ﻿@page "/support"
 
-<h3>Component1</h3>
+@using Microsoft.AspNetCore.Components.Forms
+@using OptechX.Portal.Shared.Models.SupportTickets
+@using OptechX.Portal.Shared.Models.Constants
+@using OptechX.Portal.Shared.Helper
+
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ILocalStorageService LocalStorageService
+@inject NavigationManager NavigationManager
+
+<h3>Support Tickets</h3>
 
 @code {
-
+    private List<SupportTicket>? tickets = new List<SupportTicket>();
 }
 
