@@ -1,0 +1,103 @@
+﻿@using OptechX.Portal.Shared.Models.User
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IAuthService AuthService
+@inject IToastService ToastService
+@inject NavigationManager NavigationManager
+
+<PageTitle>OptechX Portal</PageTitle>
+
+<h3>Set New Password</h3>
+
+<EditForm Model="setStripePasswordRequest" OnValidSubmit="HandleSetPasswordRequest">
+    <DataAnnotationsValidator></DataAnnotationsValidator>
+
+    <!-- Set Password Token -->
+    <div class="form-group mb-3">
+        <label for="token">Account Verification Token</label>
+        <InputText id="token" @bind-Value="setStripePasswordRequest.AccountVerificcationToken" class="form-control"></InputText>
+        <ValidationMessage For="@(() => setStripePasswordRequest.AccountVerificcationToken)" />
+    </div>
+
+    <div class="form-group mb-3">
+        <label for="password">New Password</label>
+        <InputText id="password" @bind-Value="setStripePasswordRequest.Password" class="form-control" type="password"></InputText>
+        <ValidationMessage For="@(() => setStripePasswordRequest.Password)" />
+    </div>
+
+    <div class="form-group mb-3">
+        <label for="passwordConfirm">Confirm New Password</label>
+        <InputText id="passwordConfirm" @bind-Value="setStripePasswordRequest.ConfirmPassword" class="form-control" type="password"></InputText>
+        <ValidationMessage For="@(() => setStripePasswordRequest.ConfirmPassword)" />
+    </div>
+
+    <!-- Submit button -->
+    @if (showSubmitButton)
+    {
+        <button type="submit" class="btn btn-primary mb-3">Set New Password</button>
+    }
+    else
+    {
+        <button type="submit" class="btn btn-primary btn-secondary" style="cursor: not-allowed; color: grey; font-style: italic;" disabled>Requesting...</button>
+    }
+</EditForm>
+
+<p>To set a new password, please provide the following information:</p>
+
+<table class="table">
+    <tbody>
+        <tr>
+            <td class="fw-content"><strong>Account Verification Token</strong></td>
+            <td>This token was sent to your registered email address. It ensures the security of your account and verifies your identity.</td>
+        </tr>
+        <tr>
+            <td class="fw-content"><strong>New Password</strong></td>
+            <td>Choose a strong and unique password for your account. Make sure it meets the required criteria and helps keep your account secure.</td>
+        </tr>
+        <tr>
+            <td class="fw-content"><strong>Confirm Password</strong></td>
+            <td>Re-enter your new password to confirm there are no typing errors.</td>
+        </tr>
+    </tbody>
+</table>
+
+<p>If you encounter any issues or need further assistance, please don't hesitate to reach out to our support team. We're here to help!</p>
+
+<p>Thank you for choosing our service, and we appreciate your cooperation in securing your account.</p>
+
+@code {
+    private bool showSubmitButton;
+    private SetStripePasswordRequest setStripePasswordRequest = new();
+
+    protected override void OnInitialized()
+    {
+        var uri = new Uri(NavigationManager.Uri);
+        var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
+        var token = query["token"];
+        if (!string.IsNullOrEmpty(token))
+        {
+            setStripePasswordRequest.AccountVerificcationToken = token;
+        }
+        showSubmitButton = true;
+    }
+
+    private async Task HandleSetPasswordRequest()
+    {
+        showSubmitButton = false;
+        ToastService.ShowSuccess("Password reset submitted");
+        var response = await AuthService.VerifyStripeAccount(request: setStripePasswordRequest);
+        switch (response.Data)
+        {
+            case true:
+                ToastService.ShowSuccess(response.Message!);
+                ToastService.ShowInfo("Redirecting...");
+                await Task.Delay(1000);
+                NavigationManager.NavigateTo("/");
+                break;
+            default:
+                ToastService.ShowError(response.Message!);
+                showSubmitButton = true;
+                break;
+        }
+    }
+}
+
