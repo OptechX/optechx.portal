@@ -1,0 +1,130 @@
+﻿@page "/support/new"
+
+@using Microsoft.AspNetCore.Components.Forms
+@using OptechX.Portal.Shared.Models.SupportTickets
+@using OptechX.Portal.Shared.Models.Constants
+@using OptechX.Portal.Shared.Helper
+
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ILocalStorageService LocalStorageService
+@inject NavigationManager NavigationManager
+
+<h3>Submit Support Ticket</h3>
+
+<EditForm EditContext="editContext" OnValidSubmit="SubmitTicket">
+    <div class="form-row">
+        <div class="form-group col-md-12 col-lg-8 mb-2">
+            <label>Priority:</label>
+            <InputSelect class="form-control" @bind-Value="ticket.Priority">
+                @foreach (IssuePriority priority in Enum.GetValues(typeof(IssuePriority)))
+                {
+                    <option value="@priority">@GetEnumPriorityStringValue(priority)</option>
+                }
+            </InputSelect>
+        </div>
+
+        <div class="form-group col-md-12 col-lg-8 mb-2">
+            <label>Category:</label>
+            <InputSelect class="form-control" @bind-Value="ticket.Type">
+                @foreach (IssueType type in Enum.GetValues(typeof(IssueType)))
+                {
+                    <option value="@type">@GetEnumTypeStringValue(type)</option>
+                }
+            </InputSelect>
+        </div>
+
+        <div class="form-group col-md-12 col-lg-8 mb-2">
+            <label for="subject">Subject:</label>
+            <InputText id="subject" class="form-control" @bind-Value="ticket.Subject" />
+        </div>
+
+        <div class="form-group col-md-12 col-lg-8 mb-2">
+            <label for="message">Message:</label>
+            <InputTextArea id="message" class="form-control" @bind-Value="ticket.Message"></InputTextArea>
+        </div>
+
+        @*<div class="form-group col-md-12 col-lg-8 mb-2">
+            <label for="attachment">Attachment:</label>
+            <InputFile id="attachment" OnChange="HandleFileChange" />
+        </div>*@
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+</EditForm>
+
+
+@code {
+    private string accountId = string.Empty;
+    private SupportTicket ticket = new SupportTicket();
+    private bool isSubmitted = false;
+
+    private EditContext? editContext;
+
+    protected override async Task OnInitializedAsync()
+    {
+        editContext = new EditContext(ticket);
+        var isAuthd = await LocalStorageService.GetItemAsync<string>("authToken");
+        if (!string.IsNullOrEmpty(isAuthd))
+        {
+            accountId = await GetAccountId();
+        }
+        else
+        {
+            NavigationManager.NavigateTo("/");
+        }
+    }
+
+    private async Task<string> GetAccountId()
+    {
+        var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var accountIdClaim = authenticationState.User.Claims.FirstOrDefault(claim => claim.Type == "AccountId"); //"http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress");
+        if (!string.IsNullOrEmpty(accountIdClaim?.Value))
+        {
+            return accountIdClaim!.Value;
+        }
+        else
+        {
+            return Guid.Empty.ToString();
+        }
+    }
+
+    private void SubmitTicket()
+    {
+        // Perform ticket submission logic here
+        // For demonstration purposes, we'll just set isSubmitted to true
+        isSubmitted = true;
+    }
+
+    private string GetEnumPriorityStringValue(IssuePriority priority)
+    {
+        var enumMember = priority.GetType().GetMember(priority.ToString())[0];
+        var attribute = enumMember.GetCustomAttributes(typeof(EnumStringValueAttribute), false).FirstOrDefault() as EnumStringValueAttribute;
+        return attribute?.Value ?? priority.ToString();
+    }
+
+    private string GetEnumTypeStringValue(IssueType type)
+    {
+        var enumMember = type.GetType().GetMember(type.ToString())[0];
+        var attribute = enumMember.GetCustomAttributes(typeof(EnumStringValueAttribute), false).FirstOrDefault() as EnumStringValueAttribute;
+        return attribute?.Value ?? type.ToString();
+    }
+
+    private async Task HandleFileChange(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+
+        if (file != null)
+        {
+            using var stream = new MemoryStream();
+            await file.OpenReadStream().CopyToAsync(stream);
+
+            //ticket.Attachment = new AttachmentFile
+            //{
+            //    FileName = file.Name,
+            //    Data = stream.ToArray()
+            //};
+
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+}
