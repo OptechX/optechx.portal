@@ -33,35 +33,73 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (ImageBuildBasic build in ImageBuilds)
+                    @if (ImageBuilds.Count == 0)
                     {
                         <tr>
                             <td>
-                                @build.OrderDate.ToString("yyyy-MM-dd")
-                            </td>
-                            <td style="display: flex; align-items: center;">
-                                @switch (build.OrderLifecycle)
-                                {
-                                    case "SUBMITTED":
-                                        <img src="/icons/twttrbs/inbox.svg" alt="Submitted" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />
-                                        break;
-                                }
+                                @DateTime.Today.ToString("yyyy-MM-dd")
                             </td>
                             <td>
-                                @switch (build.WindowsRelease)
-                                {
-                                    case "Windows 10":
-                                        <img src="/icons/windows/win10.png" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />
-                                        break;
-                                    case "Windows 11":
-                                        <img src="icons/windows/win11.png" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />
-                                        break;
-                                }
+                                <img src="/icons/twttrbs/question-diamond.svg" alt="No Image" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />
                             </td>
                             <td>
-                                @build.WindowsEdition
+                                <img src="/icons/Linux_tux_circle_logo.svg" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />
+                            </td>
+                            <td>
+                                No images currently built
                             </td>
                         </tr>
+                    }
+                    else
+                    {
+                        foreach (ImageBuildBasic build in ImageBuilds)
+                        {
+                            <tr>
+                                <td>
+                                    @build.OrderDate.ToString("yyyy-MM-dd")
+                                </td>
+                                <td style="display: flex; align-items: center;">
+                                    @switch (build.OrderLifecycle)
+                                    {
+                                        case "SUBMITTED":
+                                            <img src="/icons/twttrbs/inbox.svg" alt="Submitted" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />
+                                            break;
+                                        case "QUEUED":
+                                            <img src="/icons/twttrbs/calendar-week.svg" alt="Queued" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />
+                                            break;
+                                        case "PREWORK":
+                                            <img src="/icons/twttrbs/hdd-network.svg" alt="Pre-Work" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />
+                                            break;
+                                        case "PROCESSING":
+                                            <img src="/icons/twttrbs/cpu.svg" alt="Processing" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />
+                                            break;
+                                        case "COMPILING":
+                                            <img src="/icons/twttrbs/stack.svg" alt="Compiling" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />
+                                            break;
+                                        case "COMPLETE":
+                                            <img src="/icons/twttrbs/check-circle.svg" alt="Complete" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />
+                                            break;
+                                        case "DELETED":
+                                            <img src="/icons/twttrbs/file-earmark-x.svg" alt="Deleted" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />
+                                            break;
+                                    }
+                                </td>
+                                <td>
+                                    @switch (build.WindowsRelease)
+                                    {
+                                        case "Windows 10":
+                                            <img src="/icons/windows/win10.png" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />
+                                            break;
+                                        case "Windows 11":
+                                            <img src="icons/windows/win11.png" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />
+                                            break;
+                                    }
+                                </td>
+                                <td>
+                                    @build.WindowsEdition
+                                </td>
+                            </tr>
+                        }
                     }
                 </tbody>
             </table>
@@ -149,35 +187,73 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (ImageBuildBasic build in ImageBuilds)
+                    @if (ImageBuilds.Count == 0)
                     {
                         <tr>
                             <td>
-                                @build.OrderDate.ToString("yyyy-MM-dd")
-                            </td>
-                            <td style="display: flex; align-items: center;">
-                                @switch (build.OrderLifecycle)
-                                {
-                                    case "SUBMITTED":
-                                        <img src="/icons/twttrbs/inbox.svg" alt="Submitted" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />
-                                        break;
-                                }
+                                @DateTime.Today.ToString("yyyy-MM-dd")
                             </td>
                             <td>
-                                @switch (build.WindowsRelease)
-                                {
-                                    case "Windows 10":
-                                        <img src="/icons/windows/win10.png" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />
-                                        break;
-                                    case "Windows 11":
-                                        <img src="icons/windows/win11.png" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />
-                                        break;
-                                }
+                                <img src="/icons/twttrbs/question-diamond.svg" alt="No Image" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />
                             </td>
                             <td>
-                                @build.WindowsEdition
+                                <img src="/icons/Linux_tux_circle_logo.svg" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />
+                            </td>
+                            <td>
+                                No images currently built
                             </td>
                         </tr>
+                    }
+                    else
+                    {
+                        foreach (ImageBuildBasic build in ImageBuilds)
+                        {
+                            <tr>
+                                <td>
+                                    @build.OrderDate.ToString("yyyy-MM-dd")
+                                </td>
+                                <td style="display: flex; align-items: center;">
+                                    @switch (build.OrderLifecycle)
+                                    {
+                                        case "SUBMITTED":
+                                            <img src="/icons/twttrbs/inbox.svg" alt="Submitted" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />
+                                            break;
+                                        case "QUEUED":
+                                            <img src="/icons/twttrbs/calendar-week.svg" alt="Queued" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />
+                                            break;
+                                        case "PREWORK":
+                                            <img src="/icons/twttrbs/hdd-network.svg" alt="Pre-Work" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />
+                                            break;
+                                        case "PROCESSING":
+                                            <img src="/icons/twttrbs/cpu.svg" alt="Processing" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />
+                                            break;
+                                        case "COMPILING":
+                                            <img src="/icons/twttrbs/stack.svg" alt="Compiling" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />
+                                            break;
+                                        case "COMPLETE":
+                                            <img src="/icons/twttrbs/check-circle.svg" alt="Complete" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />
+                                            break;
+                                        case "DELETED":
+                                            <img src="/icons/twttrbs/file-earmark-x.svg" alt="Deleted" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />
+                                            break;
+                                    }
+                                </td>
+                                <td>
+                                    @switch (build.WindowsRelease)
+                                    {
+                                        case "Windows 10":
+                                            <img src="/icons/windows/win10.png" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />
+                                            break;
+                                        case "Windows 11":
+                                            <img src="icons/windows/win11.png" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />
+                                            break;
+                                    }
+                                </td>
+                                <td>
+                                    @build.WindowsEdition
+                                </td>
+                            </tr>
+                        }
                     }
                 </tbody>
             </table>
