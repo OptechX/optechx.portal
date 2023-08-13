@@ -5,6 +5,7 @@
 @inject IUserDashboardService UserDashboardService
 @inject ILocalStorageService LocalStorageService
 @inject IDashboardService DashboardService
+@inject IJSRuntime JSRuntime
 
 <div class="row ml-4 mb-3">
     <h2>@pageTitle</h2>
@@ -276,12 +277,17 @@ else
                 break;
         }
 
-        imageBuildList = userDashboardResponse.ImageBuildBasics;
-        await DashboardService.LoadLast5ApplicationsUpdatedAsync();
-        applicationDashboardViewList = DashboardService.Last5ApplicationsUpdated;
         newsArticleList = userDashboardResponse.NewsUpdates;
+        imageBuildList = userDashboardResponse.ImageBuildBasics;
 
-        await Task.Delay(3000);
+
+
+        // Last 5 Applications updated
+        await DashboardService.LoadLast5ApplicationsUpdatedAsync();
+        //applicationDashboardViewList = DashboardService.Last5ApplicationsUpdated;
+
+
+        await Task.Delay(2000);
     }
 
     private void SendEmail()
