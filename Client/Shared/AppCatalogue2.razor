@@ -1,0 +1,348 @@
+﻿@inject IApplicationService ApplicationService
+@inject IModalService ModalService
+@inject IJSRuntime JSRuntime
+
+<div class="row ml-4">
+    <h3>@pageTitle</h3>
+</div>
+
+<div class="d-flex justify-content-end mt-3 mb-3">
+    <!-- Search Input -->
+    <div>
+        <div class="input-group">
+            <input type="text" class="form-control" @bind="searchText" placeholder="Search">
+            @*<input type="text" class="form-control" @bind="searchText" @onkeypress="HandleKeyPress" placeholder="Search">*@
+            <button class="btn btn-primary" @onclick="Search">Search</button>
+        </div>
+    </div>
+
+    <!-- Gap -->
+    <div style="width: 10px;"></div>
+
+    <!-- Dropdown -->
+    <div>
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Select Category
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <li><a class="dropdown-item" @onclick="LoadAllApplications"><i class="bi bi-window-stack custom-icon"></i>&nbsp;&nbsp;All Applications</a></li>
+                <li><a class="dropdown-item" @onclick="LoadInternetApplications"><i class="bi bi-globe2 custom-icon"></i>&nbsp;&nbsp;Internet</a></li>
+                <li><a class="dropdown-item" @onclick="LoadDeveloperToolsApplications"><i class="bi bi-code-square custom-icon"></i>&nbsp;&nbsp;Developer Tools</a></li>
+                <li><a class="dropdown-item" @onclick="LoadEducationApplications"><i class="bi bi-journal-bookmark-fill custom-icon"></i>&nbsp;&nbsp;Education</a></li>
+                <li><a class="dropdown-item" @onclick="LoadEntertainmentApplications"><i class="bi bi-music-note-beamed custom-icon"></i>&nbsp;&nbsp;Entertainment</a></li>
+                <li><a class="dropdown-item" @onclick="LoadGamesApplications"><i class="bi bi-joystick custom-icon"></i>&nbsp;&nbsp;Games</a></li>
+                <li><a class="dropdown-item" @onclick="LoadLifestyleApplications"><i class="bi bi-wechat custom-icon"></i>&nbsp;&nbsp;Lifestyle</a></li>
+                <li><a class="dropdown-item" @onclick="LoadMicrosoftApplications"><i class="bi bi-microsoft custom-icon"></i>&nbsp;&nbsp;Microsoft</a></li>
+                <li><a class="dropdown-item" @onclick="LoadPhotoDesignApplications"><i class="bi bi-camera custom-icon"></i>&nbsp;&nbsp;Photo &amp; Design</a></li>
+                <li><a class="dropdown-item" @onclick="LoadProductivityApplications"><i class="bi bi-person-workspace custom-icon"></i>&nbsp;&nbsp;Productivity</a></li>
+                <li><a class="dropdown-item" @onclick="LoadSecurityApplications"><i class="bi bi-shield-lock custom-icon"></i>&nbsp;&nbsp;Security</a></li>
+                <li><a class="dropdown-item" @onclick="LoadUtilityApplications"><i class="bi bi-tools custom-icon"></i>&nbsp;&nbsp;Utility</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Application Table View -->
+<div style="height: 100vh; overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="mb-3">
+    @if (ApplicationService.EnabledApplications.Count > 0)
+    {
+        <table class="table table-responsive custom-table">
+            <thead>
+                <tr>
+                    <th style="width: 20px;"></th>
+                    <th>
+                        <div class="d-flex align-items-center">
+                            <span style="white-space: nowrap;">Publisher</span>&nbsp;
+                            @*<button @onclick="() => SortByAppColumn(sortColumnAppPublisher)" class="btn btn-primary btn-sm ml-2" style="cursor: pointer;">
+                                @((MarkupString)(SortColumn == "Publisher" ? (SortAscending ? "&#x25B2;" : "&#x25BC;") : "&#x2195;"))
+                            </button>*@
+                        </div>
+                    </th>
+                    <th>
+                        <div class="d-flex align-items-center">
+                            <span style="white-space: nowrap;">Name</span>&nbsp;
+                            @*<button @onclick="() => SortByAppColumn(sortColumnAppName)" class="btn btn-primary btn-sm ml-2" style="cursor: pointer;">
+                                @((MarkupString)(SortColumn == "Name" ? (SortAscending ? "&#x25B2;" : "&#x25BC;") : "&#x2195;"))
+                            </button>*@
+                        </div>
+                    </th>
+                    <th>
+                        <div class="d-flex align-items-center">
+                            <span style="white-space: nowrap;">Version</span>&nbsp;
+                            @*<button @onclick="() => SortByAppColumn(sortColumnAppVersion)" class="btn btn-primary btn-sm ml-2" style="cursor: pointer;">
+                                @((MarkupString)(SortColumn == "Version" ? (SortAscending ? "&#x25B2;" : "&#x25BC;") : "&#x2195;"))
+                            </button>*@
+                        </div>
+                    </th>
+                    <th>
+                        <div class="d-flex align-items-center">
+                            <span style="white-space: nowrap;">Category</span>&nbsp;
+                            @*<button @onclick="() => SortByAppColumn(sortColumnAppCategory)" class="btn btn-primary btn-sm ml-2" style="cursor: pointer;">
+                                @((MarkupString)(SortColumn == "Category" ? (SortAscending ? "&#x25B2;" : "&#x25BC;") : "&#x2195;"))
+                            </button>*@
+                        </div>
+                    </th>
+                    <th>
+                        <div class="d-flex align-items-center">
+                            <span style="white-space: nowrap;">Last Updated</span>&nbsp;
+                            @*<button @onclick="() => SortByAppColumn(sortColumnAppLastUpdated)" class="btn btn-primary btn-sm ml-2" style="cursor: pointer;">
+                                @((MarkupString)(SortColumn == "Last Updated" ? (SortAscending ? "&#x25B2;" : "&#x25BC;") : "&#x2195;"))
+                            </button>*@
+                        </div>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var app in ApplicationService.EnabledApplications)
+                {
+                    <tr>
+                        <td style="display: flex; align-items: center;">
+                            <img src="@app.Icon" alt="@app.Publisher @app.Name logo" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />
+                        </td>
+                        <td>
+                            @app.Publisher
+                        </td>
+                        <td>
+                            @app.Name
+                        </td>
+                        <td>
+                            @app.Version
+                        </td>
+                        <td>
+                            @switch (@app.ApplicationCategory.ToString())
+                            {
+                                case "MICROSOFT":<i class="bi bi-microsoft custom-icon"></i>; break;
+                                case "ENTERTAINMENT":<i class="bi bi-music-note-beamed custom-icon"></i>; break;
+                                case "EDUCATION":<i class="bi bi-journal-bookmark-fill custom-icon"></i>; break;
+                                case "GAMES":<i class="bi bi-joystick custom-icon"></i>; break;
+                                case "INTERNET":<i class="bi bi-globe2 custom-icon"></i>; break;
+                                case "LIFESTYLE":<i class="bi bi-wechat custom-icon"></i>; break;
+                                case "PRODUCTIVITY":<i class="bi bi-person-workspace custom-icon"></i>; break;
+                                case "SECURITY":<i class="bi bi-shield-lock custom-icon"></i>; break;
+                                case "PHOTODESIGN":<i class="bi bi-camera custom-icon"></i>; break;
+                                case "DEVELOPERTOOLS":<i class="bi bi-code-square custom-icon"></i>; break;
+                                case "UTILITY":<i class="bi bi-tools custom-icon"></i>; break;
+                            }
+                        </td>
+                        <td>
+                            @app.LastUpdate.ToString("yyyy-MM-dd")
+                        </td>
+                        <td>
+                            <a class="btn btn-optechx text-white" style="padding: 5px 20px;" @onclick="(() => ShowMyModal(
+                                   app.Icon,
+                                   app.Publisher,
+                                   app.Name,
+                                   app.Version,
+                                   app.Summary,
+                                   app.CpuArchString,
+                                   app.LcidString,
+                                   app.Copyright,
+                                   app.Homepage,
+                                   app.Docs,
+                                   app.UID))">Info</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <span>Loading applications...</span>
+    }
+</div>
+
+<!-- ModalService -->
+@if (ModalService.IsModalVisible())
+{
+    <div class="modal fade show" id="myModal" style="display:block; background-color: rgba(10,10,10,.8);" aria-modal="true" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header text-left">
+                    <img src="@ModalService.AppIconURI" alt="Icon Image" style="width: 64px; height: 64px;" />
+                    <h5 class="modal-title">@ModalService.AppPublisher @ModalService.AppName</h5>
+                    <button type="button" class="close" @onclick="ModalService.CloseModal">
+                        &times;
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>@ModalService.AppDescription</p>
+                    <p>
+                        <strong>Version:</strong>&nbsp;@ModalService.AppVersion<br />
+                        <strong>CPU Arch:</strong>&nbsp;@ModalService.AppArch.Replace(",", ", ")<br />
+                        <strong>Language:</strong>&nbsp;@ModalService.AppLanguage<br />
+                        <strong>UID:</strong>&nbsp;@ModalService.AppUID::@ModalService.AppVersion
+                    </p>
+                    <p>@ModalService.AppCopyright</p>
+                </div>
+                <div class="modal-footer d-flex">
+                    <div class="mr-auto">
+                        <button type="button" class="btn btn-optechx" @onclick="() => OpenDocsInNewTab(ModalService.AppDocs)">Docs</button>
+                        <button type="button" class="btn btn-warning" @onclick="() => OpenDocsInNewTab(ModalService.AppHomepage)">Homepage</button>
+                        <button type="button" class="btn btn-danger" @onclick="ModalService.CloseModal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private string pageTitle = "Application Library";
+    private string searchText { get; set; } = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ApplicationService.LoadEnabledApplicationsAsync();
+    }
+
+    private async Task Search()
+    {
+        await SearchApplications(searchText);
+        searchText = string.Empty;
+    }
+
+    private async Task SearchApplications(string searchTerm)
+    {
+        await ApplicationService.SearchApplicationTagsAsync(searchString: searchTerm);
+        StateHasChanged();
+    }
+
+    private void ShowMyModal(string icon, string publisher, string name, string version, string description, string arch, string language, string copyright, string homepage, string docs, string uid)
+    {
+        // Show the modal with the specified parameters
+        ModalService.ShowModal(icon, publisher, name, version, description, arch, language, copyright, homepage, docs, uid);
+    }
+
+    private async Task OpenDocsInNewTab(string url)
+    {
+        await JSRuntime.InvokeVoidAsync("window.open", url, "_blank");
+    }
+
+    private async Task LoadAllApplications()
+    {
+        await ApplicationService.LoadAllApplicationsAsync();
+        StateHasChanged();
+    }
+
+
+    private async Task LoadInternetApplications()
+    {
+        await ApplicationService.LoadInternetApplicationsAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadDeveloperToolsApplications()
+    {
+        await ApplicationService.LoadDeveloperToolsApplicationsAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadEducationApplications()
+    {
+        await ApplicationService.LoadEducationApplicationsAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadEntertainmentApplications()
+    {
+        await ApplicationService.LoadEntertainmentApplicationsAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadGamesApplications()
+    {
+        await ApplicationService.LoadGamesApplicationsAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadLifestyleApplications()
+    {
+        await ApplicationService.LoadLifestyleApplicationsAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadMicrosoftApplications()
+    {
+        await ApplicationService.LoadMicrosoftApplicationsAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadPhotoDesignApplications()
+    {
+        await ApplicationService.LoadPhotoDesignApplicationsAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadProductivityApplications()
+    {
+        await ApplicationService.LoadProductivityApplicationsAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadSecurityApplications()
+    {
+        await ApplicationService.LoadSecurityApplicationsAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadUtilityApplications()
+    {
+        await ApplicationService.LoadUtilityApplicationsAsync();
+        StateHasChanged();
+    }
+
+    private async Task HandleKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await Search();
+        }
+    }
+
+
+    // Sort Functions
+    private string sortColumnAppPublisher = "Publisher";
+    private string sortColumnAppName = "Name";
+    private string sortColumnAppVersion = "Version";
+    private string sortColumnAppCategory = "Category";
+    private string sortColumnAppLastUpdated = "Last Updated";
+
+    private string? SortColumn { get; set; }
+    private bool SortAscending { get; set; } = true;
+
+    //private IList<Application> SortAppData(List<ApplicationService.EnabledApplications> data)
+    //{
+    //    switch (SortColumn)
+    //    {
+    //        case "Publisher":
+    //            return SortAscending ? data.OrderBy(item => item.Publisher).ToList() : data.OrderByDescending(item => item.Publisher).ToList();
+    //        case "Name":
+    //            return SortAscending ? data.OrderBy(item => item.Name).ToList() : data.OrderByDescending(item => item.Name).ToList();
+    //        case "Version":
+    //            return SortAscending ? data.OrderBy(item => item.Version).ToList() : data.OrderByDescending(item => item.Version).ToList();
+    //        case "Category":
+    //            return SortAscending ? data.OrderBy(item => item.Category).ToList() : data.OrderByDescending(item => item.Category).ToList();
+    //        case "Last Updated":
+    //            return SortAscending ? data.OrderBy(item => item.LastUpdated).ToList() : data.OrderByDescending(item => item.LastUpdated).ToList();
+    //        default:
+    //            return data;
+    //    }
+    //}
+
+    //private void SortByAppColumn(string column)
+    //{
+    //    if (SortColumn == column)
+    //    {
+    //        SortAscending = !SortAscending;
+    //    }
+    //    else
+    //    {
+    //        SortColumn = column;
+    //        SortAscending = true;
+    //    }
+
+    //    ApplicationService.EnabledApplications = SortAppData(ApplicationService.EnabledApplications);
+    //}
+}
