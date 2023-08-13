@@ -1,8 +1,8 @@
-﻿@using OptechX.Portal.Shared.Models.User
-@inject AuthenticationStateProvider AuthenticationStateProvider
+﻿@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject ILocalStorageService LocalStorageService
 @inject IUserAccountService UserAccountService
 @inject ICountryListService CountryListService
+@inject IToastService ToastService
 @inject NavigationManager NavigationManager
 
 <div class="row ml-4">
@@ -137,10 +137,19 @@
         return country == UserAccountService.UserDatas.Country;
     }
 
-    private void HandlePublishUpdate()
+    private async Task HandlePublishUpdate()
     {
         showSubmitButton = false;
+        int response = await UserAccountService.UpdateUserDatasAsync(userData: UserAccountService.UserDatas);
+        if (response == 0)
+        {
+            ToastService.ShowSuccess("Account updated");
+        }
+        else
+        {
+            ToastService.ShowError("Account not updated");
+        }
+        NavigationManager.NavigateTo("/");
     }
-
 }
 
