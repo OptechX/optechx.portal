@@ -1,0 +1,116 @@
+﻿@page "/support/edit"
+
+@using Microsoft.AspNetCore.Components.Forms
+@using OptechX.Portal.Shared.Models.SupportTickets
+@using OptechX.Portal.Shared.Models.Constants
+@using OptechX.Portal.Shared.Helper
+
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ILocalStorageService LocalStorageService
+@inject ISupportTicketService SupportTicketService
+@inject IJSRuntime JSRuntime
+@inject NavigationManager NavigationManager
+
+<h3>Update Support Ticket</h3>
+
+<EditForm Model="UpdateText" OnValidSubmit="UpdateTicket">
+    <div class="form-row">
+        <div class="form-group col-md-12 col-lg-8 mb-2">
+            <label>Priority:</label>
+            <input class="form-control" value="@GetEnumPriorityStringValue(ticket.Priority)" readonly />
+        </div>
+        <div class="form-group col-md-12 col-lg-8 mb-2">
+            <label>Category:</label>
+            <input class="form-control" value="@GetEnumTypeStringValue(ticket.Type)" readonly />
+        </div>
+        <div class="form-group col-md-12 col-lg-8 mb-2">
+            <label for="subject">Subject:</label>
+            <input id="subject" class="form-control" value="@ticket.Subject" readonly />
+        </div>
+        <div class="form-group col-md-12 col-lg-8 mb-2">
+            <label for="message">Message:</label>
+            <textarea id="message" class="form-control" readonly>@ticket.Message</textarea>
+        </div>
+        <div class="form-group col-md-12 col-lg-8 mb-2">
+            <label for="additionalText">Additional Text:</label>
+            <InputTextArea id="additionalText" class="form-control" @bind-Value="UpdateText"></InputTextArea>
+        </div>
+    </div>
+
+    @if (isSubmitted)
+    {
+        <button type="submit" class="btn btn-primary" disabled>Updating</button>
+    }
+    else
+    {
+        <button type="submit" class="btn btn-primary">Update</button>
+    }
+</EditForm>
+
+
+@code {
+    private string accountId = string.Empty;
+    private SupportTicket ticket = new SupportTicket();
+    private bool isSubmitted = false;
+    private string UpdateText = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var isAuthd = await LocalStorageService.GetItemAsync<string>("authToken");
+        if (!string.IsNullOrEmpty(isAuthd))
+        {
+            await GetAccountId();
+            ticket = SupportTicketService.CurrentEditTicket;
+            if (string.IsNullOrEmpty(ticket.Subject))
+            {
+                NavigationManager.NavigateTo("/support");
+            }
+            await InvokeAsync(StateHasChanged);
+        }
+        else
+        {
+            NavigationManager.NavigateTo("/");
+        }
+    }
+
+    private async void UpdateTicket()
+    {
+        isSubmitted = true;
+        await InvokeAsync(StateHasChanged);
+        await SupportTicketService.UpdateSupportTicketBodyAsync(updateText: UpdateText, ticketId: ticket.Id);
+        NavigationManager.NavigateTo("/support");
+    }
+
+    private string GetEnumPriorityStringValue(IssuePriority priority)
+    {
+        var enumMember = priority.GetType().GetMember(priority.ToString())[0];
+        var attribute = enumMember.GetCustomAttributes(typeof(EnumStringValueAttribute), false).FirstOrDefault() as EnumStringValueAttribute;
+        return attribute?.Value ?? priority.ToString();
+    }
+
+    private string GetEnumTypeStringValue(IssueType type)
+    {
+        var enumMember = type.GetType().GetMember(type.ToString())[0];
+        var attribute = enumMember.GetCustomAttributes(typeof(EnumStringValueAttribute), false).FirstOrDefault() as EnumStringValueAttribute;
+        return attribute?.Value ?? type.ToString();
+    }
+
+    private async Task HandleFileChange(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+
+        if (file != null)
+        {
+            using var stream = new MemoryStream();
+            await file.OpenReadStream().CopyToAsync(stream);
+
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task GetAccountId()
+    {
+        accountId = await LocalStorageService.GetItemAsync<string>("accountId");
+        await JSRuntime.InvokeVoidAsync("console.log", accountId);
+    }
+}
