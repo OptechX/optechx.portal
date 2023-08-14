@@ -7,6 +7,8 @@
 
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject ILocalStorageService LocalStorageService
+@inject ISupportTicketService SupportTicketService
+@inject IJSRuntime JSRuntime
 @inject NavigationManager NavigationManager
 
 <h3>Submit Support Ticket</h3>
@@ -44,12 +46,20 @@
         </div>
 
         @*<div class="form-group col-md-12 col-lg-8 mb-2">
-            <label for="attachment">Attachment:</label>
-            <InputFile id="attachment" OnChange="HandleFileChange" />
-        </div>*@
+                <label for="attachment">Attachment:</label>
+                <InputFile id="attachment" OnChange="HandleFileChange" />
+            </div>*@
     </div>
 
-    <button type="submit" class="btn btn-primary">Submit</button>
+    @if (isSubmitted)
+    {
+        <button type="submit" class="btn btn-primary" disabled>Submit</button>
+    }
+    else
+    {
+        <button type="submit" class="btn btn-primary">Submit</button>
+    }
+
 </EditForm>
 
 
@@ -66,7 +76,7 @@
         var isAuthd = await LocalStorageService.GetItemAsync<string>("authToken");
         if (!string.IsNullOrEmpty(isAuthd))
         {
-            accountId = await GetAccountId();
+            await GetAccountId();
         }
         else
         {
@@ -74,25 +84,17 @@
         }
     }
 
-    private async Task<string> GetAccountId()
-    {
-        var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var accountIdClaim = authenticationState.User.Claims.FirstOrDefault(claim => claim.Type == "AccountId"); //"http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress");
-        if (!string.IsNullOrEmpty(accountIdClaim?.Value))
-        {
-            return accountIdClaim!.Value;
-        }
-        else
-        {
-            return Guid.Empty.ToString();
-        }
-    }
-
-    private void SubmitTicket()
+    private async void SubmitTicket()
     {
         // Perform ticket submission logic here
         // For demonstration purposes, we'll just set isSubmitted to true
         isSubmitted = true;
+        ticket.UserId = Guid.Parse(accountId);
+        ticket.Status = IssueStatus.OPEN;
+        ticket.Updated = DateTime.UtcNow;
+        await SupportTicketService.PostSupportTicket(ticket: ticket);
+        await Task.Delay(1000);
+        NavigationManager.NavigateTo("/support");
     }
 
     private string GetEnumPriorityStringValue(IssuePriority priority)
@@ -126,5 +128,11 @@
 
             await InvokeAsync(StateHasChanged);
         }
+    }
+
+    private async Task GetAccountId()
+    {
+        accountId = await LocalStorageService.GetItemAsync<string>("accountId");
+        await JSRuntime.InvokeVoidAsync("console.log", accountId);
     }
 }

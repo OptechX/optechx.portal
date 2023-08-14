@@ -5,6 +5,7 @@
 @inject IUserDashboardService UserDashboardService
 @inject ILocalStorageService LocalStorageService
 @inject IDashboardService DashboardService
+@inject IJSRuntime JSRuntime
 
 <div class="row ml-4 mb-3">
     <h2>@pageTitle</h2>
@@ -87,41 +88,202 @@
     </div>
 </div>
 
-@if (imageBuildList != null && imageBuildList.Count > 0 && applicationDashboardViewList != null && applicationDashboardViewList.Count > 0)
-{
-    <DashboardImageHistoryApplicationLast5 ImageBuilds="@imageBuildList" ApplicationViews="@applicationDashboardViewList" />
-}
-else
-{
-    <!-- DESKTOP -->
-    <div class="row d-none d-md-flex justify-content-center">
+<!-- DESKTOP BUILD HISTORY AND APPLICATIONS -->
+<div class="row d-none d-md-flex justify-content-center">
+    <!-- BUILD HISTORY -->
+    @if (imageBuildList.Count == 0)
+    {
         <div class="col-md-6 col-12 mb-4">
+            <h3>Latest Builds</h3>
             <div style="height: 300px; overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="mb-3">
                 <p>Loading image build history...</p>
             </div>
         </div>
+    }
+    else
+    {
         <div class="col-md-6 col-12 mb-4">
+            <h3>Build History</h3>
+            <div style="height: 300px; overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="mb-3">
+                <table class="table table-responsive custom-table" style="border-collapse: collapse;">
+                    <thead>
+                        <tr>
+                            <th>
+                                <div class="d-flex align-items-center">
+                                    <span style="white-space: nowrap;">Order Date</span>
+                                </div>
+                            </th>
+                            <th>
+                                <div class="d-flex align-items-center">
+                                    <span style="white-space: nowrap;">Status</span>
+                                </div>
+                            </th>
+                            <th>
+                                <div class="d-flex align-items-center">
+                                    <span style="white-space: nowrap;">Release</span>
+                                </div>
+                            </th>
+                            <th>
+                                <div class="d-flex align-items-center">
+                                    <span style="white-space: nowrap;">Edition</span>
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (imageBuildList[0].AccountId == Guid.Empty.ToString())
+                        {
+                            <tr>
+                                <td>
+                                    @DateTime.Today.ToString("yyyy-MM-dd")
+                                </td>
+                                <td>
+                                    <img src="/icons/twttrbs/question-diamond.svg" alt="No Image" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />
+                                </td>
+                                <td>
+                                    <img src="/icons/Linux_tux_circle_logo.svg" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />
+                                </td>
+                                <td>
+                                    No images currently built
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            foreach (ImageBuildBasic build in imageBuildList)
+                            {
+                                <tr>
+                                    <td>
+                                        @build.OrderDate.ToString("yyyy-MM-dd")
+                                    </td>
+                                    <td style="display: flex; align-items: center;">
+                                        @switch (build.OrderLifecycle)
+                                        {
+                                            case "SUBMITTED":
+                                                <img src="/icons/twttrbs/inbox.svg" alt="Submitted" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />
+                                                break;
+                                            case "QUEUED":
+                                                <img src="/icons/twttrbs/calendar-week.svg" alt="Queued" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />
+                                                break;
+                                            case "PREWORK":
+                                                <img src="/icons/twttrbs/hdd-network.svg" alt="Pre-Work" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />
+                                                break;
+                                            case "PROCESSING":
+                                                <img src="/icons/twttrbs/cpu.svg" alt="Processing" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />
+                                                break;
+                                            case "COMPILING":
+                                                <img src="/icons/twttrbs/stack.svg" alt="Compiling" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />
+                                                break;
+                                            case "COMPLETE":
+                                                <img src="/icons/twttrbs/check-circle.svg" alt="Complete" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />
+                                                break;
+                                            case "DELETED":
+                                                <img src="/icons/twttrbs/file-earmark-x.svg" alt="Deleted" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />
+                                                break;
+                                        }
+                                    </td>
+                                    <td>
+                                        @switch (build.WindowsRelease)
+                                        {
+                                            case "Windows 10":
+                                                <img src="/icons/windows/win10.png" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />
+                                                break;
+                                            case "Windows 11":
+                                                <img src="icons/windows/win11.png" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />
+                                                break;
+                                        }
+                                    </td>
+                                    <td>
+                                        @build.WindowsEdition
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+
+    <!-- APPLICATION HISTORY -->
+    @if (applicationDashboardViewList.Count == 0)
+    {
+        <div class="col-md-6 col-12 mb-4">
+            <h3>Recent Apps</h3>
             <div style="height: 300px; overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="mb-3">
                 <p>Loading application update history...</p>
             </div>
         </div>
-    </div>
-
-    <!-- MOBILE -->
-    <div class="row d-md-none">
-        <div class="col-12 mb-4">
+    }
+    else
+    {
+        <div class="col-md-6 col-12 mb-4">
+            <h3>Recent Apps</h3>
             <div style="height: 300px; overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="mb-3">
-                <p>Loading image build history...</p>
+                <table class="table table-responsive custom-table" style="border-collapse: collapse;">
+                    <thead>
+                        <tr>
+                            <th style="width: 20px;"></th>
+                            <th>
+                                <div class="d-flex align-items-center">
+                                    <span style="white-space: nowrap;">Publisher</span>
+                                </div>
+                            </th>
+                            <th>
+                                <div class="d-flex align-items-center">
+                                    <span style="white-space: nowrap;">Name</span>
+                                </div>
+                            </th>
+                            <th>
+                                <div class="d-flex align-items-center">
+                                    <span style="white-space: nowrap;">Version</span>
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (ApplicationDashboardView app in applicationDashboardViewList)
+                        {
+                            <tr>
+                                <td style="display: flex; align-items: center;">
+                                    <img src="@app.Icon" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />
+                                </td>
+                                <td>
+                                    @app.Publisher
+                                </td>
+                                <td>
+                                    @app.Name
+                                </td>
+                                <td>
+                                    @app.Version
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
             </div>
         </div>
-        <div class="col-12 mb-4">
-            <div style="height: 300px; overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="mb-3">
-                <p>Loading application update history...</p>
-            </div>
+    }
+</div>
+
+<!-- MOBILE BUILD HISTORY AND APPLICATIONS -->
+<div class="row d-md-none">
+    <!-- BUILD HISTORY -->
+    <div class="col-12 mb-4">
+        <div style="height: 300px; overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="mb-3">
+            <p>Loading image build history...</p>
         </div>
     </div>
-}
+    <!-- APPLICATION HISTORY -->
+    <div class="col-12 mb-4">
+        <div style="height: 300px; overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="mb-3">
+            <p>Loading application update history...</p>
+        </div>
+    </div>
+</div>
 
+
+<!-- NEWS ARTICLES -->
 @if (newsArticleList != null && newsArticleList.Count > 0)
 {
     <DashboardNewsArticles NewsUpdates="@newsArticleList" />
@@ -131,6 +293,7 @@ else
     <!-- DESKTOP -->
     <div class="row d-none d-md-flex justify-content-center">
         <div class="col-12 mb-4">
+            <h3>News Updates</h3>
             <div style="height: 300px; overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="mb-3">
                 <p>Loading news articles...</p>
             </div>
@@ -140,6 +303,7 @@ else
     <!-- MOBILE -->
     <div class="row d-md-none">
         <div class="col-12 mb-4">
+            <h4>News Updates</h4>
             <div style="height: 300px; overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="mb-3">
                 <p>Loading news articles...</p>
             </div>
@@ -148,7 +312,7 @@ else
 }
 
 @code {
-    private string pageTitle = "Dashboard";
+    private string pageTitle = "Portal Dashboard";
 
     UserDashboardResponse? userDashboardResponse;
 
@@ -158,9 +322,9 @@ else
     //private string? SubscriptionTier;  // issue #40
     private string? SubscriptionTierHtml;
 
-    private List<ImageBuildBasic>? imageBuildList;
-    private List<ApplicationDashboardView>? applicationDashboardViewList;
-    private List<NewsUpdate>? newsArticleList;
+    private List<ImageBuildBasic> imageBuildList = new();
+    private List<ApplicationDashboardView> applicationDashboardViewList = new();
+    private List<NewsUpdate> newsArticleList = new();
 
     // init
     protected override async Task OnInitializedAsync()
@@ -276,12 +440,40 @@ else
                 break;
         }
 
-        imageBuildList = userDashboardResponse.ImageBuildBasics;
+        imageBuildList = userDashboardResponse.ImageBuildBasics!;
+        if (imageBuildList.Count == 0)
+        {
+            imageBuildList = new List<ImageBuildBasic>()
+                                {
+                                    new ImageBuildBasic
+                                    {
+                                        Id = 0,
+                                        AccountId = Guid.Empty.ToString(),
+                                        OrderLifecycle = "DELETED",
+                                        ImageFormat = "WIM",
+                                        ContinuousIntegrationApplications = false,
+                                        ContinuousIntegrationDrivers = false,
+                                        IntegrateSecurityPatches = false,
+                                        WindowsRelease = "Windows 11",
+                                        WindowsEdition = "No Edition",
+                                        WindowsVersion = "No Version",
+                                        Arch = "x64",
+                                        Language = "English",
+                                        NotifyBuildComplete = false,
+                                        NotifyCICDComplete = false,
+                                    },
+                                };
+        }
+
+        // Latest News updates
+        await DashboardService.LoadLatestNewsUpdatesAsync();
+        newsArticleList = DashboardService.LatestNewsUpdates;
+
+        // Last 5 Applications updated
         await DashboardService.LoadLast5ApplicationsUpdatedAsync();
         applicationDashboardViewList = DashboardService.Last5ApplicationsUpdated;
-        newsArticleList = userDashboardResponse.NewsUpdates;
 
-        await Task.Delay(3000);
+        await Task.Delay(2000);
     }
 
     private void SendEmail()

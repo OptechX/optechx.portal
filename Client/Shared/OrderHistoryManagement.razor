@@ -16,14 +16,14 @@
                 Status Select
             </button>
             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <li><a class="dropdown-item" @onclick="LoadOrders">All Status</a></li>
-                <li><a class="dropdown-item" @onclick="LoadSubmittedOrders">Submitted</a></li>
-                <li><a class="dropdown-item" @onclick="LoadQueuedOrders">Queued</a></li>
-                <li><a class="dropdown-item" @onclick="LoadPreworkOrders">Prework</a></li>
-                <li><a class="dropdown-item" @onclick="LoadProcessingOrders">Processing</a></li>
-                <li><a class="dropdown-item" @onclick="LoadCompilingOrders">Compiling</a></li>
-                <li><a class="dropdown-item" @onclick="LoadCompleteOrders">Complete</a></li>
-                <li><a class="dropdown-item" @onclick="LoadDeletedOrders">Deleted</a></li>
+                <li><a class="dropdown-item" @onclick="LoadOrders"><i class="bi bi-balloon"></i>&nbsp;&nbsp;All Status</a></li>
+                <li><a class="dropdown-item" @onclick="LoadSubmittedOrders"><i class="bi bi-inbox"></i>&nbsp;&nbsp;Submitted</a></li>
+                <li><a class="dropdown-item" @onclick="LoadQueuedOrders"><i class="bi bi-ticket-perforated"></i>&nbsp;&nbsp;Queued</a></li>
+                <li><a class="dropdown-item" @onclick="LoadPreworkOrders"><i class="bi bi-clipboard2-data"></i>&nbsp;&nbsp;Prework</a></li>
+                <li><a class="dropdown-item" @onclick="LoadProcessingOrders"><i class="bi bi-cpu"></i>&nbsp;&nbsp;Processing</a></li>
+                <li><a class="dropdown-item" @onclick="LoadCompilingOrders"><i class="bi bi-box-seam"></i>&nbsp;&nbsp;Compiling</a></li>
+                <li><a class="dropdown-item" @onclick="LoadCompleteOrders"><i class="bi bi-check-circle"></i>&nbsp;&nbsp;Complete</a></li>
+                <li><a class="dropdown-item" @onclick="LoadDeletedOrders"><i class="bi bi-file-earmark-x"></i>&nbsp;&nbsp;Deleted</a></li>
             </ul>
         </div>
     </div>
@@ -51,10 +51,14 @@
                             <span style="white-space: nowrap;">Release</span>
                         </div>
                     </th>
-
                     <th>
                         <div class="d-flex align-items-center">
                             <span style="white-space: nowrap;">Actions</span>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="d-flex align-items-center">
+                            <span style="white-space: nowrap;">Format</span>
                         </div>
                     </th>
                 </tr>
@@ -94,7 +98,7 @@
                                                 break;
                                             case "COMPLETE":
                                                 <circle cx="20" cy="20" r="18" fill="#CCFFE0" />
-                                                <image href="/icons/twttrbs/shield-check.svg" width="24" height="24" x="8" y="8" />
+                                                <image href="/icons/twttrbs/check-circle.svg" width="24" height="24" x="8" y="8" />
                                                 break;
                                             case "DELETED":
                                                 <circle cx="20" cy="20" r="18" fill="#FFCCCC" />
@@ -158,6 +162,51 @@
                                     </g>
                                 </svg>
                             </div>
+                        </td>
+                        <td>
+                            @switch (build.ImageFormat!.ToString())
+                            {
+                                case "WIM":
+                                    <svg class="svg-image" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                                        <g>
+                                            <circle cx="20" cy="20" r="18" fill="#98FB98" />
+                                            <image href="/icons/twttrbs/device-hdd.svg" width="24" height="24" x="8" y="8" />
+                                        </g>
+                                    </svg>
+                                    break;
+                                case "ISO":
+                                    <svg class="svg-image" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                                        <g>
+                                            <circle cx="20" cy="20" r="18" fill="#AEC6CF" />
+                                            <image href="/icons/twttrbs/disc.svg" width="24" height="24" x="8" y="8" />
+                                        </g>
+                                    </svg>
+                                    break;
+                                case "VHDX":
+                                    <svg class="svg-image" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                                        <g>
+                                            <circle cx="20" cy="20" r="18" fill="#B19CD9" />
+                                            <image href="/icons/twttrbs/hdd-rack.svg" width="24" height="24" x="8" y="8" />
+                                        </g>
+                                    </svg>
+                                    break;
+                                case "VHD":
+                                    <svg class="svg-image" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                                        <g>
+                                            <circle cx="20" cy="20" r="18" fill="#FFFACD" />
+                                            <image href="/icons/twttrbs/archive.svg" width="24" height="24" x="8" y="8" />
+                                        </g>
+                                    </svg>
+                                    break;
+                                case "ZIP":
+                                    <svg class="svg-image" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                                        <g>
+                                            <circle cx="20" cy="20" r="18" fill="#98FF98" />
+                                            <image href="/icons/twttrbs/file-zip.svg" width="24" height="24" x="8" y="8" />
+                                        </g>
+                                    </svg>
+                                    break;
+                            }
                         </td>
                     </tr>
                 }
@@ -528,11 +577,10 @@
         StateHasChanged();
     }
 
-    private async Task ShowOrderInfo(DateTime dateTime, string? imgFormat, bool ciApps, bool ciDrivers, bool cicd, string? release,
+    private void ShowOrderInfo(DateTime dateTime, string? imgFormat, bool ciApps, bool ciDrivers, bool cicd, string? release,
         string? edition, string? version, string? arch, string? lcid, string? apps, string? drivers, string? regedits, string? appx,
         string? features, bool notifyComplete, bool notifycicd, string userAccount, string userPassword)
     {
-        await JSRuntime.InvokeVoidAsync("console.log", "Show info pressed");
         BuildModalService.ShowModal(
             OrderDate: dateTime,
             ImageFormat: imgFormat,
