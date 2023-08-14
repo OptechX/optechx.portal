@@ -1,17 +1,260 @@
 ﻿@page "/support"
 
-@using Microsoft.AspNetCore.Components.Forms
 @using OptechX.Portal.Shared.Models.SupportTickets
 @using OptechX.Portal.Shared.Models.Constants
-@using OptechX.Portal.Shared.Helper
 
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject ILocalStorageService LocalStorageService
+@inject ISupportTicketService SupportTicketService
+@inject IToastService ToastService
+@inject IJSRuntime JSRuntime
 @inject NavigationManager NavigationManager
 
 <h3>Support Tickets</h3>
 
+<!-- Application Table View -->
+
+@if (tickets.Count == 0)
+{
+    <span>Loading support tickets...</span>
+}
+else
+{
+    <div style="overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="mb-3">
+        <table class="table table-responsive custom-table">
+            <thead>
+                <tr>
+                    <th style="width: 20px;">
+                        <div class="d-flex align-items-center">
+                            <span style="white-space: nowrap;">Status</span>&nbsp;
+                        </div>
+                    </th>
+                    <th style="width: 20px;">
+                        <div class="d-flex align-items-center">
+                            <span style="white-space: nowrap;">Priority</span>&nbsp;
+                        </div>
+                    </th>
+                    <th style="width: 20px;">
+                        <div class="d-flex align-items-center">
+                            <span style="white-space: nowrap;">Type</span>&nbsp;
+                        </div>
+                    </th>
+                    <th>
+                        <div class="d-flex align-items-center">
+                            <span style="white-space: nowrap;">Opened</span>&nbsp;
+                        </div>
+                    </th>
+                    <th>
+                        <div class="d-flex align-items-center">
+                            <span style="white-space: nowrap;">Subject</span>&nbsp;
+                        </div>
+                    </th>
+                    <th>
+                        <div class="d-flex align-items-center">
+                            <span style="white-space: nowrap;">Action</span>&nbsp;
+                        </div>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var ticket in tickets)
+                {
+                    <tr>
+                        <td>
+                            <!-- style="display: flex; align-items: center;"-->
+                            @switch (ticket.Status)
+                            {
+                                case IssueStatus.OPEN:
+                                    <svg class="svg-image" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                                        <g>
+                                            <circle cx="20" cy="20" r="18" fill="#3498DB" />
+                                            <image href="/icons/twttrbs/box-arrow-in-down-right.svg" alt="Update" width="24" height="24" x="8" y="8" />
+                                        </g>
+                                    </svg>
+                                    break;
+                                case IssueStatus.ASSIGNED:
+                                    <svg class="svg-image" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                                        <g>
+                                            <circle cx="20" cy="20" r="18" fill="#9B59B6" />
+                                            <image href="/icons/twttrbs/person-check.svg" alt="Update" width="24" height="24" x="8" y="8" />
+                                        </g>
+                                    </svg>
+                                    break;
+                                case IssueStatus.PENDING:
+                                    <svg class="svg-image" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                                        <g>
+                                            <circle cx="20" cy="20" r="18" fill="#F39C12" />
+                                            <image href="/icons/twttrbs/chat-left-dots.svg" alt="Update" width="24" height="24" x="8" y="8" />
+                                        </g>
+                                    </svg>
+                                    break;
+                                case IssueStatus.CLOSED:
+                                    <svg class="svg-image" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                                        <g>
+                                            <circle cx="20" cy="20" r="18" fill="#27AE60" />
+                                            <image href="/icons/twttrbs/door-closed.svg" alt="Update" width="24" height="24" x="8" y="8" />
+                                        </g>
+                                    </svg>
+                                    break;
+                            }
+                        </td>
+                        <td>
+                            @switch (ticket.Priority)
+                            {
+                                case IssuePriority.LOW:
+                                    <svg class="svg-image" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                                        <g>
+                                            <circle cx="20" cy="20" r="18" fill="#2ECC71" />
+                                            <image href="/icons/twttrbs/thermometer.svg" alt="Update" width="24" height="24" x="8" y="8" />
+                                        </g>
+                                    </svg>
+                                    break;
+                                case IssuePriority.MEDIUM:
+                                    <svg class="svg-image" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                                        <g>
+                                            <circle cx="20" cy="20" r="18" fill="#F0C419" />
+                                            <image href="/icons/twttrbs/thermometer-low.svg" alt="Update" width="24" height="24" x="8" y="8" />
+                                        </g>
+                                    </svg>
+                                    break;
+                                case IssuePriority.HIGH:
+                                    <svg class="svg-image" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                                        <g>
+                                            <circle cx="20" cy="20" r="18" fill="#FFA500" />
+                                            <image href="/icons/twttrbs/thermometer-half.svg" alt="Update" width="24" height="24" x="8" y="8" />
+                                        </g>
+                                    </svg>
+                                    break;
+                                case IssuePriority.CRITICAL:
+                                    <svg class="svg-image" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                                        <g>
+                                            <circle cx="20" cy="20" r="18" fill="#E74C3C" />
+                                            <image href="/icons/twttrbs/thermometer-high.svg" alt="Update" width="24" height="24" x="8" y="8" />
+                                        </g>
+                                    </svg>
+                                    break;
+                            }
+                        </td>
+                        <td>
+                            @switch (ticket.Type)
+                            {
+                                case IssueType.SUPPORT:
+                                    <svg class="svg-image" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                                        <g>
+                                            <circle cx="20" cy="20" r="18" fill="#3498DB" />
+                                            <image href="/icons/twttrbs/pc-display-horizontal.svg" alt="Update" width="24" height="24" x="8" y="8" />
+                                        </g>
+                                    </svg>
+                                    break;
+                                case IssueType.ACCOUNT:
+                                    <svg class="svg-image" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                                        <g>
+                                            <circle cx="20" cy="20" r="18" fill="#E74C3C" />
+                                            <image href="/icons/twttrbs/person-badge.svg" alt="Update" width="24" height="24" x="8" y="8" />
+                                        </g>
+                                    </svg>
+                                    break;
+                                case IssueType.BILLING:
+                                    <svg class="svg-image" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                                        <g>
+                                            <circle cx="20" cy="20" r="18" fill="#F39C12" />
+                                            <image href="/icons/twttrbs/currency-exchange.svg" alt="Update" width="24" height="24" x="8" y="8" />
+                                        </g>
+                                    </svg>
+                                    break;
+                            }
+                        </td>
+                        <td>
+                            @ticket.Opened.ToString("yyyy-MM-dd")
+                        </td>
+                        <td>
+                            @ticket.Subject
+                        </td>
+                        <td>
+                            @if (ticket.Status != IssueStatus.CLOSED)
+                            {
+                                <svg class="svg-image" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" @onclick="@(async () => await EditTicket(ticket.Id, accountId))">
+                                    <g>
+                                        <circle cx="20" cy="20" r="18" fill="#87CEEB" />
+                                        <image href="/icons/twttrbs/pencil.svg" alt="Update" width="24" height="24" x="8" y="8" />
+                                    </g>
+                                </svg>
+                                <svg class="svg-image" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" @onclick="@(async () => await CloseTicket(ticket.Id))">
+                                    <g>
+                                        <circle cx="20" cy="20" r="18" fill="#FF6B6B" />
+                                        <image href="/icons/twttrbs/x-square.svg" alt="Close" width="24" height="24" x="8" y="8" />
+                                    </g>
+                                </svg>
+                            }
+                            else
+                            {
+                                <svg class="svg-image" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                                    <g>
+                                        <circle cx="20" cy="20" r="18" fill="#27AE60" />
+                                        <image href="/icons/twttrbs/door-closed.svg" alt="Update" width="24" height="24" x="8" y="8" />
+                                    </g>
+                                </svg>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+
 @code {
-    private List<SupportTicket>? tickets = new List<SupportTicket>();
+    private string accountId = string.Empty;
+    private List<SupportTicket> tickets = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var isAuthd = await LocalStorageService.GetItemAsync<string>("authToken");
+        if (!string.IsNullOrEmpty(isAuthd))
+        {
+            await GetAccountId();
+            tickets = await LoadSupportTicketsAsync(userId: accountId);
+        }
+        else
+        {
+            NavigationManager.NavigateTo("/");
+        }
+    }
+
+    private async Task GetAccountId()
+    {
+        accountId = await LocalStorageService.GetItemAsync<string>("accountId");
+        await JSRuntime.InvokeVoidAsync("console.log", accountId);
+    }
+
+    private async Task<List<SupportTicket>> LoadSupportTicketsAsync(string userId)
+    {
+        await SupportTicketService.GetSupportTicketsAsync(userId.Replace("\"", ""));
+        return SupportTicketService.SupportTickets.ToList();
+    }
+
+    private async Task CloseTicket(int TicketId)
+    {
+        await SupportTicketService.CloseSupportTicketAsync(ticketId: TicketId);
+        ToastService.ShowSuccess("Ticket closed");
+        await SupportTicketService.GetSupportTicketsAsync(accountId);
+        tickets = SupportTicketService.SupportTickets.ToList();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task EditTicket(int TicketId, string AccountId)
+    {
+        int result = await SupportTicketService.FindSupportTicketAsync(ticketId: TicketId, accountId: AccountId);
+        if (result == 0)
+        {
+            NavigationManager.NavigateTo("/support/edit");
+        }
+    }
+
+    private async Task RefreshPage()
+    {
+        await JSRuntime.InvokeVoidAsync("location.reload");
+    }
 }
 
