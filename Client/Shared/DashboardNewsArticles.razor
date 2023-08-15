@@ -61,20 +61,16 @@
             <table class="table table-responsive custom-table" style="border-collapse: collapse;">
                 <thead>
                     <tr>
-                        <th style="width: 60px;"></th> <!-- Image -->
                         <th>
+                            <!-- Link -->
                             <div class="d-flex align-items-center">
                                 <span style="white-space: nowrap;"></span>
                             </div>
                         </th>
                         <th>
+                            <!-- Heading -->
                             <div class="d-flex align-items-center">
-                                <span style="white-space: nowrap;"></span> <!-- Preview -->
-                            </div>
-                        </th>
-                        <th>
-                            <div class="d-flex align-items-center">
-                                <span style="white-space: nowrap;"></span> <!-- Link -->
+                                <span style="white-space: nowrap;"></span>
                             </div>
                         </th>
                     </tr>
@@ -83,17 +79,11 @@
                     @foreach (NewsUpdate article in NewsUpdates)
                     {
                         <tr>
-                            <td style="display: flex; align-items: center;">
-                                <img src="@article.Image" style="height: 2em; margin-left: 0.5em; margin-right: 0.5em;" />
+                            <td>
+                                <button class="btn btn-optechx" onclick="window.open('@article.Link', '_blank')">Link</button>
                             </td>
                             <td>
                                 @article.Heading
-                            </td>
-                            <td>
-                                @article.Preview
-                            </td>
-                            <td>
-                                <button class="btn btn-optechx" onclick="window.open('@article.Link', '_blank')">Link</button>
                             </td>
                         </tr>
                     }
