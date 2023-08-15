@@ -95,96 +95,209 @@
 </div>
 
 
-<!-- Registry Editor -->
-<div class="row rounded border border-dark p-3 mb-3">
-    <h4>Registry Edits</h4>
-    <p>Registry Edits allow additional regisry keys to be added to the SOE image. Select the types from dropdowns and populate each field.</p>
-    <p>The preceeding backslash is not required for the Root Key <i>ie - SOFTWARE\Microsoft\Windows</i></p>
+<!-- Registry Editor
+<!-- Desktop -->
+<div class="d-none d-sm-block">
+    <div class="row rounded border border-dark p-3 mb-3">
+        <h4>Registry Edits</h4>
+        <p>Registry Edits allow additional regisry keys to be added to the SOE image. Select the types from dropdowns and populate each field.</p>
+        <p>The preceeding backslash is not required for the Root Key <i>ie - SOFTWARE\Microsoft\Windows</i></p>
 
-    @if (enableRegEditsSection)
-    {
-        <div class="d-flex align-items-center mb-4 form-group">
-            <div><strong>REG</strong></div>
-            <div class="d-inline-block ms-2">
-                <select class="form-select custom-select" @bind="addDeleteOption">
-                    @foreach (var option in addDeleteOptions)
-                    {
-                        <option value="@option">@option</option>
-                    }
-                </select>
+        @if (enableRegEditsSection)
+        {
+            <div class="d-flex align-items-center mb-4 form-group">
+                <div><strong>REG</strong></div>
+                <div class="d-inline-block ms-2">
+                    <select class="form-select custom-select" @bind="addDeleteOption">
+                        @foreach (var option in addDeleteOptions)
+                        {
+                            <option value="@option">@option</option>
+                        }
+                    </select>
+                </div>
+                <div style="color: red; font-weight: bold;">*</div>
+                <div class="d-inline-block ms-2">
+                    <select class="form-select custom-select" @bind="registryOption">
+                        @foreach (var option in registryOptions)
+                        {
+                            <option value="@option">@option</option>
+                        }
+                    </select>
+                </div>
+                <div style="color: red; font-weight: bold;">*</div>
+                <input type="text" class="form-control ms-2" @bind="regCommand" placeholder="SOFTWARE\Microsoft\ExampleKey" />
+                <div style="color: red; font-weight: bold;">*</div>
             </div>
-            <div style="color: red; font-weight: bold;">*</div>
-            <div class="d-inline-block ms-2">
-                <select class="form-select custom-select" @bind="registryOption">
-                    @foreach (var option in registryOptions)
-                    {
-                        <option value="@option">@option</option>
-                    }
-                </select>
+            <div class="d-flex align-items-center mb-4">
+                <div class="d-inline-block ms-2">
+                    <select class="form-select custom-select" @bind="regVOption">
+                        @foreach (var option in regVOptions)
+                        {
+                            <option value="@option">@option</option>
+                        }
+                    </select>
+                </div>
+                <div style="color: red; font-weight: bold;">*</div>
+                <input type="text" class="form-control ms-2" @bind="regCommand2" placeholder="Example SubKey" />
+                <div class="ms-2"><strong>/t</strong></div>
+                <div class="d-inline-block ms-2">
+                    <select class="form-select custom-select" @bind="valueTypeOption">
+                        @foreach (var option in valueTypeOptions)
+                        {
+                            <option value="@option">@option</option>
+                        }
+                    </select>
+                </div>
+                <div class="ms-2">/d</div>
+                <input type="text" class="form-control ms-2" @bind="regCommand3" placeholder="Example Value" />
+                <button class="btn btn-optechx ms-2" @onclick="CreateRegCommand" style="white-space: nowrap;">ADD REGKEY</button>
             </div>
-            <div style="color: red; font-weight: bold;">*</div>
-            <input type="text" class="form-control ms-2" @bind="regCommand" placeholder="SOFTWARE\Microsoft\ExampleKey" />
-            <div style="color: red; font-weight: bold;">*</div>
-        </div>
-        <div class="d-flex align-items-center mb-4">
-            <div class="d-inline-block ms-2">
-                <select class="form-select custom-select" @bind="regVOption">
-                    @foreach (var option in regVOptions)
-                    {
-                        <option value="@option">@option</option>
-                    }
-                </select>
-            </div>
-            <div style="color: red; font-weight: bold;">*</div>
-            <input type="text" class="form-control ms-2" @bind="regCommand2" placeholder="Example SubKey" />
-            <div class="ms-2"><strong>/t</strong></div>
-            <div class="d-inline-block ms-2">
-                <select class="form-select custom-select" @bind="valueTypeOption">
-                    @foreach (var option in valueTypeOptions)
-                    {
-                        <option value="@option">@option</option>
-                    }
-                </select>
-            </div>
-            <div class="ms-2">/d</div>
-            <input type="text" class="form-control ms-2" @bind="regCommand3" placeholder="Example Value" />
-            <button class="btn btn-optechx ms-2" @onclick="CreateRegCommand" style="white-space: nowrap;">ADD REGKEY</button>
-        </div>
-    }
+        }
 
-    @if (regCommands.Count >= 1)
-    {
-        <table class="table mb-3">
-            <thead>
-                <tr>
-                    <th>Remove</th>
-                    <th>Registry Commands Added</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var command in regCommands)
-                {
+        @if (regCommands.Count >= 1)
+        {
+            <table class="table mb-3">
+                <thead>
                     <tr>
-                        <td>
-                            <button class="btn btn-danger btn-sm" @onclick="() => RemoveRegCommand(command)">X</button>
-                        </td>
-                        <td>@command</td>
+                        <th>Remove</th>
+                        <th>Registry Commands Added</th>
                     </tr>
+                </thead>
+                <tbody>
+                    @foreach (var command in regCommands)
+                    {
+                        <tr>
+                            <td>
+                                <button class="btn btn-danger btn-sm" @onclick="() => RemoveRegCommand(command)">X</button>
+                            </td>
+                            <td>@command</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <div class="form-group">
+                @if (IsHasRegEditsNotSaved)
+                {
+                    <button class="btn btn-optechx" @onclick="SaveRegistryEdits" style="white-space: nowrap;">Save Reg Edits</button>
                 }
-            </tbody>
-        </table>
-        <div class="form-group">
-            @if (IsHasRegEditsNotSaved)
-            {
-                <button class="btn btn-optechx" @onclick="SaveRegistryEdits" style="white-space: nowrap;">Save Reg Edits</button>
-            }
-            else
-            {
-                <button class="btn btn-secondary" style="cursor: not-allowed; font-style: italic;" disabled>Reg Edits Saved</button>
-            }
-        </div>
-    }
+                else
+                {
+                    <button class="btn btn-secondary" style="cursor: not-allowed; font-style: italic;" disabled>Reg Edits Saved</button>
+                }
+            </div>
+        }
+    </div>
 </div>
+
+<!-- Mobile -->
+<div class="d-block d-sm-none">
+    <div class="row rounded border border-dark p-3 mb-3">
+        <h4>Registry Edits</h4>
+        <p>Registry Edits allow additional regisry keys to be added to the SOE image. Select the types from dropdowns and populate each field.</p>
+        <p>The preceeding backslash is not required for the Root Key</p>
+        <p><i>eg:<br />SOFTWARE\Microsoft\Windows</i></p>
+
+        @if (enableRegEditsSection)
+        {
+            <!-- ROW 01 -->
+            <div class="d-flex align-items-center mb-4 form-group">
+                <div><strong>REG</strong></div>
+                <div class="d-inline-block ms-2">
+                    <select class="form-select custom-select" @bind="addDeleteOption">
+                        @foreach (var option in addDeleteOptions)
+                        {
+                            <option value="@option">@option</option>
+                        }
+                    </select>
+                </div>
+                <div style="color: red; font-weight: bold;">*</div>
+                <div class="d-inline-block ms-2">
+                    <select class="form-select custom-select" @bind="registryOption">
+                        @foreach (var option in registryOptions)
+                        {
+                            <option value="@option">@option</option>
+                        }
+                    </select>
+                </div>
+                <div style="color: red; font-weight: bold;">*</div>
+
+            </div>
+            <!-- ROW 02 -->
+            <div class="d-flex align-items-center mb-4 form-group">
+                <input type="text" class="form-control ms-2" @bind="regCommand" placeholder="SOFTWARE\Microsoft\ExampleKey" />
+                <div style="color: red; font-weight: bold;">*</div>
+            </div>
+            <!-- ROW 03-->
+            <div class="d-flex align-items-center mb-4">
+                <div class="d-inline-block ms-2">
+                    <select class="form-select custom-select" @bind="regVOption">
+                        @foreach (var option in regVOptions)
+                        {
+                            <option value="@option">@option</option>
+                        }
+                    </select>
+                </div>
+                <div style="color: red; font-weight: bold;">*</div>
+                <input type="text" class="form-control ms-2" @bind="regCommand2" placeholder="SubKey" />
+            </div>
+            <!-- ROW 04 -->
+            <div class="d-flex align-items-center mb-4">
+                <div class="ms-2"><strong>/t</strong></div>
+                <div class="d-inline-block ms-2">
+                    <select class="form-select custom-select" @bind="valueTypeOption">
+                        @foreach (var option in valueTypeOptions)
+                        {
+                            <option value="@option">@option</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <!-- ROW 05 -->
+            <div class="d-flex align-items-center mb-4">
+                <div class="ms-2">/d</div>
+                <input type="text" class="form-control ms-2" @bind="regCommand3" placeholder="Example Value" />
+            </div>
+            <!-- ROW 06 -->
+            <div class="d-flex align-items-center mb-4">
+                <button class="btn btn-optechx ms-2" @onclick="CreateRegCommand" style="white-space: nowrap;">ADD REGKEY</button>
+            </div>
+        }
+
+        @if (regCommands.Count >= 1)
+        {
+            <table class="table mb-3">
+                <thead>
+                    <tr>
+                        <th>Remove</th>
+                        <th>Registry Commands Added</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var command in regCommands)
+                    {
+                        <tr>
+                            <td>
+                                <button class="btn btn-danger btn-sm" @onclick="() => RemoveRegCommand(command)">X</button>
+                            </td>
+                            <td>@command</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <div class="form-group">
+                @if (IsHasRegEditsNotSaved)
+                {
+                    <button class="btn btn-optechx" @onclick="SaveRegistryEdits" style="white-space: nowrap;">Save Reg Edits</button>
+                }
+                else
+                {
+                    <button class="btn btn-secondary" style="cursor: not-allowed; font-style: italic;" disabled>Reg Edits Saved</button>
+                }
+            </div>
+        }
+    </div>
+</div>
+
 
 <div class="row rounded border border-dark p-3 mb-3">
     <div class="col-md-6">
