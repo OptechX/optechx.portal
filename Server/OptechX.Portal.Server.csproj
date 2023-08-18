@@ -23,7 +23,7 @@
     <PackageReference Include="MimeKit" Version="4.1.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.32.1" />
-    <PackageReference Include="Stripe.net" Version="41.28.0" />
+    <PackageReference Include="Stripe.net" Version="42.1.0" />
   </ItemGroup>
 
   <ItemGroup>
