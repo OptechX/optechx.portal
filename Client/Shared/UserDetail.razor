@@ -112,12 +112,10 @@
     @if (showSubmitButton)
     {
         <button type="submit" class="btn btn-primary mb-3">Update Account</button>
-        <button class="btn btn-danger mb-3" @onclick="@(() => NavigationManager.NavigateTo("/"))">Cancel</button>
     }
     else
     {
-        <button type="submit" class="btn btn-secondary mb-3" style="cursor: not-allowed; color: grey; font-style: italic;" disabled>Updating...</button>
-        <button class="btn btn-danger mb-3" @onclick="@(() => NavigationManager.NavigateTo("/"))">Cancel</button>
+        <button type="submit" class="btn btn-secondary mb-3" style="cursor: not-allowed; color: grey; font-style: italic;" disabled>Updated</button>
     }
 </EditForm>
 
@@ -149,7 +147,6 @@
         {
             ToastService.ShowError("Account not updated");
         }
-        NavigationManager.NavigateTo("/");
     }
 }
 
