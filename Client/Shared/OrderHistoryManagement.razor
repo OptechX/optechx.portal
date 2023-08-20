@@ -11,7 +11,7 @@
 <!-- Legend & Dropdown -->
 <div class="d-flex mt-3 mb-3">
     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#imageFormatModal">
-        Image Formats
+        Legend
     </button>
 
     <!-- Dropdown on the Right -->
@@ -63,7 +63,7 @@
                     </th>
                     <th>
                         <div class="d-flex align-items-center">
-                            <span style="white-space: nowrap;">Format</span>
+                            <span style="white-space: nowrap;">Image Format</span>
                         </div>
                     </th>
                 </tr>
@@ -231,7 +231,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="imageFormatModalLabel">Image Format Legend</h5>
+                <h5 class="modal-title" id="imageFormatModalLabel">Image Formats</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -468,7 +468,7 @@
                 <!-- Applications -->
                 @if (Apps?.Count > 0 && Apps[0] != string.Empty)
                 {
-                    <div style="overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="container mb-2">
+                    @*<div style="overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="container mb-2">
                         <h6>Applications</h6>
                         <p>
                             <ul>
@@ -478,7 +478,7 @@
                                 }
                             </ul>
                         </p>
-                    </div>
+                    </div>*@
                     <div style="overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="container mb-2">
                         <!-- Applications -->
                         <table class="table table-responsive custom-table" style="border-collapse: collapse;">
@@ -502,7 +502,7 @@
                 <!-- Drivers -->
                 @if (Drivers?.Count > 0 && Drivers[0] != string.Empty)
                 {
-                    <div style="overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="container mb-2">
+                    @*<div style="overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="container mb-2">
                         <h6>Drivers</h6>
                         <p>
                             <ul>
@@ -512,13 +512,31 @@
                                 }
                             </ul>
                         </p>
+                    </div>*@
+                    <div style="overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="container mb-2">
+                        <!-- Applications -->
+                        <table class="table table-responsive custom-table" style="border-collapse: collapse;">
+                            <thead>
+                                <tr>
+                                    <th colspan="2">Applications</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (string driver in Drivers)
+                                {
+                                    <tr style="margin-bottom: -10px;">
+                                        <td>@driver.Replace("::", " ")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
                     </div>
                 }
 
                 <!-- AppxPackages -->
                 @if (AppxPackages?.Count > 0 && AppxPackages[0] != string.Empty)
                 {
-                    <div style="overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="container mb-2">
+                    @*<div style="overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="container mb-2">
                         <h6>Appx Packages</h6>
                         <p>
                             <ul>
@@ -528,13 +546,31 @@
                                 }
                             </ul>
                         </p>
+                    </div>*@
+                    <div style="overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="container mb-2">
+                        <!-- Appx Packages -->
+                        <table class="table table-responsive custom-table" style="border-collapse: collapse;">
+                            <thead>
+                                <tr>
+                                    <th colspan="2">Appx Packages</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (string pkg in AppxPackages)
+                                {
+                                    <tr style="margin-bottom: -10px;">
+                                        <td>@pkg</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
                     </div>
                 }
 
                 <!-- Optional Features -->
                 @if (OptionalFeatures?.Count > 0 && OptionalFeatures[0] != string.Empty)
                 {
-                    <div style="overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="container mb-2">
+                    @*<div style="overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="container mb-2">
                         <h6>Optional Features</h6>
                         <p>
                             <ul>
@@ -544,13 +580,31 @@
                                 }
                             </ul>
                         </p>
+                    </div>*@
+                    <div style="overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="container mb-2">
+                        <!-- Optional Features -->
+                        <table class="table table-responsive custom-table" style="border-collapse: collapse;">
+                            <thead>
+                                <tr>
+                                    <th colspan="2">Appx Packages</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (string feat in OptionalFeatures)
+                                {
+                                    <tr style="margin-bottom: -10px;">
+                                        <td>@feat</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
                     </div>
                 }
 
                 <!-- Reg Edits -->
                 @if (RegEdits?.Count > 0 && RegEdits[0] != string.Empty)
                 {
-                    <div style="overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="container mb-2">
+                    @*<div style="overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="container mb-2">
                         <h6>Registry Edits</h6>
                         <p>
                             <ul>
@@ -560,6 +614,24 @@
                                 }
                             </ul>
                         </p>
+                    </div>*@
+                    <div style="overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; padding: 5px;" class="container mb-2">
+                        <!-- Registry Edits -->
+                        <table class="table table-responsive custom-table" style="border-collapse: collapse;">
+                            <thead>
+                                <tr>
+                                    <th colspan="2">Appx Packages</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (string reg in RegEdits)
+                                {
+                                    <tr style="margin-bottom: -10px;">
+                                        <td>@reg</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
                     </div>
                 }
             </div>

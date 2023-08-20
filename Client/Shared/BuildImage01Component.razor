@@ -310,7 +310,28 @@
     // refresh the page
     private async Task RefreshPageAsync()
     {
-        await Task.Run(() => NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true));
+        //await Task.Run(() => NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true));
+
+        imageBuild = new();
+
+        isReleaseReadOnly = false;
+        isEditionReadOnly = true;
+        isBuildReadOnly = true;
+        isArchReadOnly = true;
+        isLcidReadOnly = true;
+        isFormatReadOnly = true;
+        apiSearchString = string.Empty;
+
+        apiSearchString = null;
+
+        Editions = new() { "Select value..." };
+        Versions = new() { "Select value..." };
+        Archs = new() { "Select value..." };
+        Lcids = new() { "Select value..." };
+        ImageFormats = new() { "Select value...", "WIM", "ISO", "VHDX", "VHD", "ZIP" };
+
+        // Perform any additional asynchronous initialization tasks here if needed
+        await Task.CompletedTask;
     }
 
     // submit order
