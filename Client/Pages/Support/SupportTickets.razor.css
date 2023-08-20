@@ -20,3 +20,8 @@
     background-color: #1c9cbc;
     color: white;
 }
+
+
+.vertical-align-top {
+    vertical-align: top;
+}

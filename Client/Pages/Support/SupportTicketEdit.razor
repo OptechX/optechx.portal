@@ -29,11 +29,11 @@
         </div>
         <div class="form-group col-md-12 col-lg-8 mb-2">
             <label for="message">Message:</label>
-            <textarea id="message" class="form-control" readonly>@ticket.Message</textarea>
+            <textarea id="message" class="form-control" readonly rows="8">@ticket.Message</textarea>
         </div>
         <div class="form-group col-md-12 col-lg-8 mb-2">
             <label for="additionalText">Additional Text:</label>
-            <InputTextArea id="additionalText" class="form-control" @bind-Value="UpdateText"></InputTextArea>
+            <InputTextArea id="additionalText" class="form-control" @bind-Value="UpdateText" rows="8"></InputTextArea>
         </div>
     </div>
 
