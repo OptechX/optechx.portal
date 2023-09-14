@@ -476,7 +476,7 @@ else
     private async Task<List<SupportTicket>> LoadSupportTicketsAsync(string userId)
     {
         await SupportTicketService.GetSupportTicketsAsync(userId.Replace("\"", ""));
-        return SupportTicketService.SupportTickets.ToList();
+        return SupportTicketService.SupportTickets.OrderByDescending(o => o.Opened).ToList();
     }
 
     private async Task CloseTicket(int TicketId)

@@ -111,11 +111,11 @@
     <!-- Submit button -->
     @if (showSubmitButton)
     {
-        <button type="submit" class="btn btn-primary mb-3">Update Account</button>
+        <button type="submit" class="btn btn-primary mb-3">Update and Logout</button>
     }
     else
     {
-        <button type="submit" class="btn btn-secondary mb-3" style="cursor: not-allowed; color: grey; font-style: italic;" disabled>Updated</button>
+        <button type="submit" class="btn btn-secondary mb-3" style="cursor: not-allowed; color: grey; font-style: italic;" disabled>Updating</button>
     }
 </EditForm>
 
@@ -147,6 +147,7 @@
         {
             ToastService.ShowError("Account not updated");
         }
+        NavigationManager.NavigateTo("/");
     }
 }
 
